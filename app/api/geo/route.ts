@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { url, content, keywords } = await req.json()
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 1000,
       system: `You are VeroBehavior's GEO (Generative Engine Optimization) analyst.
 Analyze website content for AI search visibility and machine readability.
