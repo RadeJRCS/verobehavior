@@ -400,7 +400,7 @@ export default function DemoPage() {
               <div className="text-[9px] font-mono tracking-widest text-ink-3 uppercase mb-2">Engagement</div>
               <div className="space-y-2 mb-4">
                 {[
-                  { label: 'Scroll depth', pct: Math.min(100, scrollDepth + elapsed * 2), color: '#1A3A2A' },
+                  { label: 'Scroll depth', pct: Math.min(100, scrollDepth), color: '#1A3A2A' },
                   { label: 'Conversion prob.', pct: Math.min(95, convProb), color: '#C8963C' },
                 ].map(b => (
                   <div key={b.label}>
