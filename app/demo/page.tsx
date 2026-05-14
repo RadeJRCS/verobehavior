@@ -19,6 +19,12 @@ const STATE_CONFIG: Record<string, { icon: string; label: string; sub: string; c
   converted:   { icon:'🛒', label:'Conversion!',      sub:'Conversion event captured.',                     color:'#fff',    bg:'#1A3A2A' },
 }
 
+const BUNDLE_PRICES: Record<string, number> = {
+  'Headphones only': 349,
+  '+ Carry case (+$29)': 378,
+  '+ Case + Cable + Mic (+$59)': 408,
+}
+
 export default function DemoPage() {
   const [events, setEvents] = useState<BehaviorEvent[]>([])
   const [insight, setInsight] = useState<Insight | null>(null)
@@ -42,17 +48,17 @@ export default function DemoPage() {
     return () => clearInterval(t)
   }, [])
 
-  // Scroll tracking (product page div)
+  // Scroll tracking
   useEffect(() => {
     const el = document.getElementById('productScroll')
     if (!el) return
     const fn = () => {
       const d = Math.round((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100)
-      setScrollDepth(Math.max(scrollDepth, isNaN(d) ? 0 : d))
+      setScrollDepth(prev => Math.max(prev, isNaN(d) ? 0 : d))
     }
     el.addEventListener('scroll', fn, { passive: true })
     return () => el.removeEventListener('scroll', fn)
-  }, [scrollDepth])
+  }, [])
 
   const addTag = useCallback((tag: string) => setTags(prev => new Set([...prev, tag])), [])
 
@@ -60,16 +66,14 @@ export default function DemoPage() {
     const ev: BehaviorEvent = { type, ts: Date.now() - startRef.current, data }
     setEvents(prev => {
       const next = [...prev, ev]
-      // Debounce: analyze max once every 3 seconds, or on key events
       const isKey = ['add_to_cart', 'wishlist', 'reviews_hover'].includes(type)
       if (isKey || (Date.now() - lastAnalyzeRef.current > 3000 && next.length >= 3)) {
         lastAnalyzeRef.current = Date.now()
         analyzeWithAI(next, type)
       }
-      return next.slice(-20) // keep last 20 events
+      return next.slice(-20)
     })
 
-    // Immediate local state updates
     setIntentScore(p => Math.min(99, p + (type === 'add_to_cart' ? 40 : type === 'reviews_hover' ? 12 : 6)))
     if (type === 'add_to_cart') { setCurrentState('converted'); addTag('converted'); addTag('high-intent') }
     else if (type === 'wishlist') { setCurrentState('hesitating'); addTag('price-friction') }
@@ -103,17 +107,17 @@ export default function DemoPage() {
           if (data.intentScore) setIntentScore(data.intentScore)
         }
       } else {
-        // Demo mode — static responses
         await new Promise(r => setTimeout(r, 600))
         const demos: Record<string, Insight> = {
           img_hover: { state: 'engaged', intentScore: 38, conversionProbability: 22, tags: ['visual-seeking', 'engaged'], insight: { type: 'ENGAGEMENT', text: 'User inspecting product image repeatedly — tactile-visual compensation behavior. Cannot physically inspect the product, compensating through visual information gathering.', principle: 'Elaboration Likelihood Model — high involvement processing' }, recommendation: 'Add a 360° view or zoom feature to reduce tactile anxiety.', estimatedLift: '+12-18% add-to-cart' },
           reviews_hover: { state: 'engaged', intentScore: 55, conversionProbability: 38, tags: ['social-proof-seeking'], insight: { type: 'SOCIAL PROOF', text: 'User seeking social validation before committing — classic loss aversion pattern. Fear of making a wrong choice drives review consultation.', principle: 'Social proof (Cialdini) + loss aversion (Kahneman)' }, recommendation: 'Surface top review summary above the fold, near the CTA.', estimatedLift: '+15-22% conversion' },
           add_to_cart: { state: 'converted', intentScore: 94, conversionProbability: 95, tags: ['converted', 'high-intent'], insight: { type: 'CONVERSION EVENT', text: 'Add to Cart triggered! Loss aversion framing ("SAVE $100 · Limited time") successfully activated scarcity response.', principle: 'Loss aversion + scarcity principle (Cialdini)' }, recommendation: 'Follow up with cross-sell within 3 seconds of cart add.', estimatedLift: '+28% AOV' },
           wishlist: { state: 'hesitating', intentScore: 45, conversionProbability: 28, tags: ['price-friction', 'hesitating'], insight: { type: 'HESITATION', text: 'Wishlist behavior indicates price sensitivity or timing friction. Intent is present but commitment threshold not met.', principle: 'Commitment & consistency (Cialdini) — low foot-in-door' }, recommendation: 'Show "Pay over 3 months from $116/mo" near CTA to reduce commitment anxiety.', estimatedLift: '+19% checkout starts' },
+          variant_change: { state: 'comparing', intentScore: 52, conversionProbability: 35, tags: ['comparing', 'color_preference'], insight: { type: 'DECISION FATIGUE', text: 'User switching between variants signals comparison mode. Multiple option evaluation may create mild choice overload.', principle: 'Hick\'s Law — decision time increases with number of choices' }, recommendation: 'Add "Most Popular" badge to Midnight Black to anchor decision.', estimatedLift: '+14% faster checkout' },
         }
         const key = Object.keys(demos).find(k => trigger.includes(k)) || 'img_hover'
-        setInsight(demos[key])
         const d = demos[key]
+        setInsight(d)
         setConvProb(d.conversionProbability)
         setCurrentState(d.state)
         setIntentScore(d.intentScore)
@@ -127,6 +131,7 @@ export default function DemoPage() {
   }
 
   const stCfg = STATE_CONFIG[currentState] || STATE_CONFIG.browsing
+  const currentPrice = BUNDLE_PRICES[selectedBundle] || 349
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
@@ -189,6 +194,7 @@ export default function DemoPage() {
                       ))}
                     </div>
                   </div>
+
                   {/* Product info */}
                   <div>
                     <div className="text-[10px] font-mono tracking-widest text-ink-3 mb-1">LUMINA AUDIO</div>
@@ -197,9 +203,14 @@ export default function DemoPage() {
                       <span className="text-gold text-sm tracking-wider">★★★★★</span>
                       <span className="text-[11px] text-ink-3 font-mono">(2,847 reviews)</span>
                     </div>
-                    <div className="mb-1">
-                      <span className="font-serif text-3xl font-normal text-ink">$349</span>
-                      <span className="text-[14px] text-ink-3 line-through ml-2">$449</span>
+                    <div className="mb-1 flex items-baseline gap-2">
+                      <span className="font-serif text-3xl font-normal text-ink">${currentPrice}</span>
+                      {currentPrice > 349 && (
+                        <span className="text-[13px] text-ink-3">base $349</span>
+                      )}
+                      {currentPrice === 349 && (
+                        <span className="text-[14px] text-ink-3 line-through">$449</span>
+                      )}
                     </div>
                     <div className="inline-block bg-green-light text-green text-[10px] font-mono px-2 py-0.5 rounded-full mb-4">SAVE $100 · Limited time</div>
 
@@ -220,10 +231,11 @@ export default function DemoPage() {
                     <div className="mb-4">
                       <div className="text-[12px] font-medium mb-2">Bundle</div>
                       <div className="flex flex-col gap-2">
-                        {['Headphones only', '+ Carry case (+$29)', '+ Case + Cable + Mic (+$59)'].map(b => (
+                        {Object.keys(BUNDLE_PRICES).map(b => (
                           <button key={b} onClick={() => { setSelectedBundle(b); trackEvent('variant_change', { type: 'bundle', value: b }) }}
-                            className={`text-left px-3 py-2 rounded-md border text-[12px] transition-all ${selectedBundle === b ? 'border-green bg-green-light text-green' : 'border-surface-3 text-ink-2 hover:border-green/30'}`}>
-                            {b}
+                            className={`text-left px-3 py-2 rounded-md border text-[12px] transition-all flex justify-between items-center ${selectedBundle === b ? 'border-green bg-green-light text-green' : 'border-surface-3 text-ink-2 hover:border-green/30'}`}>
+                            <span>{b}</span>
+                            <span className="font-mono font-semibold">${BUNDLE_PRICES[b]}</span>
                           </button>
                         ))}
                       </div>
@@ -235,7 +247,7 @@ export default function DemoPage() {
                     <button
                       onClick={() => { trackEvent('add_to_cart'); setCartAdded(true); setTimeout(() => setCartAdded(false), 2500) }}
                       className={`w-full py-3 rounded-lg text-[14px] font-semibold mb-2 transition-all ${cartAdded ? 'bg-[#0F6E56] text-white' : 'bg-green text-white hover:opacity-90'}`}>
-                      {cartAdded ? '✓ Added to Cart!' : 'Add to Cart — $349'}
+                      {cartAdded ? '✓ Added to Cart!' : `Add to Cart — $${currentPrice}`}
                     </button>
                     <button onClick={() => trackEvent('wishlist')}
                       className="w-full py-2.5 rounded-lg border border-surface-3 text-[13px] text-ink-2 hover:border-ink-3 transition-colors">
