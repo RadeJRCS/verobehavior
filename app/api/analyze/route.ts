@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { anthropic, PSYCH_SYSTEM_PROMPT } from '@/lib/anthropic'
+import { supabase } from '@/lib/supabase'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   try {
-    const { events, pageContext, sessionDuration, scrollDepth } = await req.json()
+    const { events, pageContext, sessionDuration, scrollDepth, apiKey } = await req.json()
+    const clientKey = apiKey || req.headers.get('x-vb-key') || 'demo'
 
     if (!events || events.length === 0) {
       return NextResponse.json({ error: 'No events provided' }, { status: 400 })
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
           role: 'user',
           content: `Analyze this user session from an e-commerce product page:
 
-Page context: ${pageContext || 'E-commerce product page'}
+Page context: ${pageContext || 'Unknown page'}
 Session duration: ${sessionDuration || 0} seconds
 Scroll depth: ${scrollDepth || 0}%
 Behavioral events (chronological): ${JSON.stringify(events, null, 2)}
@@ -34,7 +36,7 @@ Return JSON in this exact structure:
   "insight": {
     "type": "ENGAGEMENT|HESITATION|SOCIAL PROOF|DECISION FATIGUE|CONVERSION EVENT|FRICTION",
     "text": "2-3 sentences explaining the psychological behavior observed",
-    "principle": "Principle name and brief explanation"
+    "principle": "principle name and brief explanation"
   },
   "recommendation": "Specific A/B test or UX change to improve conversion",
   "estimatedLift": "e.g. +15-22% add-to-cart rate"
@@ -47,11 +49,29 @@ Return JSON in this exact structure:
     const cleaned = raw.replace(/```json\n?|\n?```/g, '').trim()
     const data = JSON.parse(cleaned)
 
+    // Save to Supabase
+    await supabase.from('sessions').insert({
+      client_key: clientKey,
+      page_context: pageContext || 'Unknown',
+      session_duration: sessionDuration || 0,
+      scroll_depth: scrollDepth || 0,
+      state: data.state,
+      intent_score: data.intentScore,
+      conversion_probability: data.conversionProbability,
+      tags: data.tags || [],
+      insight_type: data.insight?.type,
+      insight_text: data.insight?.text,
+      insight_principle: data.insight?.principle,
+      recommendation: data.recommendation,
+      estimated_lift: data.estimatedLift,
+      events: events,
+    })
+
     return NextResponse.json(data, {
       headers: {
-        'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || '*',
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-vb-key',
       },
     })
   } catch (err: unknown) {
@@ -64,9 +84,9 @@ Return JSON in this exact structure:
 export async function OPTIONS() {
   return new NextResponse(null, {
     headers: {
-      'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGINS || '*',
+      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-vb-key',
     },
   })
 }
