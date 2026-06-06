@@ -2,63 +2,43 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 
-const stats = [
-  { n: '+23%', l: 'avg. conversion lift' },
-  { n: '1,200+', l: 'paying customers' },
-  { n: '4.9/5', l: 'G2 rating' },
-  { n: '<50ms', l: 'insight latency' },
-]
-
 const features = [
   {
-    icon: '🧠',
-    tag: 'Psychology Engine',
-    title: 'Why users behave the way they do — explained.',
-    desc: 'Fine-tuned AI trained on Cialdini, Kahneman, and 2M+ tagged sessions classifies every visitor into cognitive states: hesitation, decision fatigue, high intent. Every insight cites its psychological principle. Zero black box.',
-    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'XAI: every recommendation cites its psychological principle', 'Brand-voice tuning — insights match your communication style', 'Ethical AI certified — fully explainable, human-in-the-loop'],
-    accent: '#1A3A2A',
-    bg: '#E8F2EC',
+    icon: '🧠', tag: 'Psychology engine',
+    title: 'Every session explained in the language of human psychology.',
+    desc: 'Our AI, powered by Claude, analyzes user sessions and explains the why behind every behavior: citing Cialdini, Kahneman, cognitive load theory, and more. No black box. Every insight is explainable.',
+    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'XAI: every recommendation cites its psychological principle', 'Brand-voice tuning: insights match your communication style', 'Ethical AI by design: fully explainable, human-in-the-loop'],
+    accent: '#1A3A2A', bg: '#E8F2EC',
   },
   {
-    icon: '⚖️',
-    tag: 'Decision Engine',
+    icon: '⚖️', tag: 'Decision engine',
     title: 'Tests that get smarter while they run.',
-    desc: 'Multi-armed bandit allocates traffic to winners in real time. A Judge LLM then evaluates each variant on psychological alignment — not just conversion lift — so you understand why it won and what to build next.',
+    desc: 'Multi-armed bandit allocates traffic to winning variants in real time. A Judge LLM evaluates each variant on psychological alignment: not just conversion lift: so you understand why it won.',
     points: ['Multi-armed bandit: dynamic traffic reallocation in hours, not weeks', 'Judge LLM: scores variants on psychological effectiveness', 'Predictive test ranking: AI prioritizes your backlog by impact', 'Agentic mode: one-click autonomous test launch with approval gate'],
-    accent: '#854F0B',
-    bg: '#FBF3E4',
+    accent: '#854F0B', bg: '#FBF3E4',
   },
   {
-    icon: '🌐',
-    tag: 'Visibility Engine',
-    title: 'Optimize how AI search finds you — and converts them.',
-    desc: 'As ChatGPT, Perplexity, and Google SGE replace traditional search, your brand must be visible before the click and compelling after it. VeroBehavior is the only CRO platform that bridges both layers.',
-    points: ['Real-time brand monitoring across ChatGPT, Perplexity, SGE', 'AEO + JSON-LD structured data engine for max AI crawlability', 'Machine readability score — 0 to 100, with specific fixes', 'Intent-to-conversion bridge: connect AI search to on-site psychology'],
-    accent: '#1A4A6E',
-    bg: '#E8F0F8',
+    icon: '🌐', tag: 'Visibility engine',
+    title: 'Optimize how AI search finds your brand: and converts them.',
+    desc: 'As ChatGPT, Perplexity, and Google SGE replace traditional search, your brand must be visible before the click and compelling after it. VeroBehavior connects both layers.',
+    points: ['Brand monitoring across ChatGPT, Perplexity, SGE', 'AEO + JSON-LD structured data engine', 'Machine readability score: 0 to 100, with specific fixes', 'Intent-to-conversion bridge: connect AI search to on-site psychology'],
+    accent: '#1A4A6E', bg: '#E8F0F8',
   },
 ]
 
-const cases = [
-  { co: 'Nordic Home Goods', industry: 'E-commerce', lift: '+34%', metric: 'checkout conversion', quote: 'VeroBehavior identified decision fatigue from a 12-option product grid — something we had never found ourselves.', name: 'Anna M., CMO' },
-  { co: 'Stackflow Analytics', industry: 'SaaS', lift: '+47%', metric: 'free trial signups', quote: 'The AI detected commitment bias on our CTA in 48 hours. We had been A/B testing that button for months.', name: 'James T., Head of Growth' },
-  { co: 'Crux Digital', industry: 'Agency', lift: '3.2×', metric: 'client ROI delivered', quote: 'VeroBehavior replaced our entire hypothesis backlog process. Our strategists focus on strategy, not guesswork.', name: 'Ana V., Founder' },
+const useCases = [
+  { industry: 'E-commerce', problem: 'High cart abandonment', insight: 'AI detects decision fatigue from too many product options', action: 'Recommends simplified layout based on cognitive load theory', principle: 'Hick\'s Law · choice architecture' },
+  { industry: 'SaaS', problem: 'Low trial signup conversion', insight: 'AI identifies hesitation behavior near the CTA button', action: 'Suggests reduced-commitment language + social proof placement', principle: 'Loss aversion · commitment bias (Cialdini)' },
+  { industry: 'Lead generation', problem: 'Form abandonment on long forms', insight: 'AI recognizes overwhelm and friction patterns', action: 'Proposes multi-step form with progress indicator', principle: 'Endowed progress effect' },
 ]
-
-const testi = [
-  { q: 'I\'ve used VWO, Optimizely, and Hotjar. None of them ever told me why a test won. VeroBehavior does. That\'s the difference between data and intelligence.', name: 'Sofia Krauss', role: 'CMO · Nord Living', init: 'SK', color: '#534AB7' },
-  { q: 'The psychological playbooks for SaaS are incredibly specific. Our onboarding conversion went from 31% to 58% in two months. The ROI is almost embarrassing.', name: 'James Moretti', role: 'Head of Growth · Stackflow', init: 'JM', color: '#0F6E56' },
-  { q: 'We run CRO for 14 clients. VeroBehavior cut our hypothesis generation time by 70%. Our strategists now spend their time on what actually matters.', name: 'Ana Velasco', role: 'Founder · Crux Digital', init: 'AV', color: '#854F0B' },
-]
-
-const integrations = ['Shopify', 'WooCommerce', 'HubSpot', 'Salesforce', 'GA4', 'Segment', 'Klaviyo', 'Meta Ads', 'Google Ads', 'Zapier', 'Intercom', '+28 more']
 
 const faqs = [
-  ['How is VeroBehavior different from VWO or Optimizely?', 'VWO and Optimizely tell you what users did. VeroBehavior tells you why — expressed in psychological terms. Our AI is fine-tuned on behavioral psychology, not just statistics. And we\'re the only CRO platform that also covers GEO (how AI search engines represent your brand).'],
-  ['Does VeroBehavior slow down my website?', 'No. Our JavaScript snippet is under 10KB, loads asynchronously, and produces zero Cumulative Layout Shift (CLS). All AI processing happens server-side. Fully Core Web Vitals compliant.'],
-  ['Is my session data used to train your model?', 'Only with explicit consent, fully anonymized. We never store personally identifiable information. GDPR and CCPA compliant by design from day one.'],
-  ['How does the proprietary AI work — is it GPT-4?', 'Our AI is a fine-tuned, domain-specific model trained on behavioral psychology literature and 2M+ tagged user sessions. We do not use GPT-4 or any third-party LLM API for core inference — this protects your data and creates a proprietary moat that compounds with every client.'],
-  ['How quickly can I see results?', 'First psychological insights appear within 48 hours of installing the snippet. Statistically significant experiment results in 2–4 weeks. GEO visibility improvements in 2–4 months.'],
+  ['How is VeroBehavior different from VWO or Optimizely?', 'VWO and Optimizely show you what users did: click rates, scroll depth, conversions. VeroBehavior explains why they behaved that way, expressed in psychological terms. We don\'t replace those tools; we provide the intelligence layer that makes testing decisions more informed.'],
+  ['Does VeroBehavior slow down my website?', 'No. Our JavaScript snippet is under 10KB, loads asynchronously, and produces zero Cumulative Layout Shift (CLS). All AI processing happens server-side, not in the browser.'],
+  ['How does the AI work: is it GPT?', 'Our current MVP uses Claude via the Anthropic API for behavioral analysis. Our roadmap includes building a proprietary fine-tuned model trained on behavioral psychology and session data to reduce latency and improve domain accuracy.'],
+  ['Is my data safe?', 'All behavioral data is fully anonymized and tied to pseudonymous session IDs. We never collect personally identifiable information from website visitors. GDPR and CCPA compliant by design.'],
+  ['How quickly can I see results?', 'First psychological insights appear within 48 hours of installing the snippet, depending on your traffic volume. The more sessions our AI analyzes, the more accurate the insights become.'],
+  ['What stage is the product in?', 'VeroBehavior is currently in private beta. We are onboarding a select group of design partners who get free early access in exchange for feedback. Apply through our contact page.'],
 ]
 
 export default function Home() {
@@ -69,35 +49,39 @@ export default function Home() {
       {/* HERO */}
       <section className="pt-32 pb-20 px-6 text-center bg-surface">
         <div className="max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-gold-light border border-yellow-200 rounded-full px-4 py-1.5 text-[11px] font-mono font-medium text-gold mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse-dot" />
-            G2 Leader · Behavioral CRO 2026 · 4.9/5 from 312 reviews
+          <div className="inline-flex items-center gap-2 bg-green-light border border-green/20 rounded-full px-4 py-1.5 text-[11px] font-mono font-medium text-green mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+            Private beta: accepting design partners
           </div>
           <h1 className="font-serif text-5xl md:text-7xl font-normal leading-[1.05] tracking-tight text-ink mb-6">
             Stop testing words.<br />
             <em className="italic text-green">Start testing psychology.</em>
           </h1>
           <p className="text-lg text-ink-2 max-w-xl mx-auto mb-10 leading-relaxed font-light">
-            VeroBehavior is the only CRO platform that explains the <em>why</em> behind every click, scroll, and conversion — powered by proprietary AI trained on behavioral science.
+            VeroBehavior is the first CRO platform that explains the <em>why</em> behind every click, scroll, and conversion: powered by AI trained on behavioral science.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mb-6">
             <Link href="/demo" className="bg-green text-white px-7 py-3.5 rounded-lg text-[14px] font-semibold hover:opacity-90 transition-opacity">
               See live demo →
             </Link>
-            <Link href="/pricing" className="bg-white text-ink border border-surface-3 px-7 py-3.5 rounded-lg text-[14px] hover:border-ink-3 transition-colors">
-              View pricing
+            <Link href="/contact" className="bg-white text-ink border border-surface-3 px-7 py-3.5 rounded-lg text-[14px] hover:border-ink-3 transition-colors">
+              Apply for early access
             </Link>
           </div>
           <p className="text-[13px] text-ink-3 mb-14">
-            Used by <strong className="text-ink-2">1,200+ growth teams</strong> · Free 14-day trial · No credit card
+            Free for design partners · One-line integration · GDPR compliant
           </p>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 border border-surface-3 rounded-xl overflow-hidden bg-white max-w-2xl mx-auto">
-            {stats.map((s, i) => (
+          {/* What it does: not fake stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 border border-surface-3 rounded-xl overflow-hidden bg-white max-w-3xl mx-auto">
+            {[
+              { n: 'Why', desc: 'Explains the psychology behind user behavior' },
+              { n: '<50ms', desc: 'Real-time behavioral analysis' },
+              { n: '<10KB', desc: 'Lightweight snippet, zero CLS' },
+            ].map((s, i) => (
               <div key={i} className="py-5 px-4 text-center border-r border-surface-3 last:border-r-0">
                 <div className="font-serif text-3xl text-green leading-none mb-1">{s.n}</div>
-                <div className="text-[11px] text-ink-3 font-mono">{s.l}</div>
+                <div className="text-[11px] text-ink-3">{s.desc}</div>
               </div>
             ))}
           </div>
@@ -106,9 +90,9 @@ export default function Home() {
 
       {/* TICKER */}
       <div className="bg-green overflow-hidden py-2.5">
-        <div className="flex animate-ticker whitespace-nowrap gap-12">
+        <div className="flex animate-ticker whitespace-nowrap gap-12" style={{ animationDuration: '22s' }}>
           {[...Array(2)].map((_, i) =>
-            ['Psychology Engine', 'Multi-Armed Bandit', 'Judge LLM', 'GEO Monitor', 'Agentic AI', 'No GPT Dependency', 'Ethical AI Certified', 'XAI Explanations', '<10KB Snippet'].map(item => (
+            ['Psychology Engine', 'Multi-Armed Bandit', 'Judge LLM', 'GEO Monitor', 'Behavioral Tagging', 'XAI Explanations', 'Ethical AI', 'Real-time Analysis'].map(item => (
               <span key={`${i}-${item}`} className="inline-flex items-center gap-4 text-[11px] font-mono text-white/70 uppercase tracking-widest">
                 {item} <span className="text-gold text-sm">◆</span>
               </span>
@@ -117,18 +101,51 @@ export default function Home() {
         </div>
       </div>
 
+      {/* HOW IT WORKS */}
+      <section className="py-20 px-6 bg-surface-2 border-y border-surface-3">
+        <div className="max-w-4xl mx-auto text-center mb-14">
+          <div className="text-[11px] font-mono tracking-widest text-green mb-3 uppercase">How it works</div>
+          <h2 className="font-serif text-4xl font-normal tracking-tight text-ink mb-4">
+            One line of code. <em className="italic text-green">Insights in 48 hours.</em>
+          </h2>
+        </div>
+        <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-6">
+          {[
+            { step: '01', icon: '📋', title: 'Install the snippet', desc: 'Add one line of JavaScript to your site header. Under 10KB, async, no performance impact. Works with Shopify, WordPress, or any HTML site.' },
+            { step: '02', icon: '🧠', title: 'AI analyzes behavior', desc: 'Our AI watches how users interact with your pages: detecting hesitation, decision fatigue, confusion, and high intent patterns in real time.' },
+            { step: '03', icon: '💡', title: 'Get actionable insights', desc: 'The dashboard shows exactly why users behave the way they do, which psychological principles are at play, and what specific changes will improve conversion.' },
+          ].map(s => (
+            <div key={s.step} className="bg-white border border-surface-3 rounded-xl p-6 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-green" />
+              <div className="text-[10px] font-mono text-ink-3 tracking-widest mb-3">{s.step}</div>
+              <div className="text-2xl mb-3">{s.icon}</div>
+              <div className="font-serif text-lg text-ink mb-2">{s.title}</div>
+              <div className="text-[13px] text-ink-2 leading-relaxed font-light">{s.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div className="max-w-4xl mx-auto mt-8">
+          <div className="bg-[#0E0E14] rounded-xl p-5 text-center">
+            <div className="text-[10px] font-mono text-white/40 tracking-widest mb-2">THE SNIPPET</div>
+            <code className="text-[13px] font-mono text-[#A8D4B8]">
+              {'<script src="https://verobehavior.vercel.app/api/snippet?key=YOUR_KEY" async></script>'}
+            </code>
+          </div>
+        </div>
+      </section>
+
       {/* FEATURES */}
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <div className="text-[11px] font-mono tracking-widest text-green mb-3 uppercase">The Platform</div>
+            <div className="text-[11px] font-mono tracking-widest text-green mb-3 uppercase">The platform</div>
             <h2 className="font-serif text-4xl md:text-5xl font-normal tracking-tight text-ink">
               Three engines. One <em className="italic text-green">unfair advantage.</em>
             </h2>
           </div>
           <div className="flex flex-col gap-14">
             {features.map((f, i) => (
-              <div key={i} className={`grid md:grid-cols-2 gap-10 items-center ${i % 2 === 1 ? 'md:direction-rtl' : ''}`}>
+              <div key={i} className="grid md:grid-cols-2 gap-10 items-center">
                 <div className={i % 2 === 1 ? 'md:order-2' : ''}>
                   <div className="text-[10px] font-mono tracking-widest uppercase mb-3" style={{ color: f.accent }}>{f.tag}</div>
                   <h3 className="font-serif text-2xl md:text-3xl font-normal leading-snug text-ink mb-4">{f.title}</h3>
@@ -143,13 +160,13 @@ export default function Home() {
                 </div>
                 <div className={`rounded-xl p-7 border border-surface-3 ${i % 2 === 1 ? 'md:order-1' : ''}`} style={{ background: f.bg }}>
                   <div className="text-4xl mb-4">{f.icon}</div>
-                  <div className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: f.accent }}>Live analysis</div>
+                  <div className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: f.accent }}>How it works</div>
                   <div className="bg-white rounded-lg p-4 border border-white/60 shadow-sm">
-                    <div className="text-[11px] font-mono text-ink-3 mb-3">BEHAVIORAL INSIGHT</div>
+                    <div className="text-[11px] font-mono text-ink-3 mb-3">AI INSIGHT EXAMPLE</div>
                     <div className="text-[13px] text-ink leading-relaxed">
-                      {i === 0 && '"User shows decision fatigue — 12 product options exceed optimal choice architecture. Hick\'s Law predicts a 23% lift if options are reduced to 3."'}
-                      {i === 1 && '"Variant C wins on conversion AND psychological alignment. Loss aversion framing is the correct trigger for this price-sensitive segment — allocating 68% traffic."'}
-                      {i === 2 && '"Brand cited in 94% of ChatGPT CRO queries. Add FAQ JSON-LD to pricing page — machine readability 62→89, projected +30% SGE presence."'}
+                      {i === 0 && '"User shows decision fatigue: 12 product options exceed optimal choice architecture. Hick\'s Law predicts a 23% lift if options are reduced to 3."'}
+                      {i === 1 && '"Variant C wins on conversion AND psychological alignment. Loss aversion framing is the correct trigger for this price-sensitive segment: allocating 68% traffic."'}
+                      {i === 2 && '"Brand cited in 94% of ChatGPT CRO queries. Add FAQ JSON-LD to pricing page: machine readability 62→89, projected +30% SGE presence."'}
                     </div>
                     <div className="mt-2 text-[10px] font-mono" style={{ color: f.accent }}>
                       {i === 0 && '→ cognitive load theory · choice architecture'}
@@ -164,73 +181,65 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CASE STUDIES */}
-      <section className="py-20 px-6 bg-surface-2">
+      {/* USE CASES: real examples, not fake case studies */}
+      <section className="py-20 px-6 bg-surface-2 border-y border-surface-3">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <div className="text-[11px] font-mono tracking-widest text-green mb-3 uppercase">Case Studies</div>
-            <h2 className="font-serif text-4xl md:text-5xl font-normal tracking-tight text-ink">
-              Real psychology. <em className="italic text-green">Measurable results.</em>
+            <div className="text-[11px] font-mono tracking-widest text-green mb-3 uppercase">Use cases</div>
+            <h2 className="font-serif text-4xl font-normal tracking-tight text-ink">
+              How VeroBehavior solves <em className="italic text-green">real problems.</em>
             </h2>
           </div>
           <div className="grid md:grid-cols-3 gap-5">
-            {cases.map(c => (
-              <div key={c.co} className="bg-white border border-surface-3 rounded-xl overflow-hidden hover:-translate-y-0.5 transition-transform">
+            {useCases.map(uc => (
+              <div key={uc.industry} className="bg-white border border-surface-3 rounded-xl overflow-hidden">
                 <div className="p-5">
-                  <div className="text-[10px] font-mono tracking-widest uppercase text-green mb-2">{c.industry}</div>
-                  <div className="font-semibold text-[15px] text-ink mb-3">{c.co}</div>
-                  <div className="font-serif text-5xl text-green font-normal leading-none mb-1">{c.lift}</div>
-                  <div className="text-[12px] text-ink-3 mb-4">{c.metric}</div>
+                  <div className="text-[10px] font-mono tracking-widest uppercase text-green mb-2">{uc.industry}</div>
+                  <div className="font-serif text-lg text-ink mb-3">{uc.problem}</div>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'AI detects', text: uc.insight },
+                      { label: 'Recommends', text: uc.action },
+                    ].map(s => (
+                      <div key={s.label}>
+                        <div className="text-[10px] font-mono text-ink-3 uppercase tracking-wider mb-1">{s.label}</div>
+                        <div className="text-[13px] text-ink-2 leading-relaxed font-light">{s.text}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="px-5 pb-5 pt-4 border-t border-surface-2">
-                  <p className="font-serif italic text-[14px] leading-relaxed text-ink mb-3">"{c.quote}"</p>
-                  <div className="text-[12px] font-medium text-ink-2">— {c.name}</div>
+                <div className="px-5 py-3 bg-surface border-t border-surface-3">
+                  <div className="text-[10px] font-mono text-green">→ {uc.principle}</div>
                 </div>
               </div>
             ))}
           </div>
+          <div className="text-center mt-8">
+            <Link href="/demo" className="text-[13px] text-green font-medium hover:underline">
+              See these principles in action with our live demo →
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
+      {/* WHY VEROBEHAVIOR: instead of fake testimonials */}
       <section className="py-20 px-6">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl md:text-5xl font-normal tracking-tight text-ink">
-              Loved by people who <em className="italic text-green">live in conversion data.</em>
+            <h2 className="font-serif text-4xl font-normal tracking-tight text-ink">
+              Why build with <em className="italic text-green">behavioral psychology?</em>
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-5">
-            {testi.map(t => (
-              <div key={t.name} className="bg-white border border-surface-3 rounded-xl p-6">
-                <div className="flex gap-0.5 mb-4">
-                  {[...Array(5)].map((_, i) => <span key={i} className="text-gold text-sm">★</span>)}
-                </div>
-                <p className="font-serif italic text-[16px] leading-relaxed text-ink mb-5">"{t.q}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold text-white flex-shrink-0" style={{ background: t.color }}>
-                    {t.init}
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-medium text-ink">{t.name}</div>
-                    <div className="text-[11px] text-ink-3">{t.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* INTEGRATIONS */}
-      <section className="py-16 px-6 bg-surface-2 border-y border-surface-3">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="text-[11px] font-mono tracking-widest text-green mb-4 uppercase">Integrations</div>
-          <h2 className="font-serif text-3xl font-normal text-ink mb-8">Fits the stack <em className="italic text-green">you already use.</em></h2>
-          <div className="flex flex-wrap justify-center gap-3">
-            {integrations.map(i => (
-              <div key={i} className="bg-white border border-surface-3 rounded-lg px-4 py-2 text-[13px] font-medium text-ink-2 hover:border-green/30 hover:text-green transition-colors">
-                {i}
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              { q: 'Current CRO tools tell you what users did.', a: 'VeroBehavior tells you why: in the language of Cialdini, Kahneman, and cognitive science. That changes what you test next.' },
+              { q: 'A/B tests take weeks and often inconclusive.', a: 'Our multi-armed bandit + Judge LLM shifts traffic dynamically and evaluates results on psychological effectiveness, not just statistics.' },
+              { q: 'Hiring a behavioral psychologist costs $150K+/year.', a: 'VeroBehavior makes that expertise available as a SaaS product for a fraction of the cost, improving with every session it analyzes.' },
+              { q: 'AI search is replacing traditional Google clicks.', a: 'Our GEO engine monitors how AI represents your brand in ChatGPT, Perplexity, and SGE: and connects that visibility to on-site conversion.' },
+            ].map(item => (
+              <div key={item.q} className="bg-white border border-surface-3 rounded-xl p-6">
+                <div className="font-serif text-[16px] text-ink mb-3 leading-snug">{item.q}</div>
+                <div className="text-[13px] text-ink-2 leading-relaxed font-light">{item.a}</div>
               </div>
             ))}
           </div>
@@ -238,12 +247,12 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-surface-2 border-t border-surface-3">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
             <div className="text-[11px] font-mono tracking-widest text-green mb-3 uppercase">FAQ</div>
             <h2 className="font-serif text-4xl font-normal tracking-tight text-ink">
-              Questions we get <em className="italic text-green">every day.</em>
+              Common questions.<br /><em className="italic text-green">Honest answers.</em>
             </h2>
           </div>
           <div>
@@ -264,22 +273,22 @@ export default function Home() {
       <section className="py-20 px-6 bg-green">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-serif text-4xl md:text-5xl font-normal text-white leading-tight tracking-tight mb-4">
-            Start understanding your users,<br />
-            <em className="italic text-[#A8D4B8]">not just measuring them.</em>
+            Understand your users.<br />
+            <em className="italic text-[#A8D4B8]">Not just measure them.</em>
           </h2>
           <p className="text-[16px] text-white/60 max-w-md mx-auto mb-10 font-light leading-relaxed">
-            Free 14-day trial. No credit card. Cancel anytime. Join 1,200+ growth teams.
+            We are accepting a limited number of design partners for our private beta. Free access in exchange for feedback.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/demo" className="bg-gold text-white px-8 py-3.5 rounded-lg text-[14px] font-semibold hover:opacity-90 transition-opacity">
-              Start free trial →
+              Try the live demo →
             </Link>
-            <Link href="/demo" className="bg-white/10 border border-white/20 text-white px-8 py-3.5 rounded-lg text-[14px] hover:bg-white/15 transition-colors">
-              See live demo
+            <Link href="/contact" className="bg-white/10 border border-white/20 text-white px-8 py-3.5 rounded-lg text-[14px] hover:bg-white/15 transition-colors">
+              Apply as design partner
             </Link>
           </div>
           <div className="flex flex-wrap gap-5 justify-center mt-8">
-            {['Free 14-day trial', 'No credit card', 'GDPR compliant', 'Ethical AI certified', 'Cancel anytime'].map(t => (
+            {['Free for beta partners', 'One-line integration', 'GDPR compliant', 'Ethical AI by design'].map(t => (
               <div key={t} className="flex items-center gap-1.5 text-[12px] text-white/40">
                 <span className="text-[#5DCAA5]">✓</span>{t}
               </div>
