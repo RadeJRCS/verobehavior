@@ -48,24 +48,35 @@ export default function DashboardPage() {
   const [filterKey, setFilterKey] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [allKeys, setAllKeys] = useState<string[]>([])
 
   const fetchData = async (key?: string) => {
     setLoading(true)
     try {
-      const url = key ? `/api/sessions?key=${key}` : '/api/sessions'
-      const res = await fetch(url)
-      const data = await res.json()
-      setSessions(data.sessions || [])
-      setStats(data.stats || null)
+      // Always fetch all sessions first to get all client keys
+      const allRes = await fetch('/api/sessions')
+      const allData = await allRes.json()
+      const keys = [...new Set(
+        (allData.sessions || []).map((s: Session) => s.client_key).filter((k: string) => k && k.length > 0)
+      )] as string[]
+      setAllKeys(keys)
+
+      if (!key) {
+        // No filter, show all
+        setSessions(allData.sessions || [])
+        setStats(allData.stats || null)
+      } else {
+        // Filter by specific client
+        const res = await fetch(`/api/sessions?key=${key}`)
+        const data = await res.json()
+        setSessions(data.sessions || [])
+        setStats(data.stats || null)
+      }
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
   }
 
   useEffect(() => { fetchData() }, [])
-
-  const clientKeys = [...new Set(
-    sessions.map(s => s.client_key).filter(k => k && k.length > 0)
-  )]
 
   const handleFilter = (key: string) => {
     setFilterKey(key)
@@ -98,13 +109,10 @@ export default function DashboardPage() {
                         className={`w-full text-left px-4 py-2.5 text-[13px] transition-colors ${filterKey === '' ? 'bg-green text-white font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>
                         All clients
                       </button>
-                      {clientKeys.map(key => (
+                      {allKeys.map(key => (
                         <button key={key} onClick={() => handleFilter(key)}
                           className={`w-full text-left px-4 py-2.5 text-[13px] border-t border-gray-100 transition-colors flex items-center justify-between ${filterKey === key ? 'bg-green text-white font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>
                           <span>{key}</span>
-                          <span className={`text-[10px] ${filterKey === key ? 'text-white/70' : 'text-gray-400'}`}>
-                            {sessions.filter(s => s.client_key === key).length} sessions
-                          </span>
                         </button>
                       ))}
                     </div>
@@ -122,7 +130,6 @@ export default function DashboardPage() {
         </div>
 
         <div className="max-w-6xl mx-auto px-6 py-8">
-          {/* KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
               { n: stats ? stats.convRate + '%' : '-', l: 'Conversion Rate', sub: 'Sessions that converted', c: '#1A3A2A' },
@@ -138,7 +145,6 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Snippet */}
           <div className="bg-[#0E0E14] rounded-xl p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <div>
               <div className="text-[10px] font-mono text-white/40 mb-1 uppercase tracking-widest">Add to any website to start tracking</div>
@@ -147,7 +153,6 @@ export default function DashboardPage() {
             <div className="text-[11px] font-mono text-white/30 whitespace-nowrap">Replace YOUR_CLIENT_KEY with client name</div>
           </div>
 
-          {/* Tabs */}
           <div className="flex gap-1 bg-surface-2 border border-surface-3 rounded-lg p-1 mb-6 w-fit">
             {(['sessions', 'insights', 'geo'] as const).map(t => (
               <button key={t} onClick={() => setActiveTab(t)}
@@ -157,7 +162,6 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Sessions tab */}
           {activeTab === 'sessions' && (
             loading ? (
               <div className="bg-white border border-surface-3 rounded-xl p-12 text-center text-ink-3 font-mono text-[13px]">Loading sessions...</div>
@@ -173,7 +177,6 @@ export default function DashboardPage() {
                   const isOpen = expandedId === s.id
                   return (
                     <div key={s.id} className={`bg-white border rounded-xl overflow-hidden transition-all cursor-pointer ${isOpen ? 'border-green shadow-md' : 'border-surface-3 hover:border-green/30'}`}>
-                      {/* Row summary - always visible */}
                       <div className="px-5 py-4 flex items-center gap-4 flex-wrap" onClick={() => setExpandedId(isOpen ? null : s.id)}>
                         <div className="w-[90px] flex-shrink-0">
                           <div className="text-[11px] font-mono text-ink-3">
@@ -211,12 +214,10 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {/* Expanded detail */}
                       {isOpen && (
                         <div className="px-5 pb-5 border-t border-surface-2">
                           <div className="grid md:grid-cols-2 gap-4 mt-4">
-                            {/* Insight */}
-                            <div className="rounded-lg p-4 border-l-3" style={{ borderLeftWidth: 3, borderLeftColor: stateColor[s.state] || '#4A4947', background: stateBg[s.state] || '#F3F2EC' }}>
+                            <div className="rounded-lg p-4" style={{ borderLeft: `3px solid ${stateColor[s.state] || '#4A4947'}`, background: stateBg[s.state] || '#F3F2EC' }}>
                               <div className="text-[9px] font-mono uppercase tracking-widest mb-2" style={{ color: stateColor[s.state] || '#4A4947' }}>
                                 {s.insight_type || 'Behavioral Insight'}
                               </div>
@@ -227,8 +228,6 @@ export default function DashboardPage() {
                                 </div>
                               )}
                             </div>
-
-                            {/* Recommendation */}
                             <div className="bg-green rounded-lg p-4">
                               <div className="text-[9px] font-mono text-[#A8D4B8] uppercase tracking-widest mb-2">AI Recommendation</div>
                               <p className="text-[13px] text-white leading-relaxed mb-3">{s.recommendation || 'No recommendation available.'}</p>
@@ -245,8 +244,6 @@ export default function DashboardPage() {
                               </div>
                             </div>
                           </div>
-
-                          {/* Session meta */}
                           <div className="flex gap-6 mt-4 pt-3 border-t border-surface-2 flex-wrap">
                             {[
                               { l: 'Page', v: s.page_context || 'Unknown' },
@@ -269,7 +266,6 @@ export default function DashboardPage() {
             )
           )}
 
-          {/* Insights tab */}
           {activeTab === 'insights' && (
             sessions.length === 0 ? (
               <div className="bg-white border border-surface-3 rounded-xl p-12 text-center text-ink-3 text-[13px]">No insights yet.</div>
@@ -295,7 +291,6 @@ export default function DashboardPage() {
             )
           )}
 
-          {/* GEO tab */}
           {activeTab === 'geo' && (
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white border border-surface-3 rounded-xl p-5">
@@ -319,7 +314,7 @@ export default function DashboardPage() {
                 <div className="text-[11px] font-mono tracking-widest text-ink-3 uppercase mb-4">GEO Recommendations</div>
                 {[
                   { sev: 'HIGH', issue: 'Missing JSON-LD Product schema on pricing page', fix: 'Add Product + FAQPage schema', impact: '+28% SGE' },
-                  { sev: 'MED', issue: 'Machine readability score: 62/100', fix: 'Add structured metadata to catalog', impact: '+15% Perplexity' },
+                  { sev: 'MED', issue: 'Machine readability score: 62/100', fix: 'Add structured metadata', impact: '+15% Perplexity' },
                   { sev: 'LOW', issue: 'No entity disambiguation in About page', fix: 'Add Organization schema', impact: '+8% ChatGPT' },
                 ].map(r => (
                   <div key={r.issue} className="border-b border-surface-2 pb-3 mb-3 last:border-b-0">
