@@ -60,32 +60,6 @@ export default function PricingPage() {
 
         <div className="text-center text-[12px] text-ink-3 mb-6">All plans include: GDPR compliant, less than 10KB snippet, zero CLS, XAI explanations, no performance impact</div>
 
-        <div className="bg-white border border-surface-3 rounded-xl p-6 mb-8">
-          <div className="text-center mb-4">
-            <div className="font-serif text-xl text-ink mb-2">How we compare</div>
-            <p className="text-[13px] text-ink-3 font-light">VeroBehavior adds a unique psychological intelligence layer that no competitor offers.</p>
-          </div>
-          <div className="grid grid-cols-4 gap-0 text-center text-[12px] border border-surface-3 rounded-lg overflow-hidden">
-            <div className="bg-surface-2 p-3 font-medium text-ink border-b border-surface-3">Tool</div>
-            <div className="bg-surface-2 p-3 font-medium text-ink border-b border-surface-3">Starting price</div>
-            <div className="bg-surface-2 p-3 font-medium text-ink border-b border-surface-3">A/B testing</div>
-            <div className="bg-surface-2 p-3 font-medium text-ink border-b border-surface-3">Psychology insights</div>
-
-            <div className="p-3 text-ink-2 border-b border-surface-3">VWO</div>
-            <div className="p-3 text-ink-2 border-b border-surface-3">$314/mo</div>
-            <div className="p-3 text-green border-b border-surface-3">✓</div>
-            <div className="p-3 text-ink-3 border-b border-surface-3">✗</div>
-
-            <div className="p-3 text-ink-2 border-b border-surface-3">Optimizely</div>
-            <div className="p-3 text-ink-2 border-b border-surface-3">$3,000+/mo</div>
-            <div className="p-3 text-green border-b border-surface-3">✓</div>
-            <div className="p-3 text-ink-3 border-b border-surface-3">✗</div>
-
-            <div className="p-3 text-ink font-medium bg-green-light">VeroBehavior</div>
-            <div className="p-3 text-green font-medium bg-green-light">$149/mo</div>
-            <div className="p-3 text-green bg-green-light">✓</div>
-            <div className="p-3 text-green font-medium bg-green-light">✓</div>
-          </div>
         </div>
 
         <div className="bg-surface-2 border border-surface-3 rounded-2xl p-8 text-center mb-8">

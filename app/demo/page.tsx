@@ -179,11 +179,11 @@ export default function DemoPage() {
             Interact with the product page.<br />
             <em className="italic text-[#A8D4B8]">Watch the AI analyze in real time.</em>
           </h1>
-          <p className="text-[13px] text-white/50 font-mono">← Hover, click, scroll, compare variants — the VeroBehavior panel updates live using Claude API →</p>
+          <p className="text-[13px] text-white/50 font-mono">← Hover, click, scroll, compare variants — the VeroBehavior panel updates live using our behavioral AI engine →</p>
           <div className="flex justify-center gap-3 mt-4">
             <button onClick={() => setApiMode('live')}
               className={`px-4 py-1.5 rounded-md text-[12px] font-mono transition-all ${apiMode === 'live' ? 'bg-gold text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}>
-              🤖 Live Claude API
+              🤖 Live AI Analysis
             </button>
             <button onClick={() => setApiMode('demo')}
               className={`px-4 py-1.5 rounded-md text-[12px] font-mono transition-all ${apiMode === 'demo' ? 'bg-white/20 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}>
@@ -374,7 +374,7 @@ export default function DemoPage() {
               <span className="font-serif text-[15px] text-white">Vero<em className="italic text-[#A8D4B8]">Behavior</em></span>
               <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#A8D4B8]">
                 <span className={`w-1.5 h-1.5 rounded-full ${loading ? 'bg-gold animate-pulse-dot' : 'bg-[#5EBA7D] animate-pulse-dot'}`} />
-                {loading ? 'ANALYZING...' : apiMode === 'live' ? 'CLAUDE API LIVE' : 'DEMO MODE'}
+                {loading ? 'ANALYZING...' : apiMode === 'live' ? 'AI ENGINE LIVE' : 'DEMO MODE'}
               </div>
             </div>
             <div className="p-4 overflow-y-auto" style={{ maxHeight: '70vh' }}>
@@ -420,7 +420,7 @@ export default function DemoPage() {
               </div>
 
               <div className="text-[9px] font-mono tracking-widest text-ink-3 uppercase mb-2">
-                {apiMode === 'live' ? '🤖 Claude API Insight' : '⚡ Behavioral Insight'}
+                {apiMode === 'live' ? '🤖 AI Behavioral Insight' : '⚡ Behavioral Insight'}
               </div>
               {insight ? (
                 <div className="animate-slide-in">
@@ -440,7 +440,7 @@ export default function DemoPage() {
                 </div>
               ) : (
                 <div className="bg-surface rounded-lg p-3 text-[12px] text-ink-3 font-light">
-                  {loading ? '⏳ Claude is analyzing your behavioral session...' : 'Interact with the product page to generate psychological insights.'}
+                  {loading ? '⏳ AI is analyzing your behavioral session...' : 'Interact with the product page to generate psychological insights.'}
                 </div>
               )}
             </div>
@@ -450,7 +450,7 @@ export default function DemoPage() {
         <div className="max-w-6xl mx-auto px-4 pb-8">
           <div className="bg-[#0E0E14] rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
-              <div className="text-[11px] font-mono text-white/40 mb-1">This demo is powered by the VeroBehavior snippet + Claude API:</div>
+              <div className="text-[11px] font-mono text-white/40 mb-1">This demo is powered by the VeroBehavior behavioral AI engine:</div>
               <code className="text-[11px] font-mono text-[#A8D4B8]">{'<script src="cdn.verobehavior.com/vb.min.js?key=vb_demo" async></script>'}</code>
             </div>
             <a href="/pricing" className="bg-gold text-white px-5 py-2 rounded-lg text-[13px] font-semibold whitespace-nowrap hover:opacity-90 transition-opacity">

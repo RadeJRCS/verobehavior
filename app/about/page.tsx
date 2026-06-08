@@ -11,7 +11,7 @@ export default function AboutPage() {
         <div className="space-y-5 text-ink-2 text-[15px] leading-relaxed font-light">
           <p>Every CRO tool on the market answers the same question: <em>what are users doing?</em> They show heatmaps, scroll maps, click data. Useful, but incomplete.</p>
           <p>VeroBehavior asks the question that actually drives growth: <strong className="font-semibold text-ink">why are they doing it?</strong></p>
-          <p>We built an AI engine powered by the Anthropic Claude API: analyzing user sessions through the lens of behavioral economics, Cialdini&apos;s influence principles, and cognitive load theory: to classify every visitor into psychological states and explain what is driving their behavior.</p>
+          <p>We built an AI engine purpose-built to analyze user sessions through the lens of behavioral economics, Cialdini&apos;s influence principles, and cognitive load theory: to classify every visitor into psychological states and explain what is driving their behavior.</p>
           <p>This is not a better heatmap. It is a fundamentally different way to approach conversion optimization: one grounded in behavioral science, not guesswork.</p>
         </div>
         <div className="bg-surface rounded-xl p-6 my-10 border border-surface-3">
@@ -20,7 +20,7 @@ export default function AboutPage() {
         </div>
         <div className="space-y-5 text-ink-2 text-[15px] leading-relaxed font-light">
           <h2 className="font-serif text-2xl text-ink font-normal mt-10 mb-3">Where we are now</h2>
-          <p>VeroBehavior is currently in <strong className="text-ink font-semibold">private beta</strong>. Our core platform is live: the JavaScript snippet tracks behavior, the Claude API analyzes sessions in real time, and the dashboard displays psychological insights.</p>
+          <p>VeroBehavior is currently in <strong className="text-ink font-semibold">private beta</strong>. Our core platform is live: the JavaScript snippet tracks behavior, our AI engine analyzes sessions in real time, and the dashboard displays psychological insights.</p>
           <p>We are accepting a limited number of <strong className="text-ink font-semibold">design partners</strong>: companies that get free access in exchange for feedback and the willingness to help us shape the product.</p>
           <h2 className="font-serif text-2xl text-ink font-normal mt-10 mb-3">What is next</h2>
           <p>Our roadmap includes psychological persona generation, industry-specific playbooks, GEO/AEO monitoring for AI search visibility, and an agentic AI mode that can autonomously suggest and launch tests.</p>
