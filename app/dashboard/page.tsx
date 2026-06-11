@@ -43,6 +43,8 @@ export default function DashboardPage() {
   const [tests, setTests] = useState<Test[]>([])
   const [testStats, setTestStats] = useState<Record<string, { A: { sessions: number; conversions: number; rate: string }; B: { sessions: number; conversions: number; rate: string } }>>({})
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
+  const [backedUpSessions, setBackedUpSessions] = useState<Map<string, string>>(new Map()) // sessionId -> status
+  const [testedSessions, setTestedSessions] = useState<Map<string, string>>(new Map()) // sessionId -> test status
   const [launchModal, setLaunchModal] = useState<LaunchModalState>(null)
   const [launchForm, setLaunchForm] = useState({ elementFindText: '', controlText: '', variantText: '', hypothesis: '' })
   const [launching, setLaunching] = useState(false)
@@ -60,6 +62,21 @@ export default function DashboardPage() {
         const data = await res.json()
         setSessions(data.sessions || []); setStats(data.stats || null)
       }
+      // Fetch backlog + tests to mark which sessions have been actioned
+      try {
+        const [blRes, tsRes] = await Promise.all([
+          fetch('/api/backlog'),
+          fetch('/api/tests'),
+        ])
+        const blData = await blRes.json()
+        const tsData = await tsRes.json()
+        const blMap = new Map<string, string>()
+        ;(blData.items || []).forEach((i: BacklogItem) => { if (i.session_id) blMap.set(i.session_id, i.status) })
+        const tsMap = new Map<string, string>()
+        ;(tsData.tests || []).forEach((t: Test) => { if (t.session_source_id) tsMap.set(t.session_source_id, t.status) })
+        setBackedUpSessions(blMap)
+        setTestedSessions(tsMap)
+      } catch {}
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
   }, [])
@@ -115,6 +132,7 @@ export default function DashboardPage() {
         }),
       })
       setSavedIds(prev => new Set([...prev, session.id]))
+    setBackedUpSessions(prev => new Map([...prev, [session.id, 'pending']]))
     fetchBacklog()
     } catch (e) { console.error(e) }
   }
@@ -156,6 +174,7 @@ export default function DashboardPage() {
           minSessions: 50,
         }),
       })
+      if (launchModal) setTestedSessions(prev => new Map([...prev, [launchModal.session.id, 'active']]))
       setLaunchModal(null)
       setActiveTab('tests')
       fetchTests()
@@ -328,6 +347,24 @@ export default function DashboardPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap gap-1">
                             {(s.tags || []).slice(0, 3).map(tag => <span key={tag} className="text-[9px] font-mono px-1.5 py-0.5 rounded-full" style={{ background: tagBg[tag] || '#F3F2EC', color: tagColor[tag] || '#4A4947' }}>{tag}</span>)}
+                            {backedUpSessions.has(s.id) && (() => {
+                              const st = backedUpSessions.get(s.id)
+                              const cfg = st === 'done'
+                                ? { cls: 'bg-green-light text-green border-green/20', icon: '✓', label: 'done' }
+                                : st === 'in_progress'
+                                ? { cls: 'bg-blue-50 text-blue-700 border-blue-200', icon: '▶', label: 'in progress' }
+                                : { cls: 'bg-amber-50 text-amber-700 border-amber-200', icon: '📋', label: 'backlog' }
+                              return <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full border ${cfg.cls}`}>{cfg.icon} {cfg.label}</span>
+                            })()}
+                            {testedSessions.has(s.id) && (() => {
+                              const st = testedSessions.get(s.id)
+                              const cfg = st === 'completed'
+                                ? { cls: 'bg-green-light text-green border-green/20', icon: '✓', label: 'test done' }
+                                : st === 'paused'
+                                ? { cls: 'bg-surface-2 text-ink-3 border-surface-3', icon: '⏸', label: 'paused' }
+                                : { cls: 'bg-blue-50 text-blue-700 border-blue-200', icon: '⚖', label: 'testing' }
+                              return <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full border ${cfg.cls}`}>{cfg.icon} {cfg.label}</span>
+                            })()}
                           </div>
                         </div>
                         <div className="flex-shrink-0"><span className={`text-[12px] text-ink-3 inline-block transition-transform ${isOpen ? 'rotate-180' : ''}`}>&#9662;</span></div>
