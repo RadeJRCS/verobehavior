@@ -13,7 +13,7 @@ type Session = {
 }
 type Stats = { total: number; avgConv: number; avgIntent: number; converted: number; convRate: string }
 type BacklogItem = { id: string; created_at: string; client_key: string; session_id: string | null; insight_type: string; insight_text: string; recommendation: string; estimated_lift: string; state: string; status: string; priority: string }
-type Test = { id: string; created_at: string; client_key: string; name: string; hypothesis: string; element_find_text: string; control_text: string; variant_text: string; target_segment: string; status: string; winner: string; judge_analysis: string; min_sessions: number; started_at: string }
+type Test = { id: string; created_at: string; client_key: string; name: string; hypothesis: string; element_find_text: string; control_text: string; variant_text: string; target_segment: string; status: string; winner: string; judge_analysis: string; min_sessions: number; started_at: string; session_source_id: string | null }
 
 const CLIENT_PROFILES: Record<string, { name: string; type: string; url: string; industry: string; ctaTargets: string[]; description: string; snippetSince: string }> = {
   'terra-store': { name: 'Terra Store', type: 'E-commerce', url: 'terra-store-xi.vercel.app', industry: 'Consumer goods', snippetSince: '07 Jun 2026', description: 'Premium everyday essentials store. Main funnel: browse products, add to cart, checkout.', ctaTargets: ['Add to cart', 'Proceed to checkout', 'Place order'] },
@@ -71,9 +71,9 @@ export default function DashboardPage() {
         const blData = await blRes.json()
         const tsData = await tsRes.json()
         const blMap = new Map<string, string>()
-        ;(blData.items || []).forEach((i: BacklogItem) => { if (i.session_id) blMap.set(i.session_id, i.status) })
+        ;(blData.items as BacklogItem[] || []).forEach((i: BacklogItem) => { if (i.session_id) blMap.set(i.session_id, i.status) })
         const tsMap = new Map<string, string>()
-        ;(tsData.tests || []).forEach((t: Test) => { if (t.session_source_id) tsMap.set(t.session_source_id, t.status) })
+        ;(tsData.tests as Test[] || []).forEach((t: Test) => { if (t.session_source_id) tsMap.set(t.session_source_id, t.status) })
         setBackedUpSessions(blMap)
         setTestedSessions(tsMap)
       } catch {}
@@ -132,7 +132,7 @@ export default function DashboardPage() {
         }),
       })
       setSavedIds(prev => new Set([...prev, session.id]))
-    setBackedUpSessions(prev => new Map([...prev, [session.id, 'pending']]))
+    setBackedUpSessions((prev: Map<string, string>) => new Map([...prev, [session.id, 'pending']]))
     fetchBacklog()
     } catch (e) { console.error(e) }
   }
@@ -174,7 +174,7 @@ export default function DashboardPage() {
           minSessions: 50,
         }),
       })
-      if (launchModal) setTestedSessions(prev => new Map([...prev, [launchModal.session.id, 'active']]))
+      if (launchModal) setTestedSessions((prev: Map<string, string>) => new Map([...prev, [launchModal.session.id, 'active']]))
       setLaunchModal(null)
       setActiveTab('tests')
       fetchTests()
