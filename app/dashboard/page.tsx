@@ -17,6 +17,38 @@ type Stats = {
   converted: number; convRate: string
 }
 
+// Client profiles - Phase 2: comes from Supabase clients table
+const CLIENT_PROFILES: Record<string, {
+  name: string; type: string; url: string; industry: string
+  ctaTargets: string[]; description: string; snippetSince: string
+}> = {
+  'terra-store': {
+    name: 'Terra Store', type: 'E-commerce', url: 'terra-store-xi.vercel.app',
+    industry: 'Consumer goods', snippetSince: '07 Jun 2026',
+    description: 'Premium everyday essentials store. Main funnel: browse products, add to cart, checkout.',
+    ctaTargets: ['Add to cart', 'Proceed to checkout', 'Place order'],
+  },
+  'nexflow': {
+    name: 'Nexflow', type: 'SaaS', url: 'nexflow-demo.vercel.app',
+    industry: 'Project management', snippetSince: '09 Jun 2026',
+    description: 'AI-powered project management tool. Main funnel: landing, pricing, trial signup, workspace setup.',
+    ctaTargets: ['Start free trial', 'Create account', 'Get started', 'Open my workspace'],
+  },
+  'demo': {
+    name: 'Demo', type: 'Demo', url: 'verobehavior.vercel.app/demo',
+    industry: 'Internal testing', snippetSince: '07 Jun 2026',
+    description: 'Internal demo environment for testing the VeroBehavior analysis engine.',
+    ctaTargets: ['Analyze behavior', 'Run demo'],
+  },
+}
+
+const typeColor: Record<string, string> = {
+  'E-commerce': 'bg-amber-50 text-amber-700 border-amber-200',
+  'SaaS': 'bg-brand-light text-brand border-brand/20',
+  'B2B': 'bg-blue-50 text-blue-700 border-blue-200',
+  'Demo': 'bg-surface-2 text-ink-3 border-surface-3',
+}
+
 const stateColor: Record<string, string> = {
   converted: '#1A3A2A', high_intent: '#1A3A2A',
   hesitating: '#854F0B', comparing: '#4A4947',
@@ -53,20 +85,16 @@ export default function DashboardPage() {
   const fetchData = async (key?: string) => {
     setLoading(true)
     try {
-      // Always fetch all sessions first to get all client keys
       const allRes = await fetch('/api/sessions')
       const allData = await allRes.json()
       const keys = [...new Set(
         (allData.sessions || []).map((s: Session) => s.client_key).filter((k: string) => k && k.length > 0)
       )] as string[]
       setAllKeys(keys)
-
       if (!key) {
-        // No filter, show all
         setSessions(allData.sessions || [])
         setStats(allData.stats || null)
       } else {
-        // Filter by specific client
         const res = await fetch(`/api/sessions?key=${key}`)
         const data = await res.json()
         setSessions(data.sessions || [])
@@ -84,10 +112,14 @@ export default function DashboardPage() {
     fetchData(key || undefined)
   }
 
+  const clientProfile = filterKey ? CLIENT_PROFILES[filterKey] : null
+
   return (
     <div className="min-h-screen flex flex-col bg-surface">
       <Nav />
       <div className="pt-16">
+
+        {/* Header */}
         <div className="bg-green py-6 px-6">
           <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-4">
             <div>
@@ -113,6 +145,9 @@ export default function DashboardPage() {
                         <button key={key} onClick={() => handleFilter(key)}
                           className={`w-full text-left px-4 py-2.5 text-[13px] border-t border-gray-100 transition-colors flex items-center justify-between ${filterKey === key ? 'bg-green text-white font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>
                           <span>{key}</span>
+                          <span className={`text-[10px] ${filterKey === key ? 'text-white/70' : 'text-gray-400'}`}>
+                            {sessions.filter(s => s.client_key === key).length || '?'} sessions
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -129,7 +164,61 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* CLIENT CONTEXT BAR - shows only when a specific client is selected */}
+        {clientProfile && (
+          <div className="bg-white border-b border-surface-3">
+            <div className="max-w-6xl mx-auto px-6 py-4">
+              <div className="flex items-start justify-between gap-6 flex-wrap">
+                {/* Left: client identity */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-green-light flex items-center justify-center text-green font-serif text-[18px] font-bold flex-shrink-0">
+                    {clientProfile.name[0]}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <span className="text-[15px] font-semibold text-ink">{clientProfile.name}</span>
+                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded border ${typeColor[clientProfile.type] || 'bg-surface-2 text-ink-3 border-surface-3'}`}>
+                        {clientProfile.type}
+                      </span>
+                      <span className="text-[11px] text-ink-3">{clientProfile.industry}</span>
+                    </div>
+                    <div className="text-[12px] text-ink-2 font-light mb-1">{clientProfile.description}</div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-ink-3">&#127760;</span>
+                      <span className="text-[11px] font-mono text-ink-3">{clientProfile.url}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Middle: CTA targets */}
+                <div className="flex-1 min-w-[200px]">
+                  <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Tracked conversions</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {clientProfile.ctaTargets.map(cta => (
+                      <span key={cta} className="text-[11px] bg-green-light text-green border border-green/20 px-2.5 py-1 rounded-full font-medium">
+                        {cta}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Right: snippet status */}
+                <div className="flex-shrink-0 text-right">
+                  <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Snippet</div>
+                  <div className="flex items-center gap-1.5 justify-end mb-1">
+                    <span className="w-2 h-2 rounded-full bg-[#5EBA7D]" />
+                    <span className="text-[12px] font-medium text-green">Active</span>
+                  </div>
+                  <div className="text-[11px] text-ink-3">Since {clientProfile.snippetSince}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-6xl mx-auto px-6 py-8">
+
+          {/* KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
               { n: stats ? stats.convRate + '%' : '-', l: 'Conversion Rate', sub: 'Sessions that converted', c: '#1A3A2A' },
@@ -145,6 +234,7 @@ export default function DashboardPage() {
             ))}
           </div>
 
+          {/* Snippet */}
           <div className="bg-[#0E0E14] rounded-xl p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <div>
               <div className="text-[10px] font-mono text-white/40 mb-1 uppercase tracking-widest">Add to any website to start tracking</div>
@@ -153,6 +243,7 @@ export default function DashboardPage() {
             <div className="text-[11px] font-mono text-white/30 whitespace-nowrap">Replace YOUR_CLIENT_KEY with client name</div>
           </div>
 
+          {/* Tabs */}
           <div className="flex gap-1 bg-surface-2 border border-surface-3 rounded-lg p-1 mb-6 w-fit">
             {(['sessions', 'insights', 'geo'] as const).map(t => (
               <button key={t} onClick={() => setActiveTab(t)}
@@ -162,6 +253,7 @@ export default function DashboardPage() {
             ))}
           </div>
 
+          {/* Sessions tab */}
           {activeTab === 'sessions' && (
             loading ? (
               <div className="bg-white border border-surface-3 rounded-xl p-12 text-center text-ink-3 font-mono text-[13px]">Loading sessions...</div>
@@ -213,7 +305,6 @@ export default function DashboardPage() {
                           <span className={`text-[12px] text-ink-3 transition-transform inline-block ${isOpen ? 'rotate-180' : ''}`}>&#9662;</span>
                         </div>
                       </div>
-
                       {isOpen && (
                         <div className="px-5 pb-5 border-t border-surface-2">
                           <div className="grid md:grid-cols-2 gap-4 mt-4">
@@ -221,7 +312,7 @@ export default function DashboardPage() {
                               <div className="text-[9px] font-mono uppercase tracking-widest mb-2" style={{ color: stateColor[s.state] || '#4A4947' }}>
                                 {s.insight_type || 'Behavioral Insight'}
                               </div>
-                              <p className="text-[13px] text-ink leading-relaxed mb-3">{s.insight_text || 'No insight generated for this session.'}</p>
+                              <p className="text-[13px] text-ink leading-relaxed mb-3">{s.insight_text || 'No insight generated.'}</p>
                               {s.insight_principle && (
                                 <div className="text-[10px] font-mono" style={{ color: stateColor[s.state] || '#4A4947' }}>
                                   Principle: {s.insight_principle}
@@ -231,9 +322,7 @@ export default function DashboardPage() {
                             <div className="bg-green rounded-lg p-4">
                               <div className="text-[9px] font-mono text-[#A8D4B8] uppercase tracking-widest mb-2">AI Recommendation</div>
                               <p className="text-[13px] text-white leading-relaxed mb-3">{s.recommendation || 'No recommendation available.'}</p>
-                              {s.estimated_lift && (
-                                <div className="text-[11px] font-mono text-[#A8D4B8] mb-3">Estimated lift: {s.estimated_lift}</div>
-                              )}
+                              {s.estimated_lift && <div className="text-[11px] font-mono text-[#A8D4B8] mb-3">Estimated lift: {s.estimated_lift}</div>}
                               <div className="flex gap-2">
                                 <button className="flex-1 bg-white/15 border border-white/25 text-white py-2 rounded-lg text-[11px] font-mono hover:bg-white/25 transition-colors">
                                   Launch A/B Test
@@ -266,6 +355,7 @@ export default function DashboardPage() {
             )
           )}
 
+          {/* Insights tab */}
           {activeTab === 'insights' && (
             sessions.length === 0 ? (
               <div className="bg-white border border-surface-3 rounded-xl p-12 text-center text-ink-3 text-[13px]">No insights yet.</div>
@@ -291,6 +381,7 @@ export default function DashboardPage() {
             )
           )}
 
+          {/* GEO tab */}
           {activeTab === 'geo' && (
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white border border-surface-3 rounded-xl p-5">
@@ -328,6 +419,7 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+
         </div>
       </div>
       <Footer />
