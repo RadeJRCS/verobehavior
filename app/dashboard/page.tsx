@@ -12,7 +12,7 @@ type Session = {
   session_duration: number; scroll_depth: number
 }
 type Stats = { total: number; avgConv: number; avgIntent: number; converted: number; convRate: string }
-type BacklogItem = { id: string; created_at: string; client_key: string; insight_type: string; insight_text: string; recommendation: string; estimated_lift: string; state: string; status: string; priority: string }
+type BacklogItem = { id: string; created_at: string; client_key: string; session_id: string | null; insight_type: string; insight_text: string; recommendation: string; estimated_lift: string; state: string; status: string; priority: string }
 type Test = { id: string; created_at: string; client_key: string; name: string; hypothesis: string; element_find_text: string; control_text: string; variant_text: string; target_segment: string; status: string; winner: string; judge_analysis: string; min_sessions: number; started_at: string }
 
 const CLIENT_PROFILES: Record<string, { name: string; type: string; url: string; industry: string; ctaTargets: string[]; description: string; snippetSince: string }> = {
