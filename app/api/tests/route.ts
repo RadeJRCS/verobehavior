@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+export const runtime = 'nodejs'
+
+function getSupabase() {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_ANON_KEY
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY')
+  return createClient(url, key)
+}
 
 export async function GET(req: NextRequest) {
   try {
+    const supabase = getSupabase()
     const { searchParams } = new URL(req.url)
     const clientKey = searchParams.get('key')
     const status = searchParams.get('status')
@@ -16,12 +24,14 @@ export async function GET(req: NextRequest) {
     if (error) throw error
     return NextResponse.json({ tests: data || [] })
   } catch (err: unknown) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = getSupabase()
     const body = await req.json()
     const { data, error } = await supabase.from('tests').insert([{
       client_key: body.clientKey,
@@ -37,14 +47,16 @@ export async function POST(req: NextRequest) {
       started_at: new Date().toISOString(),
     }]).select()
     if (error) throw error
-    return NextResponse.json({ test: data?.[0] })
+    return NextResponse.json({ test: data?.[0] || null })
   } catch (err: unknown) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
+    const supabase = getSupabase()
     const body = await req.json()
     const { id, status, triggerJudge } = body
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
@@ -56,7 +68,6 @@ export async function PATCH(req: NextRequest) {
     }
 
     if (triggerJudge) {
-      // Fetch test + results for Judge LLM evaluation
       const { data: test } = await supabase.from('tests').select('*').eq('id', id).single()
       const { data: results } = await supabase.from('test_results').select('*').eq('test_id', id)
 
@@ -68,19 +79,19 @@ export async function PATCH(req: NextRequest) {
         const aRate = aResults.length > 0 ? ((aConv / aResults.length) * 100).toFixed(1) : '0'
         const bRate = bResults.length > 0 ? ((bConv / bResults.length) * 100).toFixed(1) : '0'
 
-        const judgePrompt = `You are a behavioral psychology expert evaluating an A/B test result.
-
+        const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+        const response = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 300,
+          messages: [{
+            role: 'user',
+            content: `You are a behavioral psychology expert evaluating an A/B test.
 Test: "${test.name}"
 Hypothesis: ${test.hypothesis || 'Not specified'}
 Control (A): "${test.control_text}" - ${aResults.length} sessions, ${aConv} conversions (${aRate}%)
 Variant (B): "${test.variant_text}" - ${bResults.length} sessions, ${bConv} conversions (${bRate}%)
-
-Analyze which variant won and explain WHY from a behavioral psychology perspective. Cite specific principles (Cialdini, Kahneman, cognitive load theory, etc.). Be concise and actionable. Maximum 3 sentences.`
-
-        const response = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 300,
-          messages: [{ role: 'user', content: judgePrompt }],
+Explain which variant won and WHY from a behavioral psychology perspective. Cite specific principles. Max 3 sentences.`
+          }],
         })
 
         const winner = parseFloat(bRate) > parseFloat(aRate) ? 'B' : 'A'
@@ -93,14 +104,16 @@ Analyze which variant won and explain WHY from a behavioral psychology perspecti
 
     const { data, error } = await supabase.from('tests').update(updates).eq('id', id).select()
     if (error) throw error
-    return NextResponse.json({ test: data?.[0] })
+    return NextResponse.json({ test: data?.[0] || null })
   } catch (err: unknown) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
+    const supabase = getSupabase()
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
@@ -109,6 +122,7 @@ export async function DELETE(req: NextRequest) {
     if (error) throw error
     return NextResponse.json({ success: true })
   } catch (err: unknown) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
+    const msg = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }
