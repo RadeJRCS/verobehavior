@@ -2,90 +2,160 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 
-// The actual snippet code that gets injected into client sites
-const SNIPPET_CODE = `
-(function(w, d, k) {
-  'use strict';
-  if (w._vb) return;
-
-  var VB_ENDPOINT = 'ENDPOINT_URL/api/analyze';
-  var events = [];
-  var startTime = Date.now();
-  var scrollDepth = 0;
-  var apiKey = k;
-
-  // Track scroll depth
-  w.addEventListener('scroll', function() {
-    var depth = Math.round((w.scrollY / (d.body.scrollHeight - w.innerHeight)) * 100);
-    scrollDepth = Math.max(scrollDepth, depth);
-  }, { passive: true });
-
-  // Track events
-  function track(type, data) {
-    events.push({ type: type, ts: Date.now() - startTime, data: data || {} });
-    if (events.length >= 5 || type === 'add_to_cart' || type === 'checkout') {
-      flush();
-    }
-  }
-
-  // Send to VeroBehavior
-  function flush() {
-    if (!events.length) return;
-    var payload = {
-      events: events.splice(0),
-      pageContext: d.title + ' — ' + w.location.pathname,
-      sessionDuration: Math.round((Date.now() - startTime) / 1000),
-      scrollDepth: scrollDepth,
-      apiKey: apiKey
-    };
-    fetch(VB_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-vb-key': apiKey },
-      body: JSON.stringify(payload),
-      keepalive: true
-    }).catch(function(){});
-  }
-
-  // Auto-track clicks on key elements
-  d.addEventListener('click', function(e) {
-    var el = e.target;
-    var tag = el.tagName.toLowerCase();
-    if (tag === 'button' || tag === 'a' || el.dataset.vbTrack) {
-      track('click', { text: el.textContent.trim().slice(0, 50), tag: tag, id: el.id });
-    }
-  });
-
-  // Track form interactions
-  d.addEventListener('change', function(e) {
-    track('field_change', { name: e.target.name || e.target.id || 'unknown' });
-  });
-
-  // Flush on page unload
-  w.addEventListener('visibilitychange', function() {
-    if (d.visibilityState === 'hidden') flush();
-  });
-
-  // Expose manual tracking
-  w._vb = { track: track };
-  console.log('[VeroBehavior] Behavioral intelligence active ✓');
-})(window, document, '{{API_KEY}}');
-`
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
-  const key = searchParams.get('key') || 'demo'
-  const origin = req.headers.get('origin') || '*'
+  const clientKey = searchParams.get('key') || 'unknown'
+  const base = process.env.NEXT_PUBLIC_APP_URL || 'https://verobehavior.vercel.app'
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://verobehavior.com'
-  const code = SNIPPET_CODE
-    .replace('ENDPOINT_URL', appUrl)
-    .replace('{{API_KEY}}', key)
+  const js = `
+;(function(){
+  var KEY='${clientKey}';
+  var BASE='${base}';
+  var events=[];
+  var startTime=Date.now();
+  var scrollDepth=0;
+  var sessionId='vb_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
 
-  return new NextResponse(code, {
+  // === SCROLL TRACKING ===
+  window.addEventListener('scroll',function(){
+    var d=Math.round((window.scrollY+window.innerHeight)/Math.max(document.body.scrollHeight,1)*100);
+    if(d>scrollDepth)scrollDepth=Math.min(d,100);
+  },{passive:true});
+
+  // === CLICK TRACKING ===
+  document.addEventListener('click',function(e){
+    var el=e.target.closest('button,a,[role="button"],[data-vb-event]');
+    if(!el)return;
+    var isConv=el.getAttribute('data-vb-event')==='conversion';
+    var text=(el.textContent||'').trim().slice(0,120);
+    events.push({type:isConv?'conversion':'click',ts:Date.now()-startTime,data:{text:text,tag:el.tagName.toLowerCase(),vbType:el.getAttribute('data-vb-type')||null}});
+    // Track A/B test conversion
+    var testId=el.getAttribute('data-vb-test');
+    if(testId&&testParticipation[testId]){
+      recordTestResult(testId,testParticipation[testId],true);
+    }
+    if(isConv)sendData(true);
+  });
+
+  // === FORM TRACKING ===
+  document.addEventListener('focus',function(e){
+    if(e.target.matches&&e.target.matches('input,textarea,select')){
+      events.push({type:'form_focus',ts:Date.now()-startTime,data:{field:e.target.name||e.target.id||e.target.type||'unknown'}});
+    }
+  },true);
+
+  // === PAGE CONTEXT ===
+  function getContext(){
+    var ld='';
+    try{var s=document.querySelector('script[type="application/ld+json"]');if(s)ld=s.textContent.slice(0,500);}catch(x){}
+    return document.title+' | '+location.pathname+(ld?' | '+ld:'');
+  }
+
+  // === SEND TO ANALYZE ===
+  function sendData(force){
+    if(events.length<2&&!force)return;
+    var participation=Object.keys(testParticipation).map(function(id){return{testId:id,variant:testParticipation[id]};});
+    try{
+      fetch(BASE+'/api/analyze',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          clientKey:KEY,
+          sessionId:sessionId,
+          pageContext:getContext(),
+          events:events.slice(-30),
+          sessionDuration:Math.round((Date.now()-startTime)/1000),
+          scrollDepth:scrollDepth,
+          referral:document.referrer||'direct',
+          activeTests:participation
+        }),
+        keepalive:true
+      });
+    }catch(x){}
+  }
+
+  window.addEventListener('pagehide',function(){sendData(false);});
+  setTimeout(function(){sendData(false);},30000);
+  setTimeout(function(){if(events.length>=5)sendData(false);},8000);
+
+  // === A/B TEST ENGINE ===
+  var testParticipation={};
+
+  function getVariant(testId){
+    var stored;
+    try{stored=localStorage.getItem('_vb_t_'+testId);}catch(x){}
+    if(stored)return stored;
+    var v=Math.random()<0.5?'A':'B';
+    try{localStorage.setItem('_vb_t_'+testId,v);}catch(x){}
+    return v;
+  }
+
+  function recordTestResult(testId,variant,converted){
+    try{
+      fetch(BASE+'/api/test-results',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({testId:testId,clientKey:KEY,variant:variant,converted:converted||false,pageUrl:location.href}),
+        keepalive:true
+      });
+    }catch(x){}
+  }
+
+  function applyTest(test){
+    if(!test.element_find_text||!test.variant_text)return;
+    var variant=getVariant(test.id);
+    testParticipation[test.id]=variant;
+    recordTestResult(test.id,variant,false);
+    if(variant==='A')return;
+
+    function doApply(){
+      var els=Array.from(document.querySelectorAll('button,a,[role="button"],input[type="submit"],input[type="button"]'));
+      var target=els.find(function(el){
+        return(el.textContent||el.value||'').trim().toLowerCase().indexOf(test.element_find_text.toLowerCase())!==-1;
+      });
+      if(target){
+        if(target.tagName==='INPUT')target.value=test.variant_text;
+        else target.textContent=test.variant_text;
+        target.setAttribute('data-vb-test',test.id);
+        return true;
+      }
+      return false;
+    }
+
+    if(!doApply()){
+      var obs=new MutationObserver(function(){if(doApply())obs.disconnect();});
+      obs.observe(document.body,{childList:true,subtree:true});
+      setTimeout(function(){obs.disconnect();},10000);
+    }
+  }
+
+  // Fetch active tests and apply
+  try{
+    fetch(BASE+'/api/tests?key='+KEY+'&status=active')
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d.tests&&d.tests.length){d.tests.forEach(applyTest);}
+      })
+      .catch(function(){});
+  }catch(x){}
+
+  // === PUBLIC API ===
+  window._vb={
+    track:function(event,data){
+      events.push({type:event,ts:Date.now()-startTime,data:data||{}});
+      if(event==='conversion')sendData(true);
+    }
+  };
+
+  console.log('[VeroBehavior] Behavioral intelligence active \u2713');
+})();
+`
+
+  return new NextResponse(js, {
     headers: {
-      'Content-Type': 'application/javascript',
-      'Cache-Control': 'public, max-age=3600',
-      'Access-Control-Allow-Origin': origin,
+      'Content-Type': 'application/javascript; charset=utf-8',
+      'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+      'Access-Control-Allow-Origin': '*',
     },
   })
 }
