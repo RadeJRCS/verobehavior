@@ -115,6 +115,7 @@ export default function DashboardPage() {
         }),
       })
       setSavedIds(prev => new Set([...prev, session.id]))
+    fetchBacklog()
     } catch (e) { console.error(e) }
   }
 
@@ -396,6 +397,10 @@ export default function DashboardPage() {
           {/* ====== BACKLOG TAB ====== */}
           {activeTab === 'backlog' && (
             <div>
+              <div className="flex justify-between items-center mb-4">
+                <div className="text-[13px] text-ink-2">{backlog.length} item{backlog.length !== 1 ? 's' : ''} in backlog</div>
+                <button onClick={fetchBacklog} className="text-[12px] font-mono text-ink-3 hover:text-ink">&#8635; Refresh</button>
+              </div>
               {backlog.length === 0 ? (
                 <div className="bg-white border border-surface-3 rounded-xl p-12 text-center">
                   <div className="text-4xl mb-4">&#128203;</div>
