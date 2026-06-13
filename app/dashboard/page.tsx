@@ -3,6 +3,14 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import { useState, useEffect, useCallback } from 'react'
 
+type AbTestConfig = {
+  testable: boolean
+  element_find_text: string | null
+  control_text: string | null
+  variant_text: string | null
+  hypothesis: string | null
+}
+
 type Session = {
   id: string; created_at: string; client_key: string
   site_url: string; page_context: string; state: string
@@ -11,6 +19,7 @@ type Session = {
   recommendation: string; estimated_lift: string
   session_duration: number; scroll_depth: number
   events: Array<{ type: string; ts: number; data: { text?: string; tag?: string; vbType?: string | null } }>
+  ab_test_config: AbTestConfig | null
 }
 type Stats = { total: number; avgConv: number; avgIntent: number; converted: number; convRate: string }
 type BacklogItem = {
@@ -106,6 +115,7 @@ export default function DashboardPage() {
   const [launchModal, setLaunchModal] = useState<LaunchModalState>(null)
   const [launchForm, setLaunchForm] = useState({ elementFindText: '', controlText: '', variantText: '', hypothesis: '' })
   const [launching, setLaunching] = useState(false)
+  const [editMode, setEditMode] = useState(false)
 
   const fetchData = useCallback(async (key?: string) => {
     setLoading(true)
@@ -188,8 +198,19 @@ export default function DashboardPage() {
   }
 
   const handleOpenLaunchModal = (session: Session) => {
-    setLaunchForm({ elementFindText: '', controlText: '', variantText: '', hypothesis: session.recommendation?.slice(0, 200) || '' })
+    const cfg = session.ab_test_config
+    if (cfg && cfg.testable && cfg.element_find_text && cfg.variant_text) {
+      setLaunchForm({
+        elementFindText: cfg.element_find_text,
+        controlText: cfg.control_text || cfg.element_find_text,
+        variantText: cfg.variant_text,
+        hypothesis: cfg.hypothesis || session.recommendation?.slice(0, 200) || '',
+      })
+    } else {
+      setLaunchForm({ elementFindText: '', controlText: '', variantText: '', hypothesis: session.recommendation?.slice(0, 200) || '' })
+    }
     setLaunchModal({ session })
+    setEditMode(false)
   }
 
   const handleLaunchTest = async () => {
@@ -619,46 +640,85 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {launchModal && (
+      {launchModal && (() => {
+        const cfg = launchModal.session.ab_test_config
+        const hasAutoConfig = cfg && cfg.testable && cfg.element_find_text && cfg.variant_text
+        const showForm = !hasAutoConfig || editMode
+        return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6">
           <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <div className="font-serif text-xl text-ink">Launch A/B Test</div>
               <button onClick={() => setLaunchModal(null)} className="text-ink-3 hover:text-ink text-xl">&#x2715;</button>
             </div>
-            <div className="bg-surface-2 rounded-lg p-3 mb-5 text-[12px] text-ink-2 leading-relaxed">
-              <div className="text-[9px] font-mono text-ink-3 uppercase tracking-widest mb-1">Based on session insight</div>
-              {launchModal.session.recommendation?.slice(0, 180)}...
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="text-[12px] text-ink-2 block mb-1">Element to find (current button text)</label>
-                <input value={launchForm.elementFindText} onChange={(e) => setLaunchForm((f) => ({ ...f, elementFindText: e.target.value }))} placeholder='e.g. "Buy Now" or "Start free trial"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
-                <div className="text-[11px] text-ink-3 mt-1">Snippet will find this text and change it for Variant B visitors</div>
+
+            {!hasAutoConfig && !cfg && (
+              <div className="bg-surface-2 rounded-lg p-3 mb-5 text-[12px] text-ink-2 leading-relaxed">
+                <div className="text-[9px] font-mono text-ink-3 uppercase tracking-widest mb-1">Based on session insight</div>
+                {launchModal.session.recommendation?.slice(0, 180)}...
               </div>
-              <div className="grid grid-cols-2 gap-3">
+            )}
+
+            {cfg && !cfg.testable && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-5 text-[12px] text-amber-800 leading-relaxed">
+                <div className="text-[9px] font-mono uppercase tracking-widest mb-1 text-amber-700">Not directly testable</div>
+                This recommendation requires layout or structural changes beyond a simple text swap. You can still configure a related copy test manually below, or implement the full recommendation and use Save to Backlog instead.
+              </div>
+            )}
+
+            {hasAutoConfig && !editMode && (
+              <div className="space-y-4 mb-5">
+                <div className="bg-green-light border border-green/20 rounded-lg p-4">
+                  <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-2">Ready to launch</div>
+                  <p className="text-[13px] text-ink leading-relaxed">{cfg!.hypothesis}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-surface-3 bg-surface-2 p-3">
+                    <div className="text-[9px] font-mono text-ink-3 uppercase tracking-widest mb-1">Control (A)</div>
+                    <div className="text-[13px] font-medium text-ink">{cfg!.control_text}</div>
+                  </div>
+                  <div className="rounded-lg border border-green bg-green-light p-3">
+                    <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-1">Variant B</div>
+                    <div className="text-[13px] font-medium text-ink">{cfg!.variant_text}</div>
+                  </div>
+                </div>
+                <button onClick={() => setEditMode(true)} className="text-[12px] font-mono text-ink-3 hover:text-ink underline">Edit before launching</button>
+              </div>
+            )}
+
+            {showForm && (
+              <div className="space-y-4">
                 <div>
-                  <label className="text-[12px] text-ink-2 block mb-1">Control (Variant A)</label>
-                  <input value={launchForm.controlText} onChange={(e) => setLaunchForm((f) => ({ ...f, controlText: e.target.value }))} placeholder="Original text" className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                  <label className="text-[12px] text-ink-2 block mb-1">Element to find (current button text)</label>
+                  <input value={launchForm.elementFindText} onChange={(e) => setLaunchForm((f) => ({ ...f, elementFindText: e.target.value }))} placeholder='e.g. "Buy Now" or "Start free trial"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                  <div className="text-[11px] text-ink-3 mt-1">Snippet will find this text and change it for Variant B visitors</div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[12px] text-ink-2 block mb-1">Control (Variant A)</label>
+                    <input value={launchForm.controlText} onChange={(e) => setLaunchForm((f) => ({ ...f, controlText: e.target.value }))} placeholder="Original text" className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                  </div>
+                  <div>
+                    <label className="text-[12px] text-ink-2 block mb-1">Variant B</label>
+                    <input value={launchForm.variantText} onChange={(e) => setLaunchForm((f) => ({ ...f, variantText: e.target.value }))} placeholder='e.g. "Only 3 left - Buy Now"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                  </div>
                 </div>
                 <div>
-                  <label className="text-[12px] text-ink-2 block mb-1">Variant B</label>
-                  <input value={launchForm.variantText} onChange={(e) => setLaunchForm((f) => ({ ...f, variantText: e.target.value }))} placeholder='e.g. "Only 3 left - Buy Now"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                  <label className="text-[12px] text-ink-2 block mb-1">Hypothesis</label>
+                  <textarea value={launchForm.hypothesis} onChange={(e) => setLaunchForm((f) => ({ ...f, hypothesis: e.target.value }))} rows={2} className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors resize-none" />
                 </div>
               </div>
-              <div>
-                <label className="text-[12px] text-ink-2 block mb-1">Hypothesis</label>
-                <textarea value={launchForm.hypothesis} onChange={(e) => setLaunchForm((f) => ({ ...f, hypothesis: e.target.value }))} rows={2} className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors resize-none" />
-              </div>
-            </div>
+            )}
+
             <div className="bg-surface-2 rounded-lg p-3 mt-4 text-[11px] text-ink-3">Traffic split: 50% Control, 50% Variant B. Auto-evaluates after 100 sessions. Judge LLM explains why the winner won.</div>
             <div className="flex gap-3 mt-5">
               <button onClick={() => setLaunchModal(null)} className="flex-1 border border-surface-3 text-ink-2 py-2.5 rounded-lg text-[13px] hover:border-ink-3">Cancel</button>
-              <button onClick={handleLaunchTest} disabled={!launchForm.elementFindText || !launchForm.variantText || launching} className="flex-1 bg-green text-white py-2.5 rounded-lg text-[13px] font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">{launching ? 'Launching...' : 'Launch test'}</button>
+              <button onClick={handleLaunchTest} disabled={!launchForm.elementFindText || !launchForm.variantText || launching} className="flex-1 bg-green text-white py-2.5 rounded-lg text-[13px] font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">{launching ? 'Launching...' : hasAutoConfig && !editMode ? 'Approve & launch' : 'Launch test'}</button>
             </div>
           </div>
         </div>
-      )}
+        )
+      })()}
       <Footer />
     </div>
   )

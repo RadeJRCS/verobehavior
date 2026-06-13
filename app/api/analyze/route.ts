@@ -62,9 +62,18 @@ Respond with this JSON only:
   "insight_type": "FRICTION|CONVERSION_EVENT|DECISION_FATIGUE|HIGH_INTENT|SOCIAL_PROOF_SEEKING|BOUNCE_RISK|COMPARISON_BEHAVIOR",
   "insight_text": "2-3 sentences about psychological behavior observed",
   "insight_principle": "Psychological principle name and brief explanation",
-  "recommendation": "Specific actionable recommendation",
-  "estimated_lift": "+X-Y% metric"
-}`
+  "recommendation": "Specific actionable recommendation (can include things not testable by simple text replacement, like layout changes)",
+  "estimated_lift": "+X-Y% metric",
+  "ab_test_config": {
+    "testable": true or false,
+    "element_find_text": "exact text of an existing button/link from the events that should change (must match text seen in events, or null if testable is false)",
+    "control_text": "the current/original text of that element",
+    "variant_text": "the new text to test, directly implementing the core idea of the recommendation as a simple copy change",
+    "hypothesis": "one sentence: what psychological principle this copy change leverages and expected effect"
+  }
+}
+
+IMPORTANT for ab_test_config: Only set "testable": true if the recommendation's core idea can be reduced to a SIMPLE TEXT CHANGE on an existing button or link that appears in the events. If the recommendation requires new elements, layout changes, multi-step flows, or anything beyond text replacement, set "testable": false and element_find_text/control_text/variant_text to null. When testable, element_find_text MUST exactly match text from one of the click events provided.`
         }],
       })
       rawText = response.content[0].type === 'text' ? response.content[0].text : ''
@@ -98,6 +107,7 @@ Respond with this JSON only:
         recommendation: analysis.recommendation || '',
         estimated_lift: analysis.estimated_lift || '',
         events: events || [],
+        ab_test_config: analysis.ab_test_config || null,
       }])
     } catch (dbErr: unknown) {
       console.error('Supabase error:', dbErr instanceof Error ? dbErr.message : String(dbErr))
