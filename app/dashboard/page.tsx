@@ -40,7 +40,16 @@ function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProf
   if (sessions.length === 0) return null
   const sorted = [...sessions].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
   const first = sorted[0]
+
+  // Get site URL - prefer site_url field, fall back to nothing
   const siteUrl = sessions.find(s => s.site_url)?.site_url || ''
+
+  // Extract site name from first page title (e.g. "Nexflow - Project..." -> "Nexflow")
+  const rawTitle = sessions[0]?.page_context || ''
+  const siteName = rawTitle.split(' - ')[0].split(' | ')[0].split(' — ')[0].trim()
+  const name = siteName && siteName.length < 40 ? siteName : clientKey.split(/[-_]/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+
+  // Infer type from page context and tags
   const allCtx = sessions.map(s => s.page_context || '').join(' ').toLowerCase()
   const allTags = sessions.flatMap(s => s.tags || []).join(' ').toLowerCase()
   const type =
@@ -48,11 +57,16 @@ function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProf
     allCtx.match(/pricing|trial|signup|dashboard|subscription/) || allTags.match(/signup|activation|pricing/) ? 'SaaS' :
     allCtx.match(/docs|guide|documentation|tutorial|manual|user.guide/) ? 'Documentation' :
     allCtx.match(/contact|service|enterprise|b2b/) ? 'B2B' : 'Website'
+
+  // Short description
+  const description = `${type} · ${sessions.length} session${sessions.length !== 1 ? 's' : ''} tracked`
+
+  // CTAs from conversion events
   const convClicks = sessions.flatMap(s =>
     (s.events || []).filter(e => e.type === 'conversion').map(e => e.data?.text || '')
   ).filter(Boolean)
   let ctaTargets = [...new Set(convClicks)].slice(0, 4)
-  // Fallback: show most-clicked elements if no conversion events found
+  // Fallback: most-clicked elements
   if (ctaTargets.length === 0) {
     const allClicks = sessions.flatMap(s =>
       (s.events || []).filter(e => e.type === 'click').map(e => e.data?.text || '')
@@ -60,16 +74,9 @@ function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProf
     const counts = allClicks.reduce((acc: Record<string, number>, t: string) => ({ ...acc, [t]: (acc[t] || 0) + 1 }), {})
     ctaTargets = Object.entries(counts).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 4).map(([t]) => t)
   }
-  const recentPages = [...new Set(sessions.slice(0, 5).map(s => s.page_context?.split(' | ')[0] || '').filter(Boolean))]
+
   const snippetSince = new Date(first.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-  const name = clientKey.split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-  return {
-    name, type, url: siteUrl,
-    industry: '',
-    description: `${sessions.length} session${sessions.length !== 1 ? 's' : ''} tracked. Recent: ${recentPages.slice(0, 2).join(', ')}`,
-    ctaTargets,
-    snippetSince,
-  }
+  return { name, type, url: siteUrl, industry: '', description, ctaTargets, snippetSince }
 }
 
 type LaunchModalState = { session: Session } | null
