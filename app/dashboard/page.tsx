@@ -5,11 +5,12 @@ import { useState, useEffect, useCallback } from 'react'
 
 type Session = {
   id: string; created_at: string; client_key: string
-  page_context: string; state: string; intent_score: number
-  conversion_probability: number; tags: string[]
+  site_url: string; page_context: string; state: string
+  intent_score: number; conversion_probability: number; tags: string[]
   insight_type: string; insight_text: string; insight_principle: string
   recommendation: string; estimated_lift: string
   session_duration: number; scroll_depth: number
+  events: Array<{ type: string; ts: number; data: { text?: string; tag?: string; vbType?: string | null } }>
 }
 type Stats = { total: number; avgConv: number; avgIntent: number; converted: number; convRate: string }
 type BacklogItem = {
@@ -25,19 +26,43 @@ type Test = {
   session_source_id: string | null
 }
 type TestStats = { A: { sessions: number; conversions: number; rate: string }; B: { sessions: number; conversions: number; rate: string } }
+type ClientProfile = { name: string; type: string; url: string; industry: string; ctaTargets: string[]; description: string; snippetSince: string }
 
-const CLIENT_PROFILES: Record<string, { name: string; type: string; url: string; industry: string; ctaTargets: string[]; description: string; snippetSince: string }> = {
-  'terra-store': { name: 'Terra Store', type: 'E-commerce', url: 'terra-store-xi.vercel.app', industry: 'Consumer goods', snippetSince: '07 Jun 2026', description: 'Premium everyday essentials store. Main funnel: browse products, add to cart, checkout.', ctaTargets: ['Add to cart', 'Proceed to checkout', 'Place order'] },
-  'nexflow': { name: 'Nexflow', type: 'SaaS', url: 'nexflow-mauve.vercel.app', industry: 'Project management', snippetSince: '09 Jun 2026', description: 'AI-powered project management tool. Main funnel: landing, pricing, trial signup, workspace setup.', ctaTargets: ['Start free trial', 'Create account', 'Get started', 'Open my workspace'] },
-  'demo': { name: 'Demo', type: 'Demo', url: 'verobehavior.vercel.app/demo', industry: 'Internal testing', snippetSince: '07 Jun 2026', description: 'Internal demo environment for testing the VeroBehavior analysis engine.', ctaTargets: ['Analyze behavior', 'Run demo'] },
-}
-const typeColor: Record<string, string> = { 'E-commerce': 'bg-amber-50 text-amber-700 border-amber-200', 'SaaS': 'bg-brand-light text-brand border-brand/20', 'B2B': 'bg-blue-50 text-blue-700 border-blue-200', 'Demo': 'bg-surface-2 text-ink-3 border-surface-3' }
 const stateColor: Record<string, string> = { converted: '#1A3A2A', high_intent: '#1A3A2A', hesitating: '#854F0B', comparing: '#4A4947', engaged: '#1A4A6E', browsing: '#8F8D89' }
 const stateBg: Record<string, string> = { converted: '#E8F2EC', high_intent: '#E8F2EC', hesitating: '#FBF3E4', comparing: '#F3F2EC', engaged: '#E8F0F8', browsing: '#F3F2EC' }
 const tagBg: Record<string, string> = { converted: '#E8F2EC', 'high-intent': '#E8F2EC', high_intent: '#E8F2EC', hesitating: '#FBF3E4', 'price-friction': '#FBF3E4', comparing: '#F3F2EC', browsing: '#E8F0F8', 'social-proof-seeking': '#EEEDFE', engaged: '#E8F0F8' }
 const tagColor: Record<string, string> = { converted: '#1A3A2A', 'high-intent': '#1A3A2A', high_intent: '#1A3A2A', hesitating: '#854F0B', 'price-friction': '#854F0B', comparing: '#4A4947', browsing: '#1A4A6E', 'social-proof-seeking': '#534AB7', engaged: '#1A4A6E' }
 const statusStyle: Record<string, string> = { pending: 'bg-surface-2 text-ink-3', in_progress: 'bg-blue-50 text-blue-700', done: 'bg-green-light text-green', archived: 'bg-surface-2 text-ink-3' }
 const priorityStyle: Record<string, string> = { high: 'bg-red-50 text-red-700', medium: 'bg-amber-50 text-amber-700', low: 'bg-surface-2 text-ink-3' }
+const typeColor: Record<string, string> = { 'E-commerce': 'bg-amber-50 text-amber-700 border-amber-200', 'SaaS': 'bg-brand-light text-brand border-brand/20', 'B2B': 'bg-blue-50 text-blue-700 border-blue-200', 'Documentation': 'bg-purple-50 text-purple-700 border-purple-200', 'Website': 'bg-surface-2 text-ink-3 border-surface-3' }
+
+function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProfile | null {
+  if (sessions.length === 0) return null
+  const sorted = [...sessions].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+  const first = sorted[0]
+  const siteUrl = sessions.find(s => s.site_url)?.site_url || ''
+  const allCtx = sessions.map(s => s.page_context || '').join(' ').toLowerCase()
+  const allTags = sessions.flatMap(s => s.tags || []).join(' ').toLowerCase()
+  const type =
+    allCtx.match(/cart|checkout|product|shop|store|buy|purchase/) || allTags.match(/cart|checkout|product/) ? 'E-commerce' :
+    allCtx.match(/pricing|trial|signup|dashboard|subscription/) || allTags.match(/signup|activation|pricing/) ? 'SaaS' :
+    allCtx.match(/docs|guide|documentation|tutorial|manual|user.guide/) ? 'Documentation' :
+    allCtx.match(/contact|service|enterprise|b2b/) ? 'B2B' : 'Website'
+  const convClicks = sessions.flatMap(s =>
+    (s.events || []).filter(e => e.type === 'conversion').map(e => e.data?.text || '')
+  ).filter(Boolean)
+  const ctaTargets = [...new Set(convClicks)].slice(0, 4)
+  const recentPages = [...new Set(sessions.slice(0, 5).map(s => s.page_context?.split(' | ')[0] || '').filter(Boolean))]
+  const snippetSince = new Date(first.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  const name = clientKey.split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  return {
+    name, type, url: siteUrl,
+    industry: '',
+    description: `${sessions.length} session${sessions.length !== 1 ? 's' : ''} tracked. Recent: ${recentPages.slice(0, 2).join(', ')}`,
+    ctaTargets,
+    snippetSince,
+  }
+}
 
 type LaunchModalState = { session: Session } | null
 
@@ -90,8 +115,7 @@ export default function DashboardPage() {
 
   const fetchBacklog = useCallback(async () => {
     try {
-      const url = filterKey ? `/api/backlog?key=${filterKey}` : '/api/backlog'
-      const res = await fetch(url)
+      const res = await fetch(filterKey ? `/api/backlog?key=${filterKey}` : '/api/backlog')
       const data = await res.json()
       setBacklog(data.items || [])
     } catch (e) { console.error(e) }
@@ -99,18 +123,13 @@ export default function DashboardPage() {
 
   const fetchTests = useCallback(async () => {
     try {
-      const url = filterKey ? `/api/tests?key=${filterKey}` : '/api/tests'
-      const res = await fetch(url)
+      const res = await fetch(filterKey ? `/api/tests?key=${filterKey}` : '/api/tests')
       const data = await res.json()
       const testList: Test[] = data.tests || []
       setTests(testList)
       const statsMap: Record<string, TestStats> = {}
       await Promise.all(testList.map(async (t: Test) => {
-        try {
-          const r = await fetch(`/api/test-results?testId=${t.id}`)
-          const d = await r.json()
-          if (d.stats) statsMap[t.id] = d.stats
-        } catch {}
+        try { const r = await fetch(`/api/test-results?testId=${t.id}`); const d = await r.json(); if (d.stats) statsMap[t.id] = d.stats } catch {}
       }))
       setTestStats(statsMap)
     } catch (e) { console.error(e) }
@@ -125,10 +144,7 @@ export default function DashboardPage() {
   const handleSaveToBacklog = async (session: Session) => {
     if (savedIds.has(session.id)) return
     try {
-      await fetch('/api/backlog', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientKey: session.client_key, sessionId: session.id, insightType: session.insight_type, insightText: session.insight_text, recommendation: session.recommendation, estimatedLift: session.estimated_lift, state: session.state }),
-      })
+      await fetch('/api/backlog', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientKey: session.client_key, sessionId: session.id, insightType: session.insight_type, insightText: session.insight_text, recommendation: session.recommendation, estimatedLift: session.estimated_lift, state: session.state }) })
       setSavedIds((prev: Set<string>) => new Set([...prev, session.id]))
       setBackedUpSessions((prev: Map<string, string>) => new Map([...prev, [session.id, 'pending']]))
       fetchBacklog()
@@ -158,14 +174,9 @@ export default function DashboardPage() {
     if (!launchModal || !launchForm.elementFindText || !launchForm.variantText) return
     setLaunching(true)
     try {
-      await fetch('/api/tests', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientKey: launchModal.session.client_key, elementFindText: launchForm.elementFindText, controlText: launchForm.controlText || launchForm.elementFindText, variantText: launchForm.variantText, hypothesis: launchForm.hypothesis, sessionSourceId: launchModal.session.id, minSessions: 50 }),
-      })
+      await fetch('/api/tests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientKey: launchModal.session.client_key, elementFindText: launchForm.elementFindText, controlText: launchForm.controlText || launchForm.elementFindText, variantText: launchForm.variantText, hypothesis: launchForm.hypothesis, sessionSourceId: launchModal.session.id, minSessions: 50 }) })
       setTestedSessions((prev: Map<string, string>) => new Map([...prev, [launchModal.session.id, 'active']]))
-      setLaunchModal(null)
-      setActiveTab('tests')
-      fetchTests()
+      setLaunchModal(null); setActiveTab('tests'); fetchTests()
     } catch (e) { console.error(e) }
     finally { setLaunching(false) }
   }
@@ -195,7 +206,8 @@ export default function DashboardPage() {
     return badges
   }
 
-  const clientProfile = filterKey ? CLIENT_PROFILES[filterKey] : null
+  // Dynamic profile - no hardcoding
+  const clientProfile: ClientProfile | null = filterKey ? deriveClientProfile(filterKey, sessions) : null
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
@@ -245,22 +257,25 @@ export default function DashboardPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                       <span className="text-[15px] font-semibold text-ink">{clientProfile.name}</span>
-                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded border ${typeColor[clientProfile.type] || ''}`}>{clientProfile.type}</span>
-                      <span className="text-[11px] text-ink-3">{clientProfile.industry}</span>
+                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded border ${typeColor[clientProfile.type] || 'bg-surface-2 text-ink-3 border-surface-3'}`}>{clientProfile.type}</span>
                     </div>
                     <div className="text-[12px] text-ink-2 font-light mb-1">{clientProfile.description}</div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-ink-3">&#127760;</span>
-                      <span className="text-[11px] font-mono text-ink-3">{clientProfile.url}</span>
+                    {clientProfile.url && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-ink-3">&#127760;</span>
+                        <span className="text-[11px] font-mono text-ink-3">{clientProfile.url}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {clientProfile.ctaTargets.length > 0 && (
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Tracked conversions</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {clientProfile.ctaTargets.map((cta: string) => <span key={cta} className="text-[11px] bg-green-light text-green border border-green/20 px-2.5 py-1 rounded-full font-medium">{cta}</span>)}
                     </div>
                   </div>
-                </div>
-                <div className="flex-1 min-w-[200px]">
-                  <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Tracked conversions</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {clientProfile.ctaTargets.map((cta: string) => <span key={cta} className="text-[11px] bg-green-light text-green border border-green/20 px-2.5 py-1 rounded-full font-medium">{cta}</span>)}
-                  </div>
-                </div>
+                )}
                 <div className="flex-shrink-0 text-right">
                   <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Snippet</div>
                   <div className="flex items-center gap-1.5 justify-end mb-1"><span className="w-2 h-2 rounded-full bg-[#5EBA7D]" /><span className="text-[12px] font-medium text-green">Active</span></div>
@@ -297,15 +312,10 @@ export default function DashboardPage() {
 
           <div className="flex gap-1 bg-surface-2 border border-surface-3 rounded-lg p-1 mb-6 w-fit flex-wrap">
             {(['sessions', 'insights', 'backlog', 'tests', 'geo'] as const).map((t) => (
-              <button key={t} onClick={() => setActiveTab(t)}
-                className={`px-4 py-1.5 rounded-md text-[13px] capitalize transition-all flex items-center gap-1.5 ${activeTab === t ? 'bg-green text-white font-medium' : 'text-ink-2 hover:text-ink'}`}>
+              <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-1.5 rounded-md text-[13px] capitalize transition-all flex items-center gap-1.5 ${activeTab === t ? 'bg-green text-white font-medium' : 'text-ink-2 hover:text-ink'}`}>
                 {t === 'geo' ? 'GEO Monitor' : t.charAt(0).toUpperCase() + t.slice(1)}
-                {t === 'backlog' && backlog.filter((i: BacklogItem) => i.status === 'pending').length > 0 && (
-                  <span className="text-[10px] bg-gold text-white px-1.5 py-0.5 rounded-full">{backlog.filter((i: BacklogItem) => i.status === 'pending').length}</span>
-                )}
-                {t === 'tests' && tests.filter((i: Test) => i.status === 'active').length > 0 && (
-                  <span className="text-[10px] bg-green-light text-green px-1.5 py-0.5 rounded-full">{tests.filter((i: Test) => i.status === 'active').length}</span>
-                )}
+                {t === 'backlog' && backlog.filter((i: BacklogItem) => i.status === 'pending').length > 0 && <span className="text-[10px] bg-gold text-white px-1.5 py-0.5 rounded-full">{backlog.filter((i: BacklogItem) => i.status === 'pending').length}</span>}
+                {t === 'tests' && tests.filter((i: Test) => i.status === 'active').length > 0 && <span className="text-[10px] bg-green-light text-green px-1.5 py-0.5 rounded-full">{tests.filter((i: Test) => i.status === 'active').length}</span>}
               </button>
             ))}
           </div>
@@ -363,7 +373,13 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <div className="flex gap-6 mt-4 pt-3 border-t border-surface-2 flex-wrap">
-                            {[{ l: 'Page', v: s.page_context || 'Unknown' }, { l: 'Duration', v: s.session_duration ? s.session_duration + 's' : 'N/A' }, { l: 'Scroll depth', v: s.scroll_depth ? s.scroll_depth + '%' : 'N/A' }, { l: 'Session ID', v: s.id.slice(0, 8) + '...' }].map((m) => (
+                            {[
+                              { l: 'Page', v: s.page_context?.split(' | ')[0] || 'Unknown' },
+                              { l: 'Site', v: s.site_url || 'Unknown' },
+                              { l: 'Duration', v: s.session_duration ? s.session_duration + 's' : 'N/A' },
+                              { l: 'Scroll', v: s.scroll_depth ? s.scroll_depth + '%' : 'N/A' },
+                              { l: 'Session ID', v: s.id.slice(0, 8) + '...' },
+                            ].map((m) => (
                               <div key={m.l}><div className="text-[9px] font-mono text-ink-3 uppercase tracking-widest">{m.l}</div><div className="text-[12px] text-ink mt-0.5">{m.v}</div></div>
                             ))}
                           </div>
@@ -476,9 +492,7 @@ export default function DashboardPage() {
                             {test.hypothesis && <div className="text-[12px] text-ink-2 font-light">{test.hypothesis}</div>}
                           </div>
                           <div className="flex gap-2">
-                            {test.status === 'active' && ts && (ts.A.sessions + ts.B.sessions) >= 10 && (
-                              <button onClick={() => handleEvaluateTest(test.id)} className="text-[11px] font-mono bg-green text-white px-3 py-1.5 rounded-lg hover:opacity-90">Judge LLM</button>
-                            )}
+                            {test.status === 'active' && ts && (ts.A.sessions + ts.B.sessions) >= 10 && <button onClick={() => handleEvaluateTest(test.id)} className="text-[11px] font-mono bg-green text-white px-3 py-1.5 rounded-lg hover:opacity-90">Judge LLM</button>}
                             {test.status === 'active' && <button onClick={() => handleStopTest(test.id)} className="text-[11px] font-mono bg-surface-2 text-ink-2 px-3 py-1.5 rounded-lg hover:bg-surface-3">Pause</button>}
                           </div>
                         </div>
@@ -496,9 +510,7 @@ export default function DashboardPage() {
                                 {vStats ? (
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                      <div className="flex-1 h-2 bg-white rounded-full overflow-hidden border border-surface-3">
-                                        <div className="h-full bg-green rounded-full transition-all" style={{ width: `${vStats.rate}%` }} />
-                                      </div>
+                                      <div className="flex-1 h-2 bg-white rounded-full overflow-hidden border border-surface-3"><div className="h-full bg-green rounded-full transition-all" style={{ width: `${vStats.rate}%` }} /></div>
                                       <span className="text-[13px] font-semibold text-ink w-10 text-right">{vStats.rate}%</span>
                                     </div>
                                     <div className="text-[11px] text-ink-3">{vStats.sessions} sessions, {vStats.conversions} conversions</div>
@@ -516,9 +528,7 @@ export default function DashboardPage() {
                         )}
                         {test.status === 'active' && ts && (
                           <div className="mt-3 flex items-center gap-3">
-                            <div className="flex-1 h-1.5 bg-surface rounded-full overflow-hidden">
-                              <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${Math.min((ts.A.sessions + ts.B.sessions) / (test.min_sessions * 2) * 100, 100)}%` }} />
-                            </div>
+                            <div className="flex-1 h-1.5 bg-surface rounded-full overflow-hidden"><div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${Math.min((ts.A.sessions + ts.B.sessions) / (test.min_sessions * 2) * 100, 100)}%` }} /></div>
                             <span className="text-[11px] text-ink-3 font-mono flex-shrink-0">{ts.A.sessions + ts.B.sessions}/{test.min_sessions * 2} sessions</span>
                           </div>
                         )}
@@ -574,7 +584,7 @@ export default function DashboardPage() {
               <div>
                 <label className="text-[12px] text-ink-2 block mb-1">Element to find (current button text)</label>
                 <input value={launchForm.elementFindText} onChange={(e) => setLaunchForm((f) => ({ ...f, elementFindText: e.target.value }))} placeholder='e.g. "Buy Now" or "Start free trial"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
-                <div className="text-[11px] text-ink-3 mt-1">Snippet will find this text on the page and change it for Variant B visitors</div>
+                <div className="text-[11px] text-ink-3 mt-1">Snippet will find this text and change it for Variant B visitors</div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -591,19 +601,14 @@ export default function DashboardPage() {
                 <textarea value={launchForm.hypothesis} onChange={(e) => setLaunchForm((f) => ({ ...f, hypothesis: e.target.value }))} rows={2} className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors resize-none" />
               </div>
             </div>
-            <div className="bg-surface-2 rounded-lg p-3 mt-4 text-[11px] text-ink-3">
-              Traffic split: 50% see Control, 50% see Variant B. Test auto-evaluates after 100 sessions. Judge LLM will explain WHY the winner won.
-            </div>
+            <div className="bg-surface-2 rounded-lg p-3 mt-4 text-[11px] text-ink-3">Traffic split: 50% Control, 50% Variant B. Auto-evaluates after 100 sessions. Judge LLM explains why the winner won.</div>
             <div className="flex gap-3 mt-5">
               <button onClick={() => setLaunchModal(null)} className="flex-1 border border-surface-3 text-ink-2 py-2.5 rounded-lg text-[13px] hover:border-ink-3">Cancel</button>
-              <button onClick={handleLaunchTest} disabled={!launchForm.elementFindText || !launchForm.variantText || launching} className="flex-1 bg-green text-white py-2.5 rounded-lg text-[13px] font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">
-                {launching ? 'Launching...' : 'Launch test'}
-              </button>
+              <button onClick={handleLaunchTest} disabled={!launchForm.elementFindText || !launchForm.variantText || launching} className="flex-1 bg-green text-white py-2.5 rounded-lg text-[13px] font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">{launching ? 'Launching...' : 'Launch test'}</button>
             </div>
           </div>
         </div>
       )}
-
       <Footer />
     </div>
   )

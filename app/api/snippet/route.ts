@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const runtime = 'edge'
 
-const CORS_HEADERS = {
+const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': '*',
 }
 
 export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS })
+  return new NextResponse(null, { status: 204, headers: CORS })
 }
 
 export async function GET(req: NextRequest) {
@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
   var startTime=Date.now();
   var scrollDepth=0;
   var sessionId='vb_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+  var siteUrl=window.location.origin;
 
   window.addEventListener('scroll',function(){
     var d=Math.round((window.scrollY+window.innerHeight)/Math.max(document.body.scrollHeight,1)*100);
@@ -61,7 +62,17 @@ export async function GET(req: NextRequest) {
       fetch(BASE+'/api/analyze',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({clientKey:KEY,sessionId:sessionId,pageContext:getContext(),events:events.slice(-30),sessionDuration:Math.round((Date.now()-startTime)/1000),scrollDepth:scrollDepth,referral:document.referrer||'direct',activeTests:participation}),
+        body:JSON.stringify({
+          clientKey:KEY,
+          sessionId:sessionId,
+          siteUrl:siteUrl,
+          pageContext:getContext(),
+          events:events.slice(-30),
+          sessionDuration:Math.round((Date.now()-startTime)/1000),
+          scrollDepth:scrollDepth,
+          referral:document.referrer||'direct',
+          activeTests:participation
+        }),
         keepalive:true
       });
     }catch(x){}
@@ -84,7 +95,8 @@ export async function GET(req: NextRequest) {
 
   function recordTestResult(testId,variant,converted){
     try{
-      fetch(BASE+'/api/test-results',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({testId:testId,clientKey:KEY,variant:variant,converted:converted||false,pageUrl:location.href}),keepalive:true});
+      fetch(BASE+'/api/test-results',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({testId:testId,clientKey:KEY,variant:variant,converted:converted||false,pageUrl:location.href}),keepalive:true});
     }catch(x){}
   }
 
@@ -127,12 +139,7 @@ export async function GET(req: NextRequest) {
   console.log('[VeroBehavior] Behavioral intelligence active \u2713 | key: '+KEY);
 })();
 `
-
   return new NextResponse(js, {
-    headers: {
-      'Content-Type': 'application/javascript; charset=utf-8',
-      'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
-      ...CORS_HEADERS,
-    },
+    headers: { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'public, max-age=60, stale-while-revalidate=300', ...CORS },
   })
 }

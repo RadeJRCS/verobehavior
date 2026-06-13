@@ -22,31 +22,21 @@ export async function OPTIONS() {
 }
 
 function parseAnalysis(raw: string) {
-  // Try direct parse
   try { return JSON.parse(raw) } catch {}
-  // Strip markdown code blocks
-  try {
-    const clean = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-    return JSON.parse(clean)
-  } catch {}
-  // Extract JSON object from text
-  try {
-    const match = raw.match(/\{[\s\S]*\}/)
-    if (match) return JSON.parse(match[0])
-  } catch {}
+  try { return JSON.parse(raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()) } catch {}
+  try { const m = raw.match(/\{[\s\S]*\}/); if (m) return JSON.parse(m[0]) } catch {}
   return null
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { clientKey, sessionId, pageContext, events, sessionDuration, scrollDepth, referral, activeTests } = body
+    const { clientKey, sessionId, siteUrl, pageContext, events, sessionDuration, scrollDepth, referral, activeTests } = body
 
     if (!clientKey || !events || events.length === 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400, headers: CORS })
     }
 
-    // Call Anthropic
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     let rawText = ''
     try {
@@ -58,6 +48,7 @@ export async function POST(req: NextRequest) {
           role: 'user',
           content: `Analyze this session:
 Client: ${clientKey}
+Site: ${siteUrl || 'unknown'}
 Page: ${pageContext}
 Duration: ${sessionDuration}s, Scroll: ${scrollDepth}%, Referral: ${referral || 'direct'}
 Events: ${JSON.stringify(events.slice(-20))}
@@ -83,18 +74,17 @@ Respond with this JSON only:
       return NextResponse.json({ error: msg }, { status: 500, headers: CORS })
     }
 
-    // Parse AI response
     const analysis = parseAnalysis(rawText)
     if (!analysis) {
       console.error('Failed to parse AI response:', rawText.slice(0, 200))
-      return NextResponse.json({ error: 'Failed to parse AI response', raw: rawText.slice(0, 200) }, { status: 500, headers: CORS })
+      return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500, headers: CORS })
     }
 
-    // Save to Supabase - never fail the request if this errors
     try {
       const supabase = getSupabase()
       await supabase.from('sessions').insert([{
         client_key: clientKey,
+        site_url: siteUrl || '',
         page_context: pageContext || '',
         session_duration: sessionDuration || 0,
         scroll_depth: scrollDepth || 0,
@@ -111,7 +101,6 @@ Respond with this JSON only:
       }])
     } catch (dbErr: unknown) {
       console.error('Supabase error:', dbErr instanceof Error ? dbErr.message : String(dbErr))
-      // Continue - return success even if DB fails
     }
 
     return NextResponse.json({ success: true, analysis }, { headers: CORS })
