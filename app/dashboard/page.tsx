@@ -35,6 +35,14 @@ type Test = {
   session_source_id: string | null
 }
 type TestStats = { A: { sessions: number; conversions: number; rate: string }; B: { sessions: number; conversions: number; rate: string } }
+type Pattern = {
+  id: string; client_key: string; state: string; insight_type: string
+  session_count: number; total_sessions: number; percentage: number
+  common_tags: string[]; top_page: string
+  sample_insights: string[]; sample_recommendations: string[]
+  ab_test_config: AbTestConfig | null; estimated_lift: string
+}
+type PatternSummary = { pattern_summary: string; principle: string; consolidated_recommendation: string; priority: string }
 type ClientProfile = { name: string; type: string; url: string; industry: string; ctaTargets: string[]; description: string; snippetSince: string }
 
 const stateColor: Record<string, string> = { converted: '#1A3A2A', high_intent: '#1A3A2A', hesitating: '#854F0B', comparing: '#4A4947', engaged: '#1A4A6E', browsing: '#8F8D89' }
@@ -43,10 +51,25 @@ const tagBg: Record<string, string> = { converted: '#E8F2EC', 'high-intent': '#E
 const tagColor: Record<string, string> = { converted: '#1A3A2A', 'high-intent': '#1A3A2A', high_intent: '#1A3A2A', hesitating: '#854F0B', 'price-friction': '#854F0B', comparing: '#4A4947', browsing: '#1A4A6E', 'social-proof-seeking': '#534AB7', engaged: '#1A4A6E' }
 const statusStyle: Record<string, string> = { pending: 'bg-surface-2 text-ink-3', in_progress: 'bg-blue-50 text-blue-700', done: 'bg-green-light text-green', archived: 'bg-surface-2 text-ink-3' }
 const priorityStyle: Record<string, string> = { high: 'bg-red-50 text-red-700', medium: 'bg-amber-50 text-amber-700', low: 'bg-surface-2 text-ink-3' }
-const typeColor: Record<string, string> = { 'E-commerce': 'bg-amber-50 text-amber-700 border-amber-200', 'SaaS': 'bg-brand-light text-brand border-brand/20', 'B2B': 'bg-blue-50 text-blue-700 border-blue-200', 'Documentation': 'bg-purple-50 text-purple-700 border-purple-200', 'Website': 'bg-surface-2 text-ink-3 border-surface-3' }
+const typeColor: Record<string, string> = { 'E-commerce': 'bg-amber-50 text-amber-700 border-amber-200', 'SaaS': 'bg-brand-light text-brand border-brand/20', 'B2B': 'bg-blue-50 text-blue-700 border-blue-200', 'Documentation': 'bg-purple-50 text-purple-700 border-purple-200', 'Website': 'bg-surface-2 text-ink-3 border-surface-3', 'Internal': 'bg-surface-2 text-ink-3 border-surface-3' }
 
 function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProfile | null {
   if (sessions.length === 0) return null
+
+  // "demo" is the internal sandbox from the public /demo page - sessions there
+  // come from arbitrary user-submitted test contexts, not a single real website.
+  if (clientKey === 'demo') {
+    const sorted = [...sessions].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    return {
+      name: 'Demo Sandbox',
+      type: 'Internal',
+      url: '',
+      industry: '',
+      description: 'Internal sandbox: sessions submitted via the public interactive demo with arbitrary test contexts. Not a single tracked website.',
+      ctaTargets: [],
+      snippetSince: new Date(sorted[0].created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    }
+  }
   const sorted = [...sessions].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
   const first = sorted[0]
 
@@ -101,7 +124,7 @@ export default function DashboardPage() {
   const [sessions, setSessions] = useState<Session[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'sessions' | 'insights' | 'backlog' | 'tests' | 'geo'>('sessions')
+  const [activeTab, setActiveTab] = useState<'sessions' | 'insights' | 'patterns' | 'backlog' | 'tests' | 'geo'>('sessions')
   const [filterKey, setFilterKey] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -116,6 +139,9 @@ export default function DashboardPage() {
   const [launchForm, setLaunchForm] = useState({ elementFindText: '', controlText: '', variantText: '', hypothesis: '' })
   const [launching, setLaunching] = useState(false)
   const [editMode, setEditMode] = useState(false)
+  const [patterns, setPatterns] = useState<Pattern[]>([])
+  const [patternSummaries, setPatternSummaries] = useState<Record<string, PatternSummary>>({})
+  const [loadingPatternId, setLoadingPatternId] = useState<string | null>(null)
 
   const fetchData = useCallback(async (key?: string) => {
     setLoading(true)
@@ -167,9 +193,78 @@ export default function DashboardPage() {
     } catch (e) { console.error(e) }
   }, [filterKey])
 
+  const fetchPatterns = useCallback(async () => {
+    try {
+      const res = await fetch(filterKey ? `/api/patterns?key=${filterKey}` : '/api/patterns')
+      const data = await res.json()
+      setPatterns(data.patterns || [])
+    } catch (e) { console.error(e) }
+  }, [filterKey])
+
+  const handleGeneratePatternSummary = async (pattern: Pattern) => {
+    setLoadingPatternId(pattern.id)
+    try {
+      const res = await fetch('/api/patterns', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientKey: pattern.client_key, state: pattern.state, insightType: pattern.insight_type,
+          sampleInsights: pattern.sample_insights, sampleRecommendations: pattern.sample_recommendations,
+          sessionCount: pattern.session_count, percentage: pattern.percentage, topPage: pattern.top_page,
+        }),
+      })
+      const data = await res.json()
+      if (data.pattern) setPatternSummaries((prev) => ({ ...prev, [pattern.id]: data.pattern }))
+    } catch (e) { console.error(e) }
+    finally { setLoadingPatternId(null) }
+  }
+
+  const handleLaunchPatternTest = (pattern: Pattern) => {
+    const cfg = pattern.ab_test_config
+    if (cfg && cfg.element_find_text && cfg.variant_text) {
+      setLaunchForm({
+        elementFindText: cfg.element_find_text,
+        controlText: cfg.control_text || cfg.element_find_text,
+        variantText: cfg.variant_text,
+        hypothesis: cfg.hypothesis || patternSummaries[pattern.id]?.consolidated_recommendation || '',
+      })
+    } else {
+      setLaunchForm({ elementFindText: '', controlText: '', variantText: '', hypothesis: patternSummaries[pattern.id]?.consolidated_recommendation || '' })
+    }
+    setEditMode(!cfg || !cfg.element_find_text)
+    setLaunchModal({
+      session: {
+        id: `pattern_${pattern.id}`, created_at: new Date().toISOString(), client_key: pattern.client_key,
+        site_url: '', page_context: pattern.top_page, state: pattern.state,
+        intent_score: 0, conversion_probability: 0, tags: pattern.common_tags,
+        insight_type: pattern.insight_type, insight_text: pattern.sample_insights[0] || '',
+        insight_principle: patternSummaries[pattern.id]?.principle || '',
+        recommendation: patternSummaries[pattern.id]?.consolidated_recommendation || pattern.sample_recommendations[0] || '',
+        estimated_lift: pattern.estimated_lift, session_duration: 0, scroll_depth: 0, events: [],
+        ab_test_config: cfg,
+      }
+    })
+  }
+
+  const handleSavePatternToBacklog = async (pattern: Pattern) => {
+    try {
+      await fetch('/api/backlog', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientKey: pattern.client_key, sessionId: null,
+          insightType: pattern.insight_type,
+          insightText: patternSummaries[pattern.id]?.pattern_summary || pattern.sample_insights[0] || '',
+          recommendation: patternSummaries[pattern.id]?.consolidated_recommendation || pattern.sample_recommendations[0] || '',
+          estimatedLift: pattern.estimated_lift, state: pattern.state,
+        }),
+      })
+      fetchBacklog()
+    } catch (e) { console.error(e) }
+  }
+
   useEffect(() => { fetchData() }, [fetchData])
   useEffect(() => { if (activeTab === 'backlog') fetchBacklog() }, [activeTab, fetchBacklog])
   useEffect(() => { if (activeTab === 'tests') fetchTests() }, [activeTab, fetchTests])
+  useEffect(() => { if (activeTab === 'patterns') fetchPatterns() }, [activeTab, fetchPatterns])
 
   const handleFilter = (key: string) => { setFilterKey(key); setDropdownOpen(false); fetchData(key || undefined) }
 
@@ -369,7 +464,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-1 bg-surface-2 border border-surface-3 rounded-lg p-1 mb-6 w-fit flex-wrap">
-            {(['sessions', 'insights', 'backlog', 'tests', 'geo'] as const).map((t) => (
+            {(['sessions', 'insights', 'patterns', 'backlog', 'tests', 'geo'] as const).map((t) => (
               <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-1.5 rounded-md text-[13px] capitalize transition-all flex items-center gap-1.5 ${activeTab === t ? 'bg-green text-white font-medium' : 'text-ink-2 hover:text-ink'}`}>
                 {t === 'geo' ? 'GEO Monitor' : t.charAt(0).toUpperCase() + t.slice(1)}
                 {t === 'backlog' && backlog.filter((i: BacklogItem) => i.status === 'pending').length > 0 && <span className="text-[10px] bg-gold text-white px-1.5 py-0.5 rounded-full">{backlog.filter((i: BacklogItem) => i.status === 'pending').length}</span>}
@@ -471,6 +566,82 @@ export default function DashboardPage() {
                 ))}
               </div>
             )
+          )}
+
+          {activeTab === 'patterns' && (
+            <div>
+              <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+                <div className="text-[13px] text-ink-2">{patterns.length} pattern{patterns.length !== 1 ? 's' : ''} detected across sessions</div>
+                <button onClick={fetchPatterns} className="text-[12px] font-mono text-ink-3 hover:text-ink">&#8635; Refresh</button>
+              </div>
+              {patterns.length === 0 ? (
+                <div className="bg-white border border-surface-3 rounded-xl p-12 text-center">
+                  <div className="text-4xl mb-4">&#128202;</div>
+                  <div className="font-serif text-xl text-ink mb-2">No patterns yet</div>
+                  <div className="text-[13px] text-ink-3">Patterns appear once at least 3 sessions share the same behavioral state and insight type. Keep collecting sessions.</div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {patterns.map((pattern) => {
+                    const summary = patternSummaries[pattern.id]
+                    const isLoading = loadingPatternId === pattern.id
+                    return (
+                      <div key={pattern.id} className="bg-white border border-surface-3 rounded-xl p-5">
+                        <div className="flex items-start justify-between gap-4 flex-wrap mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-widest" style={{ color: stateColor[pattern.state] || '#4A4947', background: stateBg[pattern.state] || '#F3F2EC' }}>{pattern.state}</span>
+                              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-widest bg-surface-2 text-ink-3">{pattern.insight_type}</span>
+                              <span className="text-[10px] font-mono bg-green-light text-green px-2 py-0.5 rounded-full">{pattern.client_key}</span>
+                            </div>
+                            <div className="text-[15px] font-medium text-ink mb-0.5">
+                              {pattern.session_count} of {pattern.total_sessions} sessions ({pattern.percentage}%)
+                              {pattern.top_page && <span className="text-ink-3 font-normal text-[12px]"> &middot; {pattern.top_page}</span>}
+                            </div>
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {pattern.common_tags.map((tag) => <span key={tag} className="text-[9px] font-mono px-1.5 py-0.5 rounded-full" style={{ background: tagBg[tag] || '#F3F2EC', color: tagColor[tag] || '#4A4947' }}>{tag}</span>)}
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0">
+                            <div className="text-[28px] font-serif font-normal leading-none" style={{ color: stateColor[pattern.state] || '#4A4947' }}>{pattern.percentage}%</div>
+                            <div className="text-[10px] text-ink-3 text-right">of sessions</div>
+                          </div>
+                        </div>
+
+                        {!summary ? (
+                          <div className="bg-surface-2 rounded-lg p-4">
+                            <div className="text-[12px] text-ink-2 leading-relaxed mb-3">{pattern.sample_insights[0]}</div>
+                            <button onClick={() => handleGeneratePatternSummary(pattern)} disabled={isLoading} className="text-[12px] font-mono bg-green text-white px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50">
+                              {isLoading ? 'Analyzing pattern...' : 'Generate consolidated summary'}
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="rounded-lg p-4" style={{ borderLeft: `3px solid ${stateColor[pattern.state] || '#4A4947'}`, background: stateBg[pattern.state] || '#F3F2EC' }}>
+                              <div className="text-[9px] font-mono uppercase tracking-widest mb-2" style={{ color: stateColor[pattern.state] || '#4A4947' }}>Pattern summary</div>
+                              <p className="text-[13px] text-ink leading-relaxed mb-2">{summary.pattern_summary}</p>
+                              <div className="text-[10px] font-mono" style={{ color: stateColor[pattern.state] || '#4A4947' }}>Principle: {summary.principle}</div>
+                            </div>
+                            <div className="bg-green rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="text-[9px] font-mono text-[#A8D4B8] uppercase tracking-widest">Consolidated recommendation</div>
+                                <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full uppercase tracking-widest ${priorityStyle[summary.priority] || 'bg-surface-2 text-ink-3'}`}>{summary.priority} priority</span>
+                              </div>
+                              <p className="text-[13px] text-white leading-relaxed mb-3">{summary.consolidated_recommendation}</p>
+                              {pattern.estimated_lift && <div className="text-[11px] font-mono text-[#A8D4B8] mb-3">Estimated lift: {pattern.estimated_lift}</div>}
+                              <div className="flex gap-2">
+                                <button onClick={() => handleLaunchPatternTest(pattern)} className="flex-1 bg-white/15 border border-white/25 text-white py-2 rounded-lg text-[11px] font-mono hover:bg-white/25 transition-colors">Launch test for pattern</button>
+                                <button onClick={() => handleSavePatternToBacklog(pattern)} className="flex-1 bg-white/5 border border-white/15 text-white/60 py-2 rounded-lg text-[11px] font-mono hover:bg-white/10 transition-colors">Save to Backlog</button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           )}
 
           {activeTab === 'backlog' && (
