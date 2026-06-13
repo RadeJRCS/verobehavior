@@ -1,92 +1,120 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { anthropic, PSYCH_SYSTEM_PROMPT } from '@/lib/anthropic'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+import Anthropic from '@anthropic-ai/sdk'
 
 export const runtime = 'nodejs'
 
-export async function POST(req: NextRequest) {
-  try {
-    const { events, pageContext, sessionDuration, scrollDepth, apiKey } = await req.json()
-    const clientKey = apiKey || req.headers.get('x-vb-key') || 'demo'
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': '*',
+}
 
-    if (!events || events.length === 0) {
-      return NextResponse.json({ error: 'No events provided' }, { status: 400 })
-    }
-
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 1000,
-      system: PSYCH_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: `Analyze this user session from an e-commerce product page:
-
-Page context: ${pageContext || 'Unknown page'}
-Session duration: ${sessionDuration || 0} seconds
-Scroll depth: ${scrollDepth || 0}%
-Behavioral events (chronological): ${JSON.stringify(events, null, 2)}
-
-Return JSON in this exact structure:
-{
-  "state": "browsing|engaged|hesitating|comparing|high_intent|converted",
-  "intentScore": 0-100,
-  "conversionProbability": 0-100,
-  "tags": ["tag1", "tag2", "tag3"],
-  "insight": {
-    "type": "ENGAGEMENT|HESITATION|SOCIAL PROOF|DECISION FATIGUE|CONVERSION EVENT|FRICTION",
-    "text": "2-3 sentences explaining the psychological behavior observed",
-    "principle": "principle name and brief explanation"
-  },
-  "recommendation": "Specific A/B test or UX change to improve conversion",
-  "estimatedLift": "e.g. +15-22% add-to-cart rate"
-}`,
-        },
-      ],
-    })
-
-    const raw = message.content[0].type === 'text' ? message.content[0].text : ''
-    const cleaned = raw.replace(/```json\n?|\n?```/g, '').trim()
-    const data = JSON.parse(cleaned)
-
-    // Save to Supabase
-    await supabase.from('sessions').insert({
-      client_key: clientKey,
-      page_context: pageContext || 'Unknown',
-      session_duration: sessionDuration || 0,
-      scroll_depth: scrollDepth || 0,
-      state: data.state,
-      intent_score: data.intentScore,
-      conversion_probability: data.conversionProbability,
-      tags: data.tags || [],
-      insight_type: data.insight?.type,
-      insight_text: data.insight?.text,
-      insight_principle: data.insight?.principle,
-      recommendation: data.recommendation,
-      estimated_lift: data.estimatedLift,
-      events: events,
-    })
-
-    return NextResponse.json(data, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-vb-key',
-      },
-    })
-  } catch (err: unknown) {
-    console.error('Analyze error:', err)
-    const message = err instanceof Error ? err.message : 'Unknown error'
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
+function getSupabase() {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_ANON_KEY
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY')
+  return createClient(url, key)
 }
 
 export async function OPTIONS() {
-  return new NextResponse(null, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-vb-key',
-    },
-  })
+  return new NextResponse(null, { status: 204, headers: CORS })
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const {
+      clientKey, sessionId, pageContext, events,
+      sessionDuration, scrollDepth, referral, activeTests
+    } = body
+
+    if (!clientKey || !events || events.length === 0) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400, headers: CORS })
+    }
+
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+    const systemPrompt = `You are a behavioral psychology expert and conversion rate optimization (CRO) specialist. You analyze user session data from websites and provide insights based on cognitive psychology, behavioral economics, and UX research.
+
+Your analysis must:
+1. Identify the psychological state of the user (hesitating, comparing, high_intent, browsing, converted, engaged)
+2. Detect behavioral patterns that indicate specific psychological phenomena
+3. Provide actionable recommendations grounded in behavioral science
+4. Cite specific psychological principles (Hick's Law, Zeigarnik Effect, Social Proof, Loss Aversion, Commitment Bias, Information Scent Theory, Cognitive Load Theory, etc.)
+5. Estimate conversion lift ranges based on the recommended interventions
+
+Always respond in valid JSON format only. No markdown, no code blocks, just raw JSON.`
+
+    const userPrompt = `Analyze this user session:
+
+Client: ${clientKey}
+Page: ${pageContext}
+Session duration: ${sessionDuration}s
+Scroll depth: ${scrollDepth}%
+Referral: ${referral || 'direct'}
+Active A/B tests: ${JSON.stringify(activeTests || [])}
+
+Events (chronological):
+${JSON.stringify(events, null, 2)}
+
+Respond with this exact JSON structure:
+{
+  "state": "one of: browsing, engaged, hesitating, comparing, high_intent, converted",
+  "intent_score": number from 0-99,
+  "conversion_probability": number from 0-100,
+  "tags": ["array", "of", "behavioral", "tags", "max 4"],
+  "insight_type": "one of: FRICTION, CONVERSION_EVENT, DECISION_FATIGUE, HIGH_INTENT, SOCIAL_PROOF_SEEKING, BOUNCE_RISK, COMPARISON_BEHAVIOR",
+  "insight_text": "2-4 sentences describing the psychological behavior observed. Be specific about what the user did and what it means psychologically.",
+  "insight_principle": "Name of the psychological principle(s) with brief explanation",
+  "recommendation": "Specific, actionable recommendation for the website owner. Include exact copy suggestions where relevant.",
+  "estimated_lift": "+X-Y% metric description"
+}`
+
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    })
+
+    const rawText = response.content[0].type === 'text' ? response.content[0].text : ''
+    let analysis
+
+    try {
+      const clean = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+      analysis = JSON.parse(clean)
+    } catch {
+      return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500, headers: CORS })
+    }
+
+    // Save to Supabase
+    const supabase = getSupabase()
+    const { error: dbError } = await supabase.from('sessions').insert([{
+      client_key: clientKey,
+      page_context: pageContext || '',
+      session_duration: sessionDuration || 0,
+      scroll_depth: scrollDepth || 0,
+      state: analysis.state || 'browsing',
+      intent_score: analysis.intent_score || 0,
+      conversion_probability: analysis.conversion_probability || 0,
+      tags: analysis.tags || [],
+      insight_type: analysis.insight_type || '',
+      insight_text: analysis.insight_text || '',
+      insight_principle: analysis.insight_principle || '',
+      recommendation: analysis.recommendation || '',
+      estimated_lift: analysis.estimated_lift || '',
+      events: events || [],
+    }])
+
+    if (dbError) console.error('Supabase insert error:', dbError.message)
+
+    return NextResponse.json({ success: true, analysis }, { headers: CORS })
+  } catch (err: unknown) {
+    console.error('Analyze error:', err)
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Unknown error' },
+      { status: 500, headers: CORS }
+    )
+  }
 }
