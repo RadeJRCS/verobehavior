@@ -66,7 +66,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const supabase = getSupabase()
     const body = await req.json()
-    const { id, status, triggerJudge } = body
+    const { id, status, triggerJudge, forceEvaluate } = body
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400, headers: CORS })
 
     const updates: Record<string, unknown> = {}
@@ -78,7 +78,7 @@ export async function PATCH(req: NextRequest) {
     if (triggerJudge) {
       const { data: test } = await supabase.from('tests').select('*').eq('id', id).single()
       const { data: results } = await supabase.from('test_results').select('*').eq('test_id', id)
-      if (test && results) {
+      if (test && results && (forceEvaluate || results.length > 0)) {
         const aR = results.filter((r) => r.variant === 'A')
         const bR = results.filter((r) => r.variant === 'B')
         const aConv = aR.filter((r) => r.converted).length

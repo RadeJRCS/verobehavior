@@ -207,6 +207,18 @@ export default function DashboardPage() {
     try { await fetch('/api/tests', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: testId, status: 'paused' }) }); fetchTests() } catch (e) { console.error(e) }
   }
 
+  const handleResumeTest = async (testId: string) => {
+    try { await fetch('/api/tests', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: testId, status: 'active' }) }); fetchTests() } catch (e) { console.error(e) }
+  }
+
+  const handleDeleteTest = async (testId: string) => {
+    try { await fetch(`/api/tests?id=${testId}`, { method: 'DELETE' }); fetchTests() } catch (e) { console.error(e) }
+  }
+
+  const handleEndTestEarly = async (testId: string) => {
+    try { await fetch('/api/tests', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: testId, triggerJudge: true, forceEvaluate: true }) }); fetchTests() } catch (e) { console.error(e) }
+  }
+
   const handleEvaluateTest = async (testId: string) => {
     try { await fetch('/api/tests', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: testId, triggerJudge: true }) }); fetchTests() } catch (e) { console.error(e) }
   }
@@ -516,9 +528,12 @@ export default function DashboardPage() {
                             <div className="text-[15px] font-medium text-ink mb-0.5">{test.name}</div>
                             {test.hypothesis && <div className="text-[12px] text-ink-2 font-light">{test.hypothesis}</div>}
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
                             {test.status === 'active' && ts && (ts.A.sessions + ts.B.sessions) >= 10 && <button onClick={() => handleEvaluateTest(test.id)} className="text-[11px] font-mono bg-green text-white px-3 py-1.5 rounded-lg hover:opacity-90">Judge LLM</button>}
                             {test.status === 'active' && <button onClick={() => handleStopTest(test.id)} className="text-[11px] font-mono bg-surface-2 text-ink-2 px-3 py-1.5 rounded-lg hover:bg-surface-3">Pause</button>}
+                            {test.status === 'paused' && <button onClick={() => handleResumeTest(test.id)} className="text-[11px] font-mono bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100">Resume</button>}
+                            {test.status === 'paused' && ts && (ts.A.sessions + ts.B.sessions) > 0 && !test.judge_analysis && <button onClick={() => handleEndTestEarly(test.id)} className="text-[11px] font-mono bg-green text-white px-3 py-1.5 rounded-lg hover:opacity-90">Evaluate now</button>}
+                            {(test.status === 'paused' || test.status === 'completed') && <button onClick={() => handleDeleteTest(test.id)} className="text-[11px] font-mono bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100">Remove</button>}
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3 mb-4">
@@ -555,6 +570,16 @@ export default function DashboardPage() {
                           <div className="mt-3 flex items-center gap-3">
                             <div className="flex-1 h-1.5 bg-surface rounded-full overflow-hidden"><div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${Math.min((ts.A.sessions + ts.B.sessions) / (test.min_sessions * 2) * 100, 100)}%` }} /></div>
                             <span className="text-[11px] text-ink-3 font-mono flex-shrink-0">{ts.A.sessions + ts.B.sessions}/{test.min_sessions * 2} sessions</span>
+                          </div>
+                        )}
+                        {test.status === 'paused' && !test.judge_analysis && ts && (ts.A.sessions + ts.B.sessions) > 0 && (
+                          <div className="mt-3 bg-surface-2 rounded-lg p-3 text-[11px] text-ink-2">
+                            Paused with {ts.A.sessions + ts.B.sessions} sessions collected ({ts.A.sessions} on A, {ts.B.sessions} on B). Click &ldquo;Evaluate now&rdquo; to get Judge LLM analysis on partial data, or &ldquo;Resume&rdquo; to keep collecting.
+                          </div>
+                        )}
+                        {test.status === 'paused' && (ts ? (ts.A.sessions + ts.B.sessions) === 0 : true) && (
+                          <div className="mt-3 bg-surface-2 rounded-lg p-3 text-[11px] text-ink-3">
+                            Paused with no session data collected yet.
                           </div>
                         )}
                       </div>
