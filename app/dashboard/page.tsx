@@ -59,7 +59,14 @@ function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProf
     allCtx.match(/contact|service|enterprise|b2b/) ? 'B2B' : 'Website'
 
   // Short description
-  const description = `${type} · ${sessions.length} session${sessions.length !== 1 ? 's' : ''} tracked`
+  const typeDesc: Record<string, string> = {
+    'E-commerce': 'Online store tracking product discovery, cart behavior, and checkout psychology.',
+    'SaaS': 'SaaS platform tracking trial signups, pricing page hesitation, and activation psychology.',
+    'Documentation': 'Documentation site tracking content engagement and navigation patterns.',
+    'B2B': 'B2B website tracking lead generation and high-intent visitor behavior.',
+    'Website': 'Website tracking visitor behavior and conversion psychology.',
+  }
+  const description = typeDesc[type] || typeDesc['Website']
 
   // CTAs from conversion events
   const convClicks = sessions.flatMap(s =>
@@ -275,12 +282,15 @@ export default function DashboardPage() {
                       <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded border ${typeColor[clientProfile.type] || 'bg-surface-2 text-ink-3 border-surface-3'}`}>{clientProfile.type}</span>
                     </div>
                     <div className="text-[12px] text-ink-2 font-light mb-1">{clientProfile.description}</div>
-                    {clientProfile.url && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-ink-3">&#127760;</span>
-                        <span className="text-[11px] font-mono text-ink-3">{clientProfile.url}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {clientProfile.url ? (
+                        <a href={clientProfile.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[11px] font-mono text-brand hover:underline">
+                          <span>&#127760;</span>{clientProfile.url}
+                        </a>
+                      ) : null}
+                      <span className="text-[11px] text-ink-3">· {sessions.length} sessions</span>
+                      <span className="text-[11px] text-ink-3">{sessions.length} sessions tracked</span>
+                    </div>
                   </div>
                 </div>
                 {clientProfile.ctaTargets.length > 0 && (
