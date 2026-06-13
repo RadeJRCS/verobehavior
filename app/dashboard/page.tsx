@@ -51,7 +51,15 @@ function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProf
   const convClicks = sessions.flatMap(s =>
     (s.events || []).filter(e => e.type === 'conversion').map(e => e.data?.text || '')
   ).filter(Boolean)
-  const ctaTargets = [...new Set(convClicks)].slice(0, 4)
+  let ctaTargets = [...new Set(convClicks)].slice(0, 4)
+  // Fallback: show most-clicked elements if no conversion events found
+  if (ctaTargets.length === 0) {
+    const allClicks = sessions.flatMap(s =>
+      (s.events || []).filter(e => e.type === 'click').map(e => e.data?.text || '')
+    ).filter((t: string) => t && t.length > 2 && t.length < 60)
+    const counts = allClicks.reduce((acc: Record<string, number>, t: string) => ({ ...acc, [t]: (acc[t] || 0) + 1 }), {})
+    ctaTargets = Object.entries(counts).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 4).map(([t]) => t)
+  }
   const recentPages = [...new Set(sessions.slice(0, 5).map(s => s.page_context?.split(' | ')[0] || '').filter(Boolean))]
   const snippetSince = new Date(first.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
   const name = clientKey.split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
@@ -270,7 +278,7 @@ export default function DashboardPage() {
                 </div>
                 {clientProfile.ctaTargets.length > 0 && (
                   <div className="flex-1 min-w-[200px]">
-                    <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Tracked conversions</div>
+                    <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Top interactions</div>
                     <div className="flex flex-wrap gap-1.5">
                       {clientProfile.ctaTargets.map((cta: string) => <span key={cta} className="text-[11px] bg-green-light text-green border border-green/20 px-2.5 py-1 rounded-full font-medium">{cta}</span>)}
                     </div>
