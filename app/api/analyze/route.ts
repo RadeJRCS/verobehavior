@@ -21,100 +21,103 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS })
 }
 
+function parseAnalysis(raw: string) {
+  // Try direct parse
+  try { return JSON.parse(raw) } catch {}
+  // Strip markdown code blocks
+  try {
+    const clean = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    return JSON.parse(clean)
+  } catch {}
+  // Extract JSON object from text
+  try {
+    const match = raw.match(/\{[\s\S]*\}/)
+    if (match) return JSON.parse(match[0])
+  } catch {}
+  return null
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const {
-      clientKey, sessionId, pageContext, events,
-      sessionDuration, scrollDepth, referral, activeTests
-    } = body
+    const { clientKey, sessionId, pageContext, events, sessionDuration, scrollDepth, referral, activeTests } = body
 
     if (!clientKey || !events || events.length === 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400, headers: CORS })
     }
 
+    // Call Anthropic
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
-    const systemPrompt = `You are a behavioral psychology expert and conversion rate optimization (CRO) specialist. You analyze user session data from websites and provide insights based on cognitive psychology, behavioral economics, and UX research.
-
-Your analysis must:
-1. Identify the psychological state of the user (hesitating, comparing, high_intent, browsing, converted, engaged)
-2. Detect behavioral patterns that indicate specific psychological phenomena
-3. Provide actionable recommendations grounded in behavioral science
-4. Cite specific psychological principles (Hick's Law, Zeigarnik Effect, Social Proof, Loss Aversion, Commitment Bias, Information Scent Theory, Cognitive Load Theory, etc.)
-5. Estimate conversion lift ranges based on the recommended interventions
-
-Always respond in valid JSON format only. No markdown, no code blocks, just raw JSON.`
-
-    const userPrompt = `Analyze this user session:
-
+    let rawText = ''
+    try {
+      const response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: `You are a behavioral psychology expert and CRO specialist. Analyze user sessions and respond ONLY with valid JSON. No markdown, no explanation, just raw JSON.`,
+        messages: [{
+          role: 'user',
+          content: `Analyze this session:
 Client: ${clientKey}
 Page: ${pageContext}
-Session duration: ${sessionDuration}s
-Scroll depth: ${scrollDepth}%
-Referral: ${referral || 'direct'}
-Active A/B tests: ${JSON.stringify(activeTests || [])}
+Duration: ${sessionDuration}s, Scroll: ${scrollDepth}%, Referral: ${referral || 'direct'}
+Events: ${JSON.stringify(events.slice(-20))}
 
-Events (chronological):
-${JSON.stringify(events, null, 2)}
-
-Respond with this exact JSON structure:
+Respond with this JSON only:
 {
-  "state": "one of: browsing, engaged, hesitating, comparing, high_intent, converted",
-  "intent_score": number from 0-99,
-  "conversion_probability": number from 0-100,
-  "tags": ["array", "of", "behavioral", "tags", "max 4"],
-  "insight_type": "one of: FRICTION, CONVERSION_EVENT, DECISION_FATIGUE, HIGH_INTENT, SOCIAL_PROOF_SEEKING, BOUNCE_RISK, COMPARISON_BEHAVIOR",
-  "insight_text": "2-4 sentences describing the psychological behavior observed. Be specific about what the user did and what it means psychologically.",
-  "insight_principle": "Name of the psychological principle(s) with brief explanation",
-  "recommendation": "Specific, actionable recommendation for the website owner. Include exact copy suggestions where relevant.",
-  "estimated_lift": "+X-Y% metric description"
+  "state": "browsing|engaged|hesitating|comparing|high_intent|converted",
+  "intent_score": 0-99,
+  "conversion_probability": 0-100,
+  "tags": ["tag1","tag2","tag3"],
+  "insight_type": "FRICTION|CONVERSION_EVENT|DECISION_FATIGUE|HIGH_INTENT|SOCIAL_PROOF_SEEKING|BOUNCE_RISK|COMPARISON_BEHAVIOR",
+  "insight_text": "2-3 sentences about psychological behavior observed",
+  "insight_principle": "Psychological principle name and brief explanation",
+  "recommendation": "Specific actionable recommendation",
+  "estimated_lift": "+X-Y% metric"
 }`
-
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1000,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
-    })
-
-    const rawText = response.content[0].type === 'text' ? response.content[0].text : ''
-    let analysis
-
-    try {
-      const clean = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      analysis = JSON.parse(clean)
-    } catch {
-      return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500, headers: CORS })
+        }],
+      })
+      rawText = response.content[0].type === 'text' ? response.content[0].text : ''
+    } catch (aiErr: unknown) {
+      const msg = aiErr instanceof Error ? aiErr.message : String(aiErr)
+      console.error('Anthropic error:', msg)
+      return NextResponse.json({ error: msg }, { status: 500, headers: CORS })
     }
 
-    // Save to Supabase
-    const supabase = getSupabase()
-    const { error: dbError } = await supabase.from('sessions').insert([{
-      client_key: clientKey,
-      page_context: pageContext || '',
-      session_duration: sessionDuration || 0,
-      scroll_depth: scrollDepth || 0,
-      state: analysis.state || 'browsing',
-      intent_score: analysis.intent_score || 0,
-      conversion_probability: analysis.conversion_probability || 0,
-      tags: analysis.tags || [],
-      insight_type: analysis.insight_type || '',
-      insight_text: analysis.insight_text || '',
-      insight_principle: analysis.insight_principle || '',
-      recommendation: analysis.recommendation || '',
-      estimated_lift: analysis.estimated_lift || '',
-      events: events || [],
-    }])
+    // Parse AI response
+    const analysis = parseAnalysis(rawText)
+    if (!analysis) {
+      console.error('Failed to parse AI response:', rawText.slice(0, 200))
+      return NextResponse.json({ error: 'Failed to parse AI response', raw: rawText.slice(0, 200) }, { status: 500, headers: CORS })
+    }
 
-    if (dbError) console.error('Supabase insert error:', dbError.message)
+    // Save to Supabase - never fail the request if this errors
+    try {
+      const supabase = getSupabase()
+      await supabase.from('sessions').insert([{
+        client_key: clientKey,
+        page_context: pageContext || '',
+        session_duration: sessionDuration || 0,
+        scroll_depth: scrollDepth || 0,
+        state: analysis.state || 'browsing',
+        intent_score: Number(analysis.intent_score) || 0,
+        conversion_probability: Number(analysis.conversion_probability) || 0,
+        tags: Array.isArray(analysis.tags) ? analysis.tags : [],
+        insight_type: analysis.insight_type || '',
+        insight_text: analysis.insight_text || '',
+        insight_principle: analysis.insight_principle || '',
+        recommendation: analysis.recommendation || '',
+        estimated_lift: analysis.estimated_lift || '',
+        events: events || [],
+      }])
+    } catch (dbErr: unknown) {
+      console.error('Supabase error:', dbErr instanceof Error ? dbErr.message : String(dbErr))
+      // Continue - return success even if DB fails
+    }
 
     return NextResponse.json({ success: true, analysis }, { headers: CORS })
   } catch (err: unknown) {
-    console.error('Analyze error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Unknown error' },
-      { status: 500, headers: CORS }
-    )
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('Analyze error:', msg)
+    return NextResponse.json({ error: msg }, { status: 500, headers: CORS })
   }
 }
