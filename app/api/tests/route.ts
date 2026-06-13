@@ -87,7 +87,7 @@ export async function PATCH(req: NextRequest) {
         const bRate = bR.length > 0 ? ((bConv / bR.length) * 100).toFixed(1) : '0'
         const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
         const response = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514', max_tokens: 300,
+          model: 'claude-sonnet-4-6', max_tokens: 300,
           messages: [{ role: 'user', content: `You are a behavioral psychology expert evaluating an A/B test.\nTest: "${test.name}"\nControl (A): "${test.control_text}" - ${aR.length} sessions, ${aConv} conversions (${aRate}%)\nVariant (B): "${test.variant_text}" - ${bR.length} sessions, ${bConv} conversions (${bRate}%)\nExplain which variant won and WHY from behavioral psychology. Cite principles. Max 3 sentences.` }],
         })
         updates.winner = parseFloat(bRate) > parseFloat(aRate) ? 'B' : 'A'
