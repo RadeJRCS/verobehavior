@@ -103,6 +103,7 @@ export default function DemoPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            clientKey: 'demo',
             events: evs.slice(-8),
             pageContext: 'E-commerce product page: Lumina Pro X Headphones ($349)',
             sessionDuration: Math.floor((Date.now() - startRef.current) / 1000),
@@ -111,11 +112,27 @@ export default function DemoPage() {
         })
         if (res.ok) {
           const data = await res.json()
-          setInsight(data)
-          setConvProb(data.conversionProbability || convProb)
-          if (data.tags) data.tags.forEach((t: string) => addTag(t))
-          if (data.state) setCurrentState(data.state)
-          if (data.intentScore) setIntentScore(data.intentScore)
+          const a = data.analysis
+          if (a) {
+            const mapped: Insight = {
+              state: a.state || currentState,
+              intentScore: Number(a.intent_score) || 0,
+              conversionProbability: Number(a.conversion_probability) || 0,
+              tags: Array.isArray(a.tags) ? a.tags : [],
+              insight: {
+                type: a.insight_type || '',
+                text: a.insight_text || '',
+                principle: a.insight_principle || '',
+              },
+              recommendation: a.recommendation || '',
+              estimatedLift: a.estimated_lift || '',
+            }
+            setInsight(mapped)
+            setConvProb(mapped.conversionProbability || convProb)
+            mapped.tags.forEach((t: string) => addTag(t))
+            if (mapped.state) setCurrentState(mapped.state)
+            if (mapped.intentScore) setIntentScore(mapped.intentScore)
+          }
         }
       } else {
         await new Promise(r => setTimeout(r, 600))
