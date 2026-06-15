@@ -4,10 +4,27 @@ import Footer from '@/components/Footer'
 import { useState, useEffect, useCallback, useRef } from 'react'
 
 type BehaviorEvent = { type: string; ts: number; data?: Record<string, unknown> }
+type TestAction = {
+  type: 'text_replace' | 'insert_element' | 'style_change'
+  element_find_text: string
+  control_text: string | null
+  variant_text: string | null
+  position: 'before' | 'after' | null
+  style_changes: Record<string, string> | null
+}
+type AbTestConfig = { testable: boolean; actions: TestAction[]; hypothesis: string | null }
 type Insight = {
   state: string; intentScore: number; conversionProbability: number
   tags: string[]; insight: { type: string; text: string; principle: string }
   recommendation: string; estimatedLift: string
+  abTestConfig?: AbTestConfig | null
+}
+
+function describeAction(a: TestAction): string {
+  if (a.type === 'text_replace') return `"${a.control_text}" \u2192 "${a.variant_text}"`
+  if (a.type === 'insert_element') return `+ "${a.variant_text}" (${a.position})`
+  const props = Object.entries(a.style_changes || {}).map(([k, v]) => `${k}: ${v}`).join(', ')
+  return `style: ${props}`
 }
 
 const STATE_CONFIG: Record<string, { icon: string; label: string; sub: string; color: string; bg: string }> = {
@@ -40,6 +57,7 @@ const THUMB_VIEWS = [
 export default function DemoPage() {
   const [events, setEvents] = useState<BehaviorEvent[]>([])
   const [insight, setInsight] = useState<Insight | null>(null)
+  const [testStatus, setTestStatus] = useState<'idle' | 'launching' | 'launched' | 'error'>('idle')
   const [loading, setLoading] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [scrollDepth, setScrollDepth] = useState(0)
@@ -126,8 +144,10 @@ export default function DemoPage() {
               },
               recommendation: a.recommendation || '',
               estimatedLift: a.estimated_lift || '',
+              abTestConfig: a.ab_test_config || null,
             }
             setInsight(mapped)
+            setTestStatus('idle')
             setConvProb(mapped.conversionProbability || convProb)
             mapped.tags.forEach((t: string) => addTag(t))
             if (mapped.state) setCurrentState(mapped.state)
@@ -147,10 +167,32 @@ export default function DemoPage() {
         const d = demos[key]
         setInsight(d); setConvProb(d.conversionProbability)
         setCurrentState(d.state); setIntentScore(d.intentScore)
+        setTestStatus('idle')
         d.tags.forEach(t => addTag(t))
       }
     } catch (e) { console.error(e) }
     finally { setLoading(false) }
+  }
+
+  const handleLaunchTest = async () => {
+    const cfg = insight?.abTestConfig
+    if (!cfg?.testable || !cfg.actions?.length || testStatus === 'launching') return
+    setTestStatus('launching')
+    try {
+      const res = await fetch('/api/tests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientKey: 'demo',
+          actions: cfg.actions,
+          hypothesis: cfg.hypothesis,
+          minSessions: 50,
+        }),
+      })
+      setTestStatus(res.ok ? 'launched' : 'error')
+    } catch {
+      setTestStatus('error')
+    }
   }
 
   const stCfg = STATE_CONFIG[currentState] || STATE_CONFIG.browsing
@@ -450,9 +492,39 @@ export default function DemoPage() {
                     <div className="text-[9px] font-mono text-[#A8D4B8] uppercase tracking-wider mb-1.5">AI Recommendation</div>
                     <div className="text-[12px] text-white leading-relaxed mb-2">{insight.recommendation}</div>
                     <div className="text-[10px] font-mono text-[#A8D4B8]">Est. lift: {insight.estimatedLift}</div>
-                    <button className="mt-2 w-full bg-white/15 border border-white/25 text-white py-1.5 rounded-md text-[10px] font-mono hover:bg-white/25 transition-colors">
-                      Launch A/B Test →
-                    </button>
+
+                    {insight.abTestConfig?.testable && insight.abTestConfig.actions?.length > 0 ? (
+                      <>
+                        <div className="mt-2 space-y-1">
+                          {insight.abTestConfig.actions.map((a, i) => (
+                            <div key={i} className="text-[10px] font-mono text-[#A8D4B8] bg-white/10 rounded px-2 py-1 leading-snug">
+                              {describeAction(a)}
+                            </div>
+                          ))}
+                        </div>
+                        {testStatus === 'launched' ? (
+                          <div className="mt-2 w-full bg-white/10 text-white py-1.5 rounded-md text-[10px] font-mono text-center">
+                            ✓ Launched · view in dashboard → Tests (Demo Sandbox)
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleLaunchTest}
+                            disabled={testStatus === 'launching'}
+                            className="mt-2 w-full bg-white/15 border border-white/25 text-white py-1.5 rounded-md text-[10px] font-mono hover:bg-white/25 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {testStatus === 'launching' ? 'Launching...' : testStatus === 'error' ? 'Couldn\u2019t launch, try again →' : 'Launch A/B Test →'}
+                          </button>
+                        )}
+                      </>
+                    ) : insight.abTestConfig && !insight.abTestConfig.testable ? (
+                      <div className="mt-2 text-[10px] font-mono text-[#A8D4B8]/70 italic">
+                        Needs more than a simple A/B test, save to backlog instead.
+                      </div>
+                    ) : (
+                      <button disabled className="mt-2 w-full bg-white/10 border border-white/15 text-white/50 py-1.5 rounded-md text-[10px] font-mono cursor-not-allowed">
+                        Launch A/B Test →
+                      </button>
+                    )}
                   </div>
                 </div>
               ) : (
