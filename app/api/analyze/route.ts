@@ -131,8 +131,9 @@ Field rules per action type:
 
     try {
       const supabase = getSupabase()
-      await supabase.from('sessions').insert([{
+      const sessionRow = {
         client_key: clientKey,
+        session_id: sessionId || null,
         site_url: siteUrl || '',
         page_context: pageContext || '',
         session_duration: sessionDuration || 0,
@@ -148,7 +149,30 @@ Field rules per action type:
         estimated_lift: analysis.estimated_lift || '',
         events: events || [],
         ab_test_config: analysis.ab_test_config || null,
-      }])
+        updated_at: new Date().toISOString(),
+      }
+
+      // The snippet sends multiple analyze calls per browser visit (early
+      // preview, on conversion, on page leave), all sharing the same
+      // session_id. Update the existing row in place so one visit stays
+      // one session, with the latest (most complete) analysis winning.
+      let existingId: string | null = null
+      if (sessionId) {
+        const { data: existing } = await supabase
+          .from('sessions')
+          .select('id')
+          .eq('client_key', clientKey)
+          .eq('session_id', sessionId)
+          .limit(1)
+          .maybeSingle()
+        existingId = existing?.id || null
+      }
+
+      if (existingId) {
+        await supabase.from('sessions').update(sessionRow).eq('id', existingId)
+      } else {
+        await supabase.from('sessions').insert([sessionRow])
+      }
     } catch (dbErr: unknown) {
       console.error('Supabase error:', dbErr instanceof Error ? dbErr.message : String(dbErr))
     }
