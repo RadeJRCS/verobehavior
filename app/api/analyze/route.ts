@@ -87,8 +87,8 @@ For each action, ask in this order:
    Example: recommendation "change 'Sign up' to 'Start free - no card needed'" -> one action: text_replace, element_find_text="Sign up", control_text="Sign up", variant_text="Start free - no card needed".
 2. Else, does it primarily say to make an existing element MORE/LESS VISUALLY PROMINENT (bigger, bolder, higher-contrast color, more padding, more rounded) WITHOUT changing its wording or adding new content? -> "style_change".
    Example: recommendation "make the primary CTA stand out more with a stronger color and larger size" -> one action: style_change on that CTA, style_changes={"backgroundColor":"#1A3A2A","fontSize":"18px","padding":"14px 28px"}.
-3. Else, does it primarily say to ADD a new short piece of text near an element (trust badge, social proof count, urgency note, guarantee) while leaving the element itself unchanged? -> "insert_element".
-   Example: recommendation "add social proof near the signup button" -> one action: insert_element, element_find_text="Create account", variant_text="Join 12,847 teams this week", position="after".
+3. Else, does it primarily say to ADD a new short piece of text near an element (trust badge, reassurance, urgency note, guarantee) while leaving the element itself unchanged? -> "insert_element".
+   Example: recommendation "reassure visitors that no card is required" -> one action: insert_element, element_find_text="Create account", variant_text="No credit card required", position="after".
 4. If the recommendation genuinely combines two of the above on the same or related elements (e.g. reword AND restyle a button, or restyle a button AND add a badge near it), include both as separate actions in the array, each targeting an element_find_text that matches an event.
 5. If the recommendation needs new forms/steps/conditional logic/layout reorganization that cannot be captured by 1-3 actions of the types above -> "testable": false, "actions": [].
 
@@ -100,6 +100,7 @@ Field rules per action type:
   Do not include any trailing arrow/chevron icon character in variant_text for the question element, it is preserved automatically.
 - "style_change": set style_changes (1-3 properties from the whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border). Leave control_text/variant_text/position null.
 - "insert_element": set variant_text (plain text, max ~80 chars, no HTML) and position ("before" or "after"). Leave control_text/style_changes null.
+  ETHICS CONSTRAINT, no exceptions: variant_text must never invent a specific number, count, name, timeframe, or claim that is not present anywhere in the page content or events provided (no fabricated "Join 12,847 teams", "4.9/5 from 2,300 reviews", "14 people viewing this now", fake countdowns, or invented testimonials). If the recommendation calls for social proof, urgency, or a statistic and no real figure is available from the page/events, either: (a) write variant_text as a true, general statement that requires no number (e.g. "No credit card required", "Cancel anytime", "Trusted by teams worldwide"), or (b) write variant_text using a clearly marked placeholder for the client to fill in with their real data (e.g. "Join [X] teams already using this"), or (c) if neither fits, set this action's type to something else or omit it and rely on testable: false with the recommendation describing what real data the client should surface.
 - element_find_text MUST exactly match text from one of the click events provided whenever testable is true, for every action. For action (b) above, element_find_text matches the event's relatedText field instead of its text field.`
         }],
       })
