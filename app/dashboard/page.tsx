@@ -52,6 +52,8 @@ type Pattern = {
 }
 type PatternSummary = { pattern_summary: string; principle: string; consolidated_recommendation: string; priority: string }
 type ClientProfile = { name: string; type: string; url: string; industry: string; ctaTargets: string[]; description: string; snippetSince: string }
+type GeoCheck = { id: string; label: string; weight: number; status: 'pass' | 'fail'; priority: 'HIGH' | 'MED' | 'LOW' | null; finding: string; recommendation: string | null }
+type GeoAuditResult = { url: string; score: number; checks: GeoCheck[] }
 
 const stateColor: Record<string, string> = { converted: '#1A3A2A', high_intent: '#1A3A2A', hesitating: '#854F0B', comparing: '#4A4947', engaged: '#1A4A6E', browsing: '#8F8D89' }
 const stateBg: Record<string, string> = { converted: '#E8F2EC', high_intent: '#E8F2EC', hesitating: '#FBF3E4', comparing: '#F3F2EC', engaged: '#E8F0F8', browsing: '#F3F2EC' }
@@ -161,6 +163,10 @@ export default function DashboardPage() {
   const [allKeys, setAllKeys] = useState<string[]>([])
   const [backlog, setBacklog] = useState<BacklogItem[]>([])
   const [tests, setTests] = useState<Test[]>([])
+  const [geoUrl, setGeoUrl] = useState('')
+  const [geoResult, setGeoResult] = useState<GeoAuditResult | null>(null)
+  const [geoLoading, setGeoLoading] = useState(false)
+  const [geoError, setGeoError] = useState('')
   const [testStats, setTestStats] = useState<Record<string, TestStats>>({})
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
   const [backedUpSessions, setBackedUpSessions] = useState<Map<string, string>>(new Map())
@@ -298,6 +304,21 @@ export default function DashboardPage() {
   useEffect(() => { if (activeTab === 'tests') fetchTests() }, [activeTab, fetchTests])
   useEffect(() => { if (activeTab === 'patterns') fetchPatterns() }, [activeTab, fetchPatterns])
 
+  const handleGeoAudit = async () => {
+    if (!geoUrl) return
+    setGeoLoading(true); setGeoError(''); setGeoResult(null)
+    try {
+      const res = await fetch('/api/geo-audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: geoUrl }) })
+      const data = await res.json()
+      if (!res.ok) { setGeoError(data.error || 'Audit failed'); return }
+      setGeoResult(data)
+    } catch {
+      setGeoError('Could not reach the audit endpoint.')
+    } finally {
+      setGeoLoading(false)
+    }
+  }
+
   const handleFilter = (key: string) => { setFilterKey(key); setDropdownOpen(false); fetchData(key || undefined) }
 
   const handleSaveToBacklog = async (session: Session) => {
@@ -396,6 +417,10 @@ export default function DashboardPage() {
 
   // Dynamic profile - no hardcoding
   const clientProfile: ClientProfile | null = filterKey ? deriveClientProfile(filterKey, sessions) : null
+
+  useEffect(() => {
+    if (clientProfile?.url && !geoUrl) setGeoUrl(clientProfile.url)
+  }, [clientProfile?.url, geoUrl])
 
   return (
     <div className="min-h-screen flex flex-col bg-surface">
@@ -831,32 +856,60 @@ export default function DashboardPage() {
           )}
 
           {activeTab === 'geo' && (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-6">
               <div className="bg-white border border-surface-3 rounded-xl p-5">
-                <div className="text-[11px] font-mono tracking-widest text-ink-3 uppercase mb-4">Brand Visibility in AI Responses</div>
-                {[{ platform: 'ChatGPT', score: 94, color: '#1A3A2A' }, { platform: 'Perplexity', score: 81, color: '#534AB7' }, { platform: 'Google SGE', score: 67, color: '#854F0B' }, { platform: 'Gemini', score: 58, color: '#1A4A6E' }].map((p) => (
-                  <div key={p.platform} className="flex items-center gap-3 mb-3">
-                    <span className="text-[12px] w-24 text-ink-2 font-mono flex-shrink-0">{p.platform}</span>
-                    <div className="flex-1 h-2 bg-surface rounded-full overflow-hidden"><div className="h-full rounded-full" style={{ width: `${p.score}%`, background: p.color }} /></div>
-                    <span className="text-[13px] font-semibold w-8 text-right" style={{ color: p.color }}>{p.score}</span>
-                  </div>
-                ))}
+                <div className="text-[11px] font-mono tracking-widest text-ink-3 uppercase mb-3">Brand Visibility in AI Responses</div>
+                <div className="bg-surface-2 rounded-lg p-6 text-center">
+                  <div className="text-[13px] text-ink-2 font-light mb-2">Tracking how ChatGPT, Perplexity, Google AI Overviews, and Gemini describe this brand when asked about its category.</div>
+                  <div className="text-[10px] font-mono text-ink-3 uppercase tracking-widest">Coming soon</div>
+                </div>
               </div>
+
               <div className="bg-white border border-surface-3 rounded-xl p-5">
-                <div className="text-[11px] font-mono tracking-widest text-ink-3 uppercase mb-4">GEO Recommendations</div>
-                {[{ sev: 'HIGH', issue: 'Missing JSON-LD Product schema on pricing page', fix: 'Add Product + FAQPage schema', impact: '+28% SGE' }, { sev: 'MED', issue: 'Machine readability score: 62/100', fix: 'Add structured metadata', impact: '+15% Perplexity' }, { sev: 'LOW', issue: 'No entity disambiguation in About page', fix: 'Add Organization schema', impact: '+8% ChatGPT' }].map((r) => (
-                  <div key={r.issue} className="border-b border-surface-2 pb-3 mb-3 last:border-b-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-[9px] font-mono px-2 py-0.5 rounded ${r.sev === 'HIGH' ? 'bg-red-50 text-red-700' : r.sev === 'MED' ? 'bg-yellow-50 text-yellow-700' : 'bg-blue-50 text-blue-700'}`}>{r.sev}</span>
-                      <span className="text-[12px] text-ink">{r.issue}</span>
+                <div className="text-[11px] font-mono tracking-widest text-ink-3 uppercase mb-3">GEO Readiness Audit</div>
+                <div className="text-[12px] text-ink-2 font-light mb-4">Fetches a real page and checks for the structured data and metadata AI systems use to read it accurately.</div>
+                <div className="flex gap-2 mb-4">
+                  <input value={geoUrl} onChange={(e) => setGeoUrl(e.target.value)} placeholder="https://yoursite.com/pricing" className="flex-1 border border-surface-3 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-green transition-colors" />
+                  <button onClick={handleGeoAudit} disabled={!geoUrl || geoLoading} className="bg-green text-white px-4 py-2 rounded-lg text-[13px] font-mono hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
+                    {geoLoading ? 'Auditing...' : 'Run audit'}
+                  </button>
+                </div>
+
+                {geoError && <div className="text-[12px] text-red-600 mb-3">{geoError}</div>}
+
+                {geoResult ? (
+                  <div>
+                    <div className="flex items-center gap-4 mb-5 pb-4 border-b border-surface-2">
+                      <div className="font-serif text-4xl text-green leading-none">{geoResult.score}</div>
+                      <div className="text-[12px] text-ink-2 font-light">
+                        Machine readability score for<br /><span className="font-mono text-ink break-all">{geoResult.url}</span>
+                      </div>
                     </div>
-                    <div className="text-[11px] text-ink-2 font-light">{r.fix} <span className="text-green font-medium">{r.impact}</span></div>
+                    <div className="space-y-3">
+                      {geoResult.checks.map((c) => (
+                        <div key={c.id} className="border-b border-surface-2 pb-3 last:border-b-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            {c.status === 'pass' ? (
+                              <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-green-light text-green">PASS</span>
+                            ) : (
+                              <span className={`text-[9px] font-mono px-2 py-0.5 rounded ${c.priority === 'HIGH' ? 'bg-red-50 text-red-700' : c.priority === 'MED' ? 'bg-yellow-50 text-yellow-700' : 'bg-blue-50 text-blue-700'}`}>{c.priority}</span>
+                            )}
+                            <span className="text-[12px] text-ink font-medium">{c.label}</span>
+                          </div>
+                          <div className="text-[11px] text-ink-2 font-light">{c.finding}</div>
+                          {c.recommendation && <div className="text-[11px] text-green font-medium mt-1">{c.recommendation}</div>}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                ) : !geoLoading && (
+                  <div className="text-[12px] text-ink-3 font-light">Enter a URL from this client&rsquo;s site (e.g. its homepage or pricing page) and run an audit to see real structured-data findings and recommendations.</div>
+                )}
               </div>
             </div>
           )}
         </div>
+
       </div>
 
       {launchModal && (() => {
