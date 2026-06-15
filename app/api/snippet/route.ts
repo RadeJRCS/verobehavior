@@ -101,13 +101,46 @@ export async function GET(req: NextRequest) {
   }
 
   var ALLOWED_STYLES=['backgroundColor','color','fontSize','fontWeight','padding','borderRadius','border'];
+  var INTERACTIVE_SELECTOR='button,a,[role="button"],input[type="submit"],input[type="button"],[data-vb-event]';
+  var BROAD_SELECTOR='h1,h2,h3,h4,p,span,div,label,'+INTERACTIVE_SELECTOR;
+  var MAX_TARGET_DESCENDANTS=8;
+
+  function isInteractive(el){
+    return /^(BUTTON|A|INPUT)$/.test(el.tagName)||el.getAttribute('role')==='button'||el.hasAttribute('data-vb-event');
+  }
+
+  // Lower score = more specific = better match. Penalize large containers
+  // heavily so a wrapping <div> never outranks the actual button/element
+  // whose text was captured in the click event.
+  function specificityScore(el,needleLen){
+    var txt=(el.textContent||el.value||'').trim();
+    var descendants=el.querySelectorAll('*').length;
+    return descendants*1000 + Math.max(txt.length-needleLen,0) + (isInteractive(el)?0:5);
+  }
+
+  function searchSelector(selector,needle,needleLen){
+    var els=Array.from(document.querySelectorAll(selector));
+    var candidates=els.filter(function(el){
+      var txt=(el.textContent||el.value||'').trim();
+      return txt.length>0 && txt.length<200 && txt.toLowerCase().indexOf(needle)!==-1;
+    });
+    if(!candidates.length)return null;
+    candidates.sort(function(a,b){return specificityScore(a,needleLen)-specificityScore(b,needleLen);});
+    return candidates[0];
+  }
 
   function findAnchor(action){
-    var els=Array.from(document.querySelectorAll('button,a,[role="button"],input[type="submit"],input[type="button"],h1,h2,h3,p,span,div,label'));
-    return els.find(function(el){
-      var txt=(el.textContent||el.value||'').trim();
-      return txt.length>0 && txt.length<200 && txt.toLowerCase().indexOf(action.element_find_text.toLowerCase())!==-1;
-    });
+    var needle=action.element_find_text.toLowerCase();
+    var needleLen=action.element_find_text.length;
+    // Prefer interactive elements first (buttons/links), since
+    // element_find_text is derived from click events on those.
+    var best=searchSelector(INTERACTIVE_SELECTOR,needle,needleLen)||searchSelector(BROAD_SELECTOR,needle,needleLen);
+    if(!best)return null;
+    // Safety net: if even the best match is a large container (e.g. an
+    // accordion item wrapping a question and its answer), refuse to apply
+    // rather than risk wiping out unrelated content.
+    if(best.querySelectorAll('*').length>MAX_TARGET_DESCENDANTS)return null;
+    return best;
   }
 
   function applyTextReplace(action,target,testId){
