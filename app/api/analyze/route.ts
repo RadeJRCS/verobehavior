@@ -94,10 +94,13 @@ For each action, ask in this order:
 
 Field rules per action type:
 - "text_replace": set control_text (current label) and variant_text (new label). Leave position/style_changes null.
-  If element_find_text reads as a question or ends with an expand/arrow icon character (it looks like an FAQ or accordion item), variant_text must reword the SAME underlying question or claim with different framing (e.g. tone, emphasis, reassurance), not introduce a new question or a new claim, because the answer content beneath it will not change. Do not include any trailing arrow/chevron icon character in variant_text, it is preserved automatically.
+  If element_find_text reads as a question or ends with an expand/arrow icon character (it looks like an FAQ or accordion item), there are two valid approaches:
+  (a) Reword the SAME underlying question or claim with different framing (tone, emphasis, reassurance), keeping it answerable by the existing content beneath it. This is a single action and is the default choice.
+  (b) Only if the click event for that element includes a non-empty "relatedText" field (the text of the answer/content associated with it), and the recommendation genuinely calls for asking something different (not just a different tone), you may add a SECOND text_replace action: element_find_text = the relatedText value exactly, control_text = the same relatedText value, variant_text = a rewritten version of that text that stays coherent with the new question from the first action and is roughly the same length. Use (b) only when (a) would not make sense, most tests should still be a single action.
+  Do not include any trailing arrow/chevron icon character in variant_text for the question element, it is preserved automatically.
 - "style_change": set style_changes (1-3 properties from the whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border). Leave control_text/variant_text/position null.
 - "insert_element": set variant_text (plain text, max ~80 chars, no HTML) and position ("before" or "after"). Leave control_text/style_changes null.
-- element_find_text MUST exactly match text from one of the click events provided whenever testable is true, for every action.`
+- element_find_text MUST exactly match text from one of the click events provided whenever testable is true, for every action. For action (b) above, element_find_text matches the event's relatedText field instead of its text field.`
         }],
       })
       rawText = response.content[0].type === 'text' ? response.content[0].text : ''

@@ -32,16 +32,60 @@ export async function GET(req: NextRequest) {
     if(d>scrollDepth)scrollDepth=Math.min(d,100);
   },{passive:true});
 
+  var ACCORDION_GLYPH_RE=/[\\u25B8\\u25B9\\u25BA\\u25BC\\u25BE\\u25B6\\u203A\\u02C4\\u02C5\\u2304\\u2303]\\s*$/;
+
+  function elClass(el){return (el&&el.className&&el.className.toString)?el.className.toString():'';}
+
+  function looksLikeAccordionTrigger(el){
+    var txt=(el.textContent||'').trim();
+    if(ACCORDION_GLYPH_RE.test(txt))return true;
+    if(el.hasAttribute('aria-expanded')||el.hasAttribute('aria-controls'))return true;
+    if(/accordion|faq|toggle|collapse|expand/i.test(elClass(el)))return true;
+    if(el.parentElement&&/accordion|faq|toggle|collapse|expand/i.test(elClass(el.parentElement)))return true;
+    return false;
+  }
+
+  function findRelatedText(el){
+    function tryEl(cand){
+      if(!cand)return null;
+      var t=(cand.textContent||'').trim();
+      return (t.length>0&&t.length<=200)?t:null;
+    }
+    var controlsId=el.getAttribute('aria-controls');
+    if(controlsId){
+      var r=tryEl(document.getElementById(controlsId));
+      if(r)return r;
+    }
+    var r2=tryEl(el.nextElementSibling);
+    if(r2)return r2;
+    if(el.parentElement){
+      var r3=tryEl(el.parentElement.nextElementSibling);
+      if(r3)return r3;
+      var siblings=Array.from(el.parentElement.children).filter(function(c){return c!==el;});
+      for(var i=0;i<siblings.length;i++){
+        var r4=tryEl(siblings[i]);
+        if(r4)return r4;
+      }
+    }
+    return null;
+  }
+
   document.addEventListener('click',function(e){
     var el=e.target.closest('button,a,[role="button"],[data-vb-event]');
     if(!el)return;
     var isConv=el.getAttribute('data-vb-event')==='conversion';
     var text=(el.textContent||'').trim().slice(0,120);
-    events.push({type:isConv?'conversion':'click',ts:Date.now()-startTime,data:{text:text,tag:el.tagName.toLowerCase(),vbType:el.getAttribute('data-vb-type')||null}});
+    var evData={text:text,tag:el.tagName.toLowerCase(),vbType:el.getAttribute('data-vb-type')||null};
+    if(looksLikeAccordionTrigger(el)){
+      var related=findRelatedText(el);
+      if(related)evData.relatedText=related;
+    }
+    events.push({type:isConv?'conversion':'click',ts:Date.now()-startTime,data:evData});
     var testId=el.getAttribute('data-vb-test');
     if(testId&&testParticipation[testId]){recordTestResult(testId,testParticipation[testId],true);}
     if(isConv)sendData(true);
   });
+
 
   document.addEventListener('focus',function(e){
     if(e.target.matches&&e.target.matches('input,textarea,select')){
