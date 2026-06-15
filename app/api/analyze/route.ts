@@ -66,14 +66,22 @@ Respond with this JSON only:
   "estimated_lift": "+X-Y% metric",
   "ab_test_config": {
     "testable": true or false,
-    "element_find_text": "exact text of an existing button/link from the events that should change (must match text seen in events, or null if testable is false)",
-    "control_text": "the current/original text of that element",
-    "variant_text": "the new text to test, directly implementing the core idea of the recommendation as a simple copy change",
-    "hypothesis": "one sentence: what psychological principle this copy change leverages and expected effect"
+    "type": "text_replace" | "insert_element" | "style_change" | null,
+    "element_find_text": "exact text of an existing button/link/element from the events that the test targets (must match text seen in events, or null if testable is false)",
+    "control_text": "for text_replace: current/original text of the element. For insert_element/style_change: null",
+    "variant_text": "for text_replace: the new text to test. For insert_element: the text content to inject (badge/banner text only, plain text no HTML). For style_change: null",
+    "position": "for insert_element only: 'before' or 'after' the anchor element. Otherwise null",
+    "style_changes": "for style_change only: an object with CSS properties to change, ONLY from this whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border. Use valid CSS values as strings, e.g. {\"backgroundColor\": \"#1A3A2A\", \"fontSize\": \"18px\"}. Otherwise null",
+    "hypothesis": "one sentence: what psychological principle this change leverages and expected effect"
   }
 }
 
-IMPORTANT for ab_test_config: Only set "testable": true if the recommendation's core idea can be reduced to a SIMPLE TEXT CHANGE on an existing button or link that appears in the events. If the recommendation requires new elements, layout changes, multi-step flows, or anything beyond text replacement, set "testable": false and element_find_text/control_text/variant_text to null. When testable, element_find_text MUST exactly match text from one of the click events provided.`
+IMPORTANT for ab_test_config - pick the type that BEST implements the core idea of the recommendation:
+- "text_replace": the recommendation is fundamentally a copy/wording change on an existing button or link. element_find_text must exactly match text from one of the click events. Set control_text and variant_text, leave position/style_changes null.
+- "insert_element": the recommendation is to ADD something near an existing element (a trust badge, social proof line, urgency text, "no credit card required", testimonial snippet, etc.) - something short and purely textual. element_find_text identifies the anchor element (must match event text). variant_text is the short text to inject (plain text only, max ~80 chars, no HTML/markup). position is "before" or "after". Leave control_text/style_changes null.
+- "style_change": the recommendation is to make an existing element more/less prominent (bigger, different color, more padding) without changing its text or adding elements. element_find_text identifies the element. style_changes contains only whitelisted CSS properties. Leave control_text/variant_text/position null.
+- Set "testable": false and type/element_find_text/etc to null ONLY if the recommendation requires multi-step flows, forms, conditional logic, or structural page reorganization that cannot be expressed as one of the three types above. When testable is false, also leave "type" as null.
+- element_find_text MUST exactly match text from one of the click events provided whenever testable is true.`
         }],
       })
       rawText = response.content[0].type === 'text' ? response.content[0].text : ''

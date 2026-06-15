@@ -100,23 +100,73 @@ export async function GET(req: NextRequest) {
     }catch(x){}
   }
 
+  var ALLOWED_STYLES=['backgroundColor','color','fontSize','fontWeight','padding','borderRadius','border'];
+
+  function findAnchor(test){
+    var els=Array.from(document.querySelectorAll('button,a,[role="button"],input[type="submit"],input[type="button"],h1,h2,h3,p,span,div,label'));
+    return els.find(function(el){
+      var txt=(el.textContent||el.value||'').trim();
+      return txt.length>0 && txt.length<200 && txt.toLowerCase().indexOf(test.element_find_text.toLowerCase())!==-1;
+    });
+  }
+
+  function applyTextReplace(test,target){
+    if(!test.variant_text)return false;
+    if(target.tagName==='INPUT')target.value=test.variant_text;
+    else target.textContent=test.variant_text;
+    target.setAttribute('data-vb-test',test.id);
+    return true;
+  }
+
+  function applyInsertElement(test,target){
+    if(!test.variant_text)return false;
+    var span=document.createElement('span');
+    span.textContent=test.variant_text;
+    span.setAttribute('data-vb-test',test.id);
+    span.setAttribute('data-vb-injected','true');
+    span.style.display='inline-block';
+    span.style.fontSize='0.85em';
+    span.style.opacity='0.85';
+    span.style.marginTop='4px';
+    span.style.marginBottom='4px';
+    if(test.position==='before'){
+      target.parentNode.insertBefore(span,target);
+    }else{
+      if(target.nextSibling)target.parentNode.insertBefore(span,target.nextSibling);
+      else target.parentNode.appendChild(span);
+    }
+    // Mark the anchor too, so clicks on it still register for this test if relevant
+    target.setAttribute('data-vb-test',test.id);
+    return true;
+  }
+
+  function applyStyleChange(test,target){
+    if(!test.style_changes)return false;
+    Object.keys(test.style_changes).forEach(function(prop){
+      if(ALLOWED_STYLES.indexOf(prop)!==-1){
+        try{target.style[prop]=test.style_changes[prop];}catch(x){}
+      }
+    });
+    target.setAttribute('data-vb-test',test.id);
+    return true;
+  }
+
   function applyTest(test){
-    if(!test.element_find_text||!test.variant_text)return;
+    if(!test.element_find_text)return;
     var variant=getVariant(test.id);
     testParticipation[test.id]=variant;
     recordTestResult(test.id,variant,false);
     if(variant==='A')return;
+
     function doApply(){
-      var els=Array.from(document.querySelectorAll('button,a,[role="button"],input[type="submit"],input[type="button"]'));
-      var target=els.find(function(el){return(el.textContent||el.value||'').trim().toLowerCase().indexOf(test.element_find_text.toLowerCase())!==-1;});
-      if(target){
-        if(target.tagName==='INPUT')target.value=test.variant_text;
-        else target.textContent=test.variant_text;
-        target.setAttribute('data-vb-test',test.id);
-        return true;
-      }
-      return false;
+      var target=findAnchor(test);
+      if(!target)return false;
+      var type=test.test_type||'text_replace';
+      if(type==='insert_element')return applyInsertElement(test,target);
+      if(type==='style_change')return applyStyleChange(test,target);
+      return applyTextReplace(test,target);
     }
+
     if(!doApply()){
       var obs=new MutationObserver(function(){if(doApply())obs.disconnect();});
       obs.observe(document.body,{childList:true,subtree:true});

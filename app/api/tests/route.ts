@@ -42,13 +42,22 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabase()
     const body = await req.json()
+    const testType = body.testType || 'text_replace'
+    const name = body.name ||
+      (testType === 'insert_element' ? `Test: insert "${body.variantText}" ${body.position || 'after'} "${body.elementFindText}"` :
+       testType === 'style_change' ? `Test: style change on "${body.elementFindText}"` :
+       `Test: ${body.controlText} vs ${body.variantText}`)
+
     const { data, error } = await supabase.from('tests').insert([{
       client_key: body.clientKey,
-      name: body.name || `Test: ${body.controlText} vs ${body.variantText}`,
+      name,
       hypothesis: body.hypothesis || null,
+      test_type: testType,
       element_find_text: body.elementFindText,
-      control_text: body.controlText,
-      variant_text: body.variantText,
+      control_text: body.controlText || null,
+      variant_text: body.variantText || null,
+      position: body.position || null,
+      style_changes: body.styleChanges || null,
       target_segment: body.targetSegment || 'all',
       status: 'active',
       min_sessions: body.minSessions || 50,
