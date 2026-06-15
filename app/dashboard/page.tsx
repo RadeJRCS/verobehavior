@@ -3,14 +3,18 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import { useState, useEffect, useCallback } from 'react'
 
-type AbTestConfig = {
-  testable: boolean
-  type: 'text_replace' | 'insert_element' | 'style_change' | null
-  element_find_text: string | null
+type TestAction = {
+  type: 'text_replace' | 'insert_element' | 'style_change'
+  element_find_text: string
   control_text: string | null
   variant_text: string | null
   position: 'before' | 'after' | null
   style_changes: Record<string, string> | null
+}
+
+type AbTestConfig = {
+  testable: boolean
+  actions: TestAction[]
   hypothesis: string | null
 }
 
@@ -36,6 +40,7 @@ type Test = {
   variant_text: string; target_segment: string; status: string; winner: string
   judge_analysis: string; min_sessions: number; started_at: string
   session_source_id: string | null
+  actions: TestAction[] | null
 }
 type TestStats = { A: { sessions: number; conversions: number; rate: string }; B: { sessions: number; conversions: number; rate: string } }
 type Pattern = {
@@ -55,6 +60,28 @@ const tagColor: Record<string, string> = { converted: '#1A3A2A', 'high-intent': 
 const statusStyle: Record<string, string> = { pending: 'bg-surface-2 text-ink-3', in_progress: 'bg-blue-50 text-blue-700', done: 'bg-green-light text-green', archived: 'bg-surface-2 text-ink-3' }
 const priorityStyle: Record<string, string> = { high: 'bg-red-50 text-red-700', medium: 'bg-amber-50 text-amber-700', low: 'bg-surface-2 text-ink-3' }
 const typeColor: Record<string, string> = { 'E-commerce': 'bg-amber-50 text-amber-700 border-amber-200', 'SaaS': 'bg-brand-light text-brand border-brand/20', 'B2B': 'bg-blue-50 text-blue-700 border-blue-200', 'Documentation': 'bg-purple-50 text-purple-700 border-purple-200', 'Website': 'bg-surface-2 text-ink-3 border-surface-3', 'Internal': 'bg-surface-2 text-ink-3 border-surface-3' }
+
+// --- TestAction helpers ---
+function emptyAction(): TestAction {
+  return { type: 'text_replace', element_find_text: '', control_text: '', variant_text: '', position: 'after', style_changes: {} }
+}
+function cloneAction(a: TestAction): TestAction {
+  return { ...a, style_changes: a.style_changes ? { ...a.style_changes } : {} }
+}
+function isActionFilled(a: TestAction): boolean {
+  if (!a.element_find_text) return false
+  if (a.type === 'style_change') return !!(a.style_changes && Object.keys(a.style_changes).length > 0)
+  return !!a.variant_text
+}
+function isActionValid(a: TestAction): boolean {
+  return isActionFilled(a)
+}
+function describeAction(a: TestAction): { label: string; detail: string } {
+  if (a.type === 'text_replace') return { label: 'Change text', detail: `"${a.control_text || a.element_find_text}" \u2192 "${a.variant_text}"` }
+  if (a.type === 'insert_element') return { label: `Add ${a.position === 'before' ? 'before' : 'after'}`, detail: `"${a.variant_text}" near "${a.element_find_text}"` }
+  const props = Object.entries(a.style_changes || {}).map(([k, v]) => `${k}: ${v}`).join(', ')
+  return { label: 'Change style', detail: `${a.element_find_text} \u2192 ${props}` }
+}
 
 function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProfile | null {
   if (sessions.length === 0) return null
@@ -139,12 +166,10 @@ export default function DashboardPage() {
   const [backedUpSessions, setBackedUpSessions] = useState<Map<string, string>>(new Map())
   const [testedSessions, setTestedSessions] = useState<Map<string, string>>(new Map())
   const [launchModal, setLaunchModal] = useState<LaunchModalState>(null)
-  const [launchForm, setLaunchForm] = useState<{
-    elementFindText: string; controlText: string; variantText: string; hypothesis: string
-    testType: 'text_replace' | 'insert_element' | 'style_change'
-    position: 'before' | 'after'
-    styleChanges: Record<string, string>
-  }>({ elementFindText: '', controlText: '', variantText: '', hypothesis: '', testType: 'text_replace', position: 'after', styleChanges: {} })
+  const [launchForm, setLaunchForm] = useState<{ actions: TestAction[]; hypothesis: string }>({
+    actions: [{ type: 'text_replace', element_find_text: '', control_text: '', variant_text: '', position: 'after', style_changes: {} }],
+    hypothesis: '',
+  })
   const [launching, setLaunching] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [patterns, setPatterns] = useState<Pattern[]>([])
@@ -228,22 +253,14 @@ export default function DashboardPage() {
 
   const handleLaunchPatternTest = (pattern: Pattern) => {
     const cfg = pattern.ab_test_config
-    const hasCfg = cfg && cfg.element_find_text &&
-      ((cfg.type === 'text_replace' && cfg.variant_text) ||
-       (cfg.type === 'insert_element' && cfg.variant_text) ||
-       (cfg.type === 'style_change' && cfg.style_changes))
+    const hasCfg = !!(cfg && cfg.actions && cfg.actions.length > 0 && cfg.actions.every(isActionFilled))
     if (hasCfg && cfg) {
       setLaunchForm({
-        elementFindText: cfg.element_find_text || '',
-        controlText: cfg.control_text || cfg.element_find_text || '',
-        variantText: cfg.variant_text || '',
+        actions: cfg.actions.map(cloneAction),
         hypothesis: cfg.hypothesis || patternSummaries[pattern.id]?.consolidated_recommendation || '',
-        testType: cfg.type || 'text_replace',
-        position: cfg.position || 'after',
-        styleChanges: cfg.style_changes || {},
       })
     } else {
-      setLaunchForm({ elementFindText: '', controlText: '', variantText: '', hypothesis: patternSummaries[pattern.id]?.consolidated_recommendation || '', testType: 'text_replace', position: 'after', styleChanges: {} })
+      setLaunchForm({ actions: [emptyAction()], hypothesis: patternSummaries[pattern.id]?.consolidated_recommendation || '' })
     }
     setEditMode(!hasCfg)
     setLaunchModal({
@@ -309,32 +326,20 @@ export default function DashboardPage() {
 
   const handleOpenLaunchModal = (session: Session) => {
     const cfg = session.ab_test_config
-    const hasUsableConfig = cfg && cfg.testable && cfg.element_find_text &&
-      ((cfg.type === 'text_replace' && cfg.variant_text) ||
-       (cfg.type === 'insert_element' && cfg.variant_text) ||
-       (cfg.type === 'style_change' && cfg.style_changes))
+    const hasUsableConfig = !!(cfg && cfg.testable && cfg.actions && cfg.actions.length > 0 && cfg.actions.every(isActionFilled))
     if (hasUsableConfig && cfg) {
       setLaunchForm({
-        elementFindText: cfg.element_find_text || '',
-        controlText: cfg.control_text || cfg.element_find_text || '',
-        variantText: cfg.variant_text || '',
+        actions: cfg.actions.map(cloneAction),
         hypothesis: cfg.hypothesis || session.recommendation?.slice(0, 200) || '',
-        testType: cfg.type || 'text_replace',
-        position: cfg.position || 'after',
-        styleChanges: cfg.style_changes || {},
       })
     } else {
-      setLaunchForm({ elementFindText: '', controlText: '', variantText: '', hypothesis: session.recommendation?.slice(0, 200) || '', testType: 'text_replace', position: 'after', styleChanges: {} })
+      setLaunchForm({ actions: [emptyAction()], hypothesis: session.recommendation?.slice(0, 200) || '' })
     }
     setLaunchModal({ session })
     setEditMode(false)
   }
 
-  const isLaunchFormValid = () => {
-    if (!launchForm.elementFindText) return false
-    if (launchForm.testType === 'style_change') return Object.keys(launchForm.styleChanges).length > 0
-    return !!launchForm.variantText
-  }
+  const isLaunchFormValid = () => launchForm.actions.length > 0 && launchForm.actions.every(isActionValid)
 
   const handleLaunchTest = async () => {
     if (!launchModal || !isLaunchFormValid()) return
@@ -342,12 +347,7 @@ export default function DashboardPage() {
     try {
       await fetch('/api/tests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
         clientKey: launchModal.session.client_key,
-        elementFindText: launchForm.elementFindText,
-        controlText: launchForm.controlText || launchForm.elementFindText,
-        variantText: launchForm.variantText || null,
-        testType: launchForm.testType,
-        position: launchForm.testType === 'insert_element' ? launchForm.position : null,
-        styleChanges: launchForm.testType === 'style_change' ? launchForm.styleChanges : null,
+        actions: launchForm.actions,
         hypothesis: launchForm.hypothesis,
         sessionSourceId: launchModal.session.id, minSessions: 50,
       }) })
@@ -770,13 +770,23 @@ export default function DashboardPage() {
                           {(['A', 'B'] as const).map((v) => {
                             const vStats = ts?.[v]
                             const isWinner = test.winner === v
+                            const actions = test.actions || []
                             return (
                               <div key={v} className={`rounded-lg p-4 border ${isWinner ? 'border-green bg-green-light' : 'border-surface-3 bg-surface-2'}`}>
                                 <div className="flex items-center gap-2 mb-2">
                                   <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${isWinner ? 'bg-green text-white' : 'bg-white text-ink-2 border border-surface-3'}`}>Variant {v}{v === 'A' ? ' (Control)' : ''}</span>
                                   {isWinner && <span className="text-[10px] text-green font-semibold">Winner</span>}
                                 </div>
-                                <div className="text-[13px] font-medium text-ink mb-2">{v === 'A' ? test.control_text : test.variant_text}</div>
+                                {v === 'A' ? (
+                                  <div className="text-[12px] text-ink-3 mb-2 italic">Original (no changes)</div>
+                                ) : (
+                                  <div className="space-y-1 mb-2">
+                                    {actions.length > 0 ? actions.map((a, i) => {
+                                      const d = describeAction(a)
+                                      return <div key={i} className="text-[12px] font-medium text-ink">{d.label}: {d.detail}</div>
+                                    }) : <div className="text-[13px] font-medium text-ink">{test.variant_text}</div>}
+                                  </div>
+                                )}
                                 {vStats ? (
                                   <div className="space-y-1">
                                     <div className="flex items-center gap-2">
@@ -851,10 +861,7 @@ export default function DashboardPage() {
 
       {launchModal && (() => {
         const cfg = launchModal.session.ab_test_config
-        const hasAutoConfig = !!(cfg && cfg.testable && cfg.element_find_text &&
-          ((cfg.type === 'text_replace' && cfg.variant_text) ||
-           (cfg.type === 'insert_element' && cfg.variant_text) ||
-           (cfg.type === 'style_change' && cfg.style_changes)))
+        const hasAutoConfig = !!(cfg && cfg.testable && cfg.actions && cfg.actions.length > 0 && cfg.actions.every(isActionFilled))
         const showForm = !hasAutoConfig || editMode
         const STYLE_FIELDS: { key: string; label: string; placeholder: string }[] = [
           { key: 'backgroundColor', label: 'Background color', placeholder: '#1A3A2A' },
@@ -864,6 +871,16 @@ export default function DashboardPage() {
           { key: 'padding', label: 'Padding', placeholder: '12px 24px' },
           { key: 'borderRadius', label: 'Border radius', placeholder: '8px' },
         ]
+        const updateAction = (idx: number, patch: Partial<TestAction>) => {
+          setLaunchForm(f => ({ ...f, actions: f.actions.map((a, i) => i === idx ? { ...a, ...patch } : a) }))
+        }
+        const addAction = () => {
+          if (launchForm.actions.length >= 3) return
+          setLaunchForm(f => ({ ...f, actions: [...f.actions, emptyAction()] }))
+        }
+        const removeAction = (idx: number) => {
+          setLaunchForm(f => ({ ...f, actions: f.actions.filter((_, i) => i !== idx) }))
+        }
         return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-6">
           <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -889,44 +906,21 @@ export default function DashboardPage() {
             {hasAutoConfig && !editMode && cfg && (
               <div className="space-y-4 mb-5">
                 <div className="bg-green-light border border-green/20 rounded-lg p-4">
-                  <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-2">Ready to launch &middot; {cfg.type === 'insert_element' ? 'Add element' : cfg.type === 'style_change' ? 'Style change' : 'Copy change'}</div>
+                  <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-2">Ready to launch &middot; {cfg.actions.length} change{cfg.actions.length !== 1 ? 's' : ''} to Variant B</div>
                   <p className="text-[13px] text-ink leading-relaxed">{cfg.hypothesis}</p>
                 </div>
 
-                {cfg.type === 'text_replace' && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-surface-3 bg-surface-2 p-3">
-                      <div className="text-[9px] font-mono text-ink-3 uppercase tracking-widest mb-1">Control (A)</div>
-                      <div className="text-[13px] font-medium text-ink">{cfg.control_text}</div>
-                    </div>
-                    <div className="rounded-lg border border-green bg-green-light p-3">
-                      <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-1">Variant B</div>
-                      <div className="text-[13px] font-medium text-ink">{cfg.variant_text}</div>
-                    </div>
-                  </div>
-                )}
-
-                {cfg.type === 'insert_element' && (
-                  <div className="rounded-lg border border-surface-3 bg-surface-2 p-3">
-                    <div className="text-[9px] font-mono text-ink-3 uppercase tracking-widest mb-1">Anchor element</div>
-                    <div className="text-[13px] font-medium text-ink mb-2">{cfg.element_find_text}</div>
-                    <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-1">New text inserted {cfg.position}</div>
-                    <div className="text-[13px] font-medium text-ink bg-green-light border border-green/20 rounded px-2 py-1 inline-block">{cfg.variant_text}</div>
-                  </div>
-                )}
-
-                {cfg.type === 'style_change' && (
-                  <div className="rounded-lg border border-surface-3 bg-surface-2 p-3">
-                    <div className="text-[9px] font-mono text-ink-3 uppercase tracking-widest mb-1">Element</div>
-                    <div className="text-[13px] font-medium text-ink mb-2">{cfg.element_find_text}</div>
-                    <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-1">Style changes (Variant B)</div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {Object.entries(cfg.style_changes || {}).map(([k, v]) => (
-                        <span key={k} className="text-[11px] font-mono bg-green-light text-green border border-green/20 px-2 py-0.5 rounded">{k}: {v}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="space-y-2">
+                  {cfg.actions.map((action, i) => {
+                    const d = describeAction(action)
+                    return (
+                      <div key={i} className="rounded-lg border border-green bg-green-light p-3">
+                        <div className="text-[9px] font-mono text-green uppercase tracking-widest mb-1">{d.label}</div>
+                        <div className="text-[13px] font-medium text-ink">{d.detail}</div>
+                      </div>
+                    )
+                  })}
+                </div>
 
                 <button onClick={() => setEditMode(true)} className="text-[12px] font-mono text-ink-3 hover:text-ink underline">Edit before launching</button>
               </div>
@@ -934,86 +928,101 @@ export default function DashboardPage() {
 
             {showForm && (
               <div className="space-y-4">
-                <div>
-                  <label className="text-[12px] text-ink-2 block mb-1">Test type</label>
-                  <div className="flex gap-2">
-                    {([
-                      { v: 'text_replace', l: 'Change text' },
-                      { v: 'insert_element', l: 'Add element' },
-                      { v: 'style_change', l: 'Change style' },
-                    ] as const).map(opt => (
-                      <button key={opt.v} onClick={() => setLaunchForm(f => ({ ...f, testType: opt.v }))}
-                        className={`flex-1 text-[12px] font-mono py-2 rounded-lg border transition-colors ${launchForm.testType === opt.v ? 'bg-green text-white border-green' : 'border-surface-3 text-ink-2 hover:border-ink-3'}`}>
-                        {opt.l}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[12px] text-ink-2 block mb-1">
-                    {launchForm.testType === 'text_replace' ? 'Element to find (current button text)' : 'Anchor element (existing text on page)'}
-                  </label>
-                  <input value={launchForm.elementFindText} onChange={(e) => setLaunchForm((f) => ({ ...f, elementFindText: e.target.value }))} placeholder='e.g. "Buy Now" or "Start free trial"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
-                  <div className="text-[11px] text-ink-3 mt-1">
-                    {launchForm.testType === 'text_replace' && 'Snippet will find this text and change it for Variant B visitors'}
-                    {launchForm.testType === 'insert_element' && 'New text will be inserted next to this element for Variant B visitors'}
-                    {launchForm.testType === 'style_change' && 'This element\'s style will change for Variant B visitors'}
-                  </div>
-                </div>
-
-                {launchForm.testType === 'text_replace' && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[12px] text-ink-2 block mb-1">Control (Variant A)</label>
-                      <input value={launchForm.controlText} onChange={(e) => setLaunchForm((f) => ({ ...f, controlText: e.target.value }))} placeholder="Original text" className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                {launchForm.actions.map((action, idx) => (
+                  <div key={idx} className="border border-surface-3 rounded-lg p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-[11px] font-mono text-ink-3 uppercase tracking-widest">Change {idx + 1}</div>
+                      {launchForm.actions.length > 1 && (
+                        <button onClick={() => removeAction(idx)} className="text-[11px] font-mono text-ink-3 hover:text-red-500">Remove</button>
+                      )}
                     </div>
-                    <div>
-                      <label className="text-[12px] text-ink-2 block mb-1">Variant B</label>
-                      <input value={launchForm.variantText} onChange={(e) => setLaunchForm((f) => ({ ...f, variantText: e.target.value }))} placeholder='e.g. "Only 3 left - Buy Now"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
-                    </div>
-                  </div>
-                )}
 
-                {launchForm.testType === 'insert_element' && (
-                  <>
                     <div>
-                      <label className="text-[12px] text-ink-2 block mb-1">Text to insert</label>
-                      <input value={launchForm.variantText} onChange={(e) => setLaunchForm((f) => ({ ...f, variantText: e.target.value }))} placeholder='e.g. "No credit card required"' maxLength={80} className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
-                      <div className="text-[11px] text-ink-3 mt-1">Plain text only, max 80 characters</div>
-                    </div>
-                    <div>
-                      <label className="text-[12px] text-ink-2 block mb-1">Position</label>
+                      <label className="text-[12px] text-ink-2 block mb-1">Type</label>
                       <div className="flex gap-2">
-                        {(['before', 'after'] as const).map(p => (
-                          <button key={p} onClick={() => setLaunchForm(f => ({ ...f, position: p }))}
-                            className={`flex-1 text-[12px] font-mono py-2 rounded-lg border capitalize transition-colors ${launchForm.position === p ? 'bg-green text-white border-green' : 'border-surface-3 text-ink-2 hover:border-ink-3'}`}>
-                            {p} anchor
+                        {([
+                          { v: 'text_replace', l: 'Change text' },
+                          { v: 'insert_element', l: 'Add element' },
+                          { v: 'style_change', l: 'Change style' },
+                        ] as const).map(opt => (
+                          <button key={opt.v} onClick={() => updateAction(idx, { type: opt.v })}
+                            className={`flex-1 text-[12px] font-mono py-2 rounded-lg border transition-colors ${action.type === opt.v ? 'bg-green text-white border-green' : 'border-surface-3 text-ink-2 hover:border-ink-3'}`}>
+                            {opt.l}
                           </button>
                         ))}
                       </div>
                     </div>
-                  </>
-                )}
 
-                {launchForm.testType === 'style_change' && (
-                  <div>
-                    <label className="text-[12px] text-ink-2 block mb-1">Style changes for Variant B</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {STYLE_FIELDS.map(sf => (
-                        <input key={sf.key} value={launchForm.styleChanges[sf.key] || ''}
-                          onChange={(e) => setLaunchForm(f => {
-                            const sc = { ...f.styleChanges }
-                            if (e.target.value) sc[sf.key] = e.target.value
-                            else delete sc[sf.key]
-                            return { ...f, styleChanges: sc }
-                          })}
-                          placeholder={`${sf.label}: ${sf.placeholder}`}
-                          className="border border-surface-3 rounded-lg px-3 py-2 text-[12px] outline-none focus:border-green transition-colors" />
-                      ))}
+                    <div>
+                      <label className="text-[12px] text-ink-2 block mb-1">
+                        {action.type === 'text_replace' ? 'Element to find (current button text)' : 'Anchor element (existing text on page)'}
+                      </label>
+                      <input value={action.element_find_text} onChange={(e) => updateAction(idx, { element_find_text: e.target.value })} placeholder='e.g. "Buy Now" or "Start free trial"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                      <div className="text-[11px] text-ink-3 mt-1">
+                        {action.type === 'text_replace' && 'Snippet will find this text and change it for Variant B visitors'}
+                        {action.type === 'insert_element' && 'New text will be inserted next to this element for Variant B visitors'}
+                        {action.type === 'style_change' && "This element's style will change for Variant B visitors"}
+                      </div>
                     </div>
-                    <div className="text-[11px] text-ink-3 mt-1">Leave fields empty to skip. Only these properties can be changed.</div>
+
+                    {action.type === 'text_replace' && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[12px] text-ink-2 block mb-1">Control (Variant A)</label>
+                          <input value={action.control_text || ''} onChange={(e) => updateAction(idx, { control_text: e.target.value })} placeholder="Original text" className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                        </div>
+                        <div>
+                          <label className="text-[12px] text-ink-2 block mb-1">Variant B</label>
+                          <input value={action.variant_text || ''} onChange={(e) => updateAction(idx, { variant_text: e.target.value })} placeholder='e.g. "Only 3 left - Buy Now"' className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                        </div>
+                      </div>
+                    )}
+
+                    {action.type === 'insert_element' && (
+                      <>
+                        <div>
+                          <label className="text-[12px] text-ink-2 block mb-1">Text to insert</label>
+                          <input value={action.variant_text || ''} onChange={(e) => updateAction(idx, { variant_text: e.target.value })} placeholder='e.g. "No credit card required"' maxLength={80} className="w-full border border-surface-3 rounded-lg px-3 py-2.5 text-[13px] outline-none focus:border-green transition-colors" />
+                          <div className="text-[11px] text-ink-3 mt-1">Plain text only, max 80 characters</div>
+                        </div>
+                        <div>
+                          <label className="text-[12px] text-ink-2 block mb-1">Position</label>
+                          <div className="flex gap-2">
+                            {(['before', 'after'] as const).map(p => (
+                              <button key={p} onClick={() => updateAction(idx, { position: p })}
+                                className={`flex-1 text-[12px] font-mono py-2 rounded-lg border capitalize transition-colors ${action.position === p ? 'bg-green text-white border-green' : 'border-surface-3 text-ink-2 hover:border-ink-3'}`}>
+                                {p} anchor
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {action.type === 'style_change' && (
+                      <div>
+                        <label className="text-[12px] text-ink-2 block mb-1">Style changes for Variant B</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {STYLE_FIELDS.map(sf => (
+                            <input key={sf.key} value={(action.style_changes && action.style_changes[sf.key]) || ''}
+                              onChange={(e) => {
+                                const sc = { ...(action.style_changes || {}) }
+                                if (e.target.value) sc[sf.key] = e.target.value
+                                else delete sc[sf.key]
+                                updateAction(idx, { style_changes: sc })
+                              }}
+                              placeholder={`${sf.label}: ${sf.placeholder}`}
+                              className="border border-surface-3 rounded-lg px-3 py-2 text-[12px] outline-none focus:border-green transition-colors" />
+                          ))}
+                        </div>
+                        <div className="text-[11px] text-ink-3 mt-1">Leave fields empty to skip. Only these properties can be changed.</div>
+                      </div>
+                    )}
                   </div>
+                ))}
+
+                {launchForm.actions.length < 3 && (
+                  <button onClick={addAction} className="text-[12px] font-mono text-green hover:underline">+ Add another change to Variant B</button>
                 )}
 
                 <div>
@@ -1023,7 +1032,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <div className="bg-surface-2 rounded-lg p-3 mt-4 text-[11px] text-ink-3">Traffic split: 50% Control, 50% Variant B. Auto-evaluates after 100 sessions. Judge LLM explains why the winner won.</div>
+            <div className="bg-surface-2 rounded-lg p-3 mt-4 text-[11px] text-ink-3">Traffic split: 50% Control, 50% Variant B (all changes above applied together). Auto-evaluates after 100 sessions. Judge LLM explains why the winner won.</div>
             <div className="flex gap-3 mt-5">
               <button onClick={() => setLaunchModal(null)} className="flex-1 border border-surface-3 text-ink-2 py-2.5 rounded-lg text-[13px] hover:border-ink-3">Cancel</button>
               <button onClick={handleLaunchTest} disabled={!isLaunchFormValid() || launching} className="flex-1 bg-green text-white py-2.5 rounded-lg text-[13px] font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">{launching ? 'Launching...' : hasAutoConfig && !editMode ? 'Approve & launch' : 'Launch test'}</button>

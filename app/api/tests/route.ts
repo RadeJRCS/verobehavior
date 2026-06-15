@@ -42,22 +42,31 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = getSupabase()
     const body = await req.json()
-    const testType = body.testType || 'text_replace'
-    const name = body.name ||
-      (testType === 'insert_element' ? `Test: insert "${body.variantText}" ${body.position || 'after'} "${body.elementFindText}"` :
-       testType === 'style_change' ? `Test: style change on "${body.elementFindText}"` :
-       `Test: ${body.controlText} vs ${body.variantText}`)
+    const actions: Array<{ type: string; element_find_text: string; control_text?: string | null; variant_text?: string | null; position?: string | null; style_changes?: Record<string, string> | null }> = body.actions || []
+
+    const describeAction = (a: typeof actions[number]) => {
+      if (a.type === 'insert_element') return `insert "${a.variant_text}" ${a.position || 'after'} "${a.element_find_text}"`
+      if (a.type === 'style_change') return `style change on "${a.element_find_text}"`
+      return `"${a.control_text || a.element_find_text}" -> "${a.variant_text}"`
+    }
+    const name = body.name || (actions.length > 0
+      ? `Test: ${actions.map(describeAction).join(' + ')}`
+      : 'Test')
+
+    // First action is mirrored into legacy flat columns for backward compatibility
+    const first = actions[0]
 
     const { data, error } = await supabase.from('tests').insert([{
       client_key: body.clientKey,
       name,
       hypothesis: body.hypothesis || null,
-      test_type: testType,
-      element_find_text: body.elementFindText,
-      control_text: body.controlText || null,
-      variant_text: body.variantText || null,
-      position: body.position || null,
-      style_changes: body.styleChanges || null,
+      actions: actions.length > 0 ? actions : null,
+      test_type: first?.type || 'text_replace',
+      element_find_text: first?.element_find_text || null,
+      control_text: first?.control_text || null,
+      variant_text: first?.variant_text || null,
+      position: first?.position || null,
+      style_changes: first?.style_changes || null,
       target_segment: body.targetSegment || 'all',
       status: 'active',
       min_sessions: body.minSessions || 50,

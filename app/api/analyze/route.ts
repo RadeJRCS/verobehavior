@@ -66,32 +66,37 @@ Respond with this JSON only:
   "estimated_lift": "+X-Y% metric",
   "ab_test_config": {
     "testable": true or false,
-    "type": "text_replace" | "insert_element" | "style_change" | null,
-    "element_find_text": "exact text of an existing button/link/element from the events that the test targets (must match text seen in events, or null if testable is false)",
-    "control_text": "for text_replace: current/original text of the element. For insert_element/style_change: null",
-    "variant_text": "for text_replace: the new text to test. For insert_element: the text content to inject (badge/banner text only, plain text no HTML). For style_change: null",
-    "position": "for insert_element only: 'before' or 'after' the anchor element. Otherwise null",
-    "style_changes": "for style_change only: an object with CSS properties to change, ONLY from this whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border. Use valid CSS values as strings, e.g. {\"backgroundColor\": \"#1A3A2A\", \"fontSize\": \"18px\"}. Otherwise null",
-    "hypothesis": "one sentence: what psychological principle this change leverages and expected effect"
+    "actions": [
+      {
+        "type": "text_replace" | "insert_element" | "style_change",
+        "element_find_text": "exact text of an existing button/link/element from the events that this change targets (must match text seen in events)",
+        "control_text": "for text_replace: current/original text of the element. For insert_element/style_change: null",
+        "variant_text": "for text_replace: the new text to test. For insert_element: the text content to inject (badge/banner text only, plain text no HTML, max ~80 chars). For style_change: null",
+        "position": "for insert_element only: 'before' or 'after' the anchor element. Otherwise null",
+        "style_changes": "for style_change only: an object with CSS properties to change, ONLY from this whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border. Use valid CSS values as strings, e.g. {\"backgroundColor\": \"#1A3A2A\", \"fontSize\": \"18px\"}. Otherwise null"
+      }
+    ],
+    "hypothesis": "one or two sentences: what psychological principle this change (or combination of changes) leverages and expected effect"
   }
 }
 
-IMPORTANT for ab_test_config - the type must follow from the psychological reasoning above, not be chosen for variety. For THIS specific session, decide what the single most effective testable intervention is given the insight_principle and recommendation, then identify which mechanism that intervention fundamentally requires. Do not default to "insert_element" out of caution - if the strongest intervention is a wording change or a visual prominence change, use text_replace or style_change accordingly.
+IMPORTANT for ab_test_config - the actions must follow from the psychological reasoning above, not be chosen for variety or padded for completeness. For THIS specific session, decide what the single most effective testable intervention is given the insight_principle and recommendation. Usually this is ONE action. Only include MULTIPLE actions (up to 3) if the recommendation genuinely describes a combination that should be tested together (e.g. "reword the CTA AND make it more prominent" -> one text_replace action + one style_change action on the same element). Do not default to "insert_element" out of caution - if the strongest intervention is a wording change or a visual prominence change, use text_replace or style_change accordingly.
 
-Decision rule - ask in this order:
-1. Does the recommendation primarily say to CHANGE THE WORDING/MESSAGE of an existing button or link (different verb, framing, urgency phrase replacing the current label)? -> "text_replace".
-   Example: recommendation "change 'Sign up' to 'Start free - no card needed'" -> text_replace, element_find_text="Sign up", variant_text="Start free - no card needed".
+For each action, ask in this order:
+1. Does it primarily say to CHANGE THE WORDING/MESSAGE of an existing button or link (different verb, framing, urgency phrase replacing the current label)? -> "text_replace".
+   Example: recommendation "change 'Sign up' to 'Start free - no card needed'" -> one action: text_replace, element_find_text="Sign up", control_text="Sign up", variant_text="Start free - no card needed".
 2. Else, does it primarily say to make an existing element MORE/LESS VISUALLY PROMINENT (bigger, bolder, higher-contrast color, more padding, more rounded) WITHOUT changing its wording or adding new content? -> "style_change".
-   Example: recommendation "make the primary CTA stand out more with a stronger color and larger size" -> style_change on that CTA, style_changes={"backgroundColor":"#1A3A2A","fontSize":"18px","padding":"14px 28px"}.
+   Example: recommendation "make the primary CTA stand out more with a stronger color and larger size" -> one action: style_change on that CTA, style_changes={"backgroundColor":"#1A3A2A","fontSize":"18px","padding":"14px 28px"}.
 3. Else, does it primarily say to ADD a new short piece of text near an element (trust badge, social proof count, urgency note, guarantee) while leaving the element itself unchanged? -> "insert_element".
-   Example: recommendation "add social proof near the signup button" -> insert_element, element_find_text="Create account", variant_text="Join 12,847 teams this week", position="after".
-4. If the recommendation needs multiple of the above combined, or needs new forms/steps/conditional logic/layout reorganization that can't be captured by ONE of the three types -> "testable": false, "type": null.
+   Example: recommendation "add social proof near the signup button" -> one action: insert_element, element_find_text="Create account", variant_text="Join 12,847 teams this week", position="after".
+4. If the recommendation genuinely combines two of the above on the same or related elements (e.g. reword AND restyle a button, or restyle a button AND add a badge near it), include both as separate actions in the array, each targeting an element_find_text that matches an event.
+5. If the recommendation needs new forms/steps/conditional logic/layout reorganization that cannot be captured by 1-3 actions of the types above -> "testable": false, "actions": [].
 
-Field rules per type:
+Field rules per action type:
 - "text_replace": set control_text (current label) and variant_text (new label). Leave position/style_changes null.
 - "style_change": set style_changes (1-3 properties from the whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border). Leave control_text/variant_text/position null.
 - "insert_element": set variant_text (plain text, max ~80 chars, no HTML) and position ("before" or "after"). Leave control_text/style_changes null.
-- element_find_text MUST exactly match text from one of the click events provided whenever testable is true, for all types.`
+- element_find_text MUST exactly match text from one of the click events provided whenever testable is true, for every action.`
         }],
       })
       rawText = response.content[0].type === 'text' ? response.content[0].text : ''

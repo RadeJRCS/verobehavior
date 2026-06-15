@@ -25,7 +25,11 @@ type SessionRow = {
   id: string; client_key: string; state: string; tags: string[]
   insight_type: string; insight_text: string; recommendation: string
   estimated_lift: string; page_context: string
-  ab_test_config: { testable: boolean; element_find_text: string | null; control_text: string | null; variant_text: string | null; hypothesis: string | null } | null
+  ab_test_config: {
+    testable: boolean
+    actions: Array<{ type: string; element_find_text: string; control_text: string | null; variant_text: string | null; position: string | null; style_changes: Record<string, string> | null }>
+    hypothesis: string | null
+  } | null
   events: Array<{ type: string; data: { text?: string } }>
 }
 
@@ -79,12 +83,12 @@ export async function GET(req: NextRequest) {
       group.forEach(s => { const p = (s.page_context || '').split(' | ')[1] || ''; if (p) pageCounts[p] = (pageCounts[p] || 0) + 1 })
       const topPage = Object.entries(pageCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || ''
 
-      // Pick the most common testable ab_test_config (if any)
-      const testableConfigs = group.map(s => s.ab_test_config).filter(c => c && c.testable && c.element_find_text)
+      // Pick the most common testable ab_test_config (by its actions signature)
+      const testableConfigs = group.map(s => s.ab_test_config).filter(c => c && c.testable && c.actions && c.actions.length > 0)
       const configCounts: Record<string, number> = {}
-      testableConfigs.forEach(c => { const k = `${c!.element_find_text}|||${c!.variant_text}`; configCounts[k] = (configCounts[k] || 0) + 1 })
+      testableConfigs.forEach(c => { const k = JSON.stringify(c!.actions); configCounts[k] = (configCounts[k] || 0) + 1 })
       const topConfigKey = Object.entries(configCounts).sort((a, b) => b[1] - a[1])[0]?.[0]
-      const topConfig = topConfigKey ? testableConfigs.find(c => `${c!.element_find_text}|||${c!.variant_text}` === topConfigKey) : null
+      const topConfig = topConfigKey ? testableConfigs.find(c => JSON.stringify(c!.actions) === topConfigKey) : null
 
       patterns.push({
         id: key,

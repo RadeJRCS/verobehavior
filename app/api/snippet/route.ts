@@ -102,76 +102,82 @@ export async function GET(req: NextRequest) {
 
   var ALLOWED_STYLES=['backgroundColor','color','fontSize','fontWeight','padding','borderRadius','border'];
 
-  function findAnchor(test){
+  function findAnchor(action){
     var els=Array.from(document.querySelectorAll('button,a,[role="button"],input[type="submit"],input[type="button"],h1,h2,h3,p,span,div,label'));
     return els.find(function(el){
       var txt=(el.textContent||el.value||'').trim();
-      return txt.length>0 && txt.length<200 && txt.toLowerCase().indexOf(test.element_find_text.toLowerCase())!==-1;
+      return txt.length>0 && txt.length<200 && txt.toLowerCase().indexOf(action.element_find_text.toLowerCase())!==-1;
     });
   }
 
-  function applyTextReplace(test,target){
-    if(!test.variant_text)return false;
-    if(target.tagName==='INPUT')target.value=test.variant_text;
-    else target.textContent=test.variant_text;
-    target.setAttribute('data-vb-test',test.id);
+  function applyTextReplace(action,target,testId){
+    if(!action.variant_text)return false;
+    if(target.tagName==='INPUT')target.value=action.variant_text;
+    else target.textContent=action.variant_text;
+    target.setAttribute('data-vb-test',testId);
     return true;
   }
 
-  function applyInsertElement(test,target){
-    if(!test.variant_text)return false;
+  function applyInsertElement(action,target,testId){
+    if(!action.variant_text)return false;
     var span=document.createElement('span');
-    span.textContent=test.variant_text;
-    span.setAttribute('data-vb-test',test.id);
+    span.textContent=action.variant_text;
+    span.setAttribute('data-vb-test',testId);
     span.setAttribute('data-vb-injected','true');
     span.style.display='inline-block';
     span.style.fontSize='0.85em';
     span.style.opacity='0.85';
     span.style.marginTop='4px';
     span.style.marginBottom='4px';
-    if(test.position==='before'){
+    if(action.position==='before'){
       target.parentNode.insertBefore(span,target);
     }else{
       if(target.nextSibling)target.parentNode.insertBefore(span,target.nextSibling);
       else target.parentNode.appendChild(span);
     }
     // Mark the anchor too, so clicks on it still register for this test if relevant
-    target.setAttribute('data-vb-test',test.id);
+    target.setAttribute('data-vb-test',testId);
     return true;
   }
 
-  function applyStyleChange(test,target){
-    if(!test.style_changes)return false;
-    Object.keys(test.style_changes).forEach(function(prop){
+  function applyStyleChange(action,target,testId){
+    if(!action.style_changes)return false;
+    Object.keys(action.style_changes).forEach(function(prop){
       if(ALLOWED_STYLES.indexOf(prop)!==-1){
-        try{target.style[prop]=test.style_changes[prop];}catch(x){}
+        try{target.style[prop]=action.style_changes[prop];}catch(x){}
       }
     });
-    target.setAttribute('data-vb-test',test.id);
+    target.setAttribute('data-vb-test',testId);
     return true;
   }
 
-  function applyTest(test){
-    if(!test.element_find_text)return;
-    var variant=getVariant(test.id);
-    testParticipation[test.id]=variant;
-    recordTestResult(test.id,variant,false);
-    if(variant==='A')return;
-
+  function applyAction(action,testId){
     function doApply(){
-      var target=findAnchor(test);
+      var target=findAnchor(action);
       if(!target)return false;
-      var type=test.test_type||'text_replace';
-      if(type==='insert_element')return applyInsertElement(test,target);
-      if(type==='style_change')return applyStyleChange(test,target);
-      return applyTextReplace(test,target);
+      var type=action.type||'text_replace';
+      if(type==='insert_element')return applyInsertElement(action,target,testId);
+      if(type==='style_change')return applyStyleChange(action,target,testId);
+      return applyTextReplace(action,target,testId);
     }
-
     if(!doApply()){
       var obs=new MutationObserver(function(){if(doApply())obs.disconnect();});
       obs.observe(document.body,{childList:true,subtree:true});
       setTimeout(function(){obs.disconnect();},10000);
     }
+  }
+
+  function applyTest(test){
+    var actions=test.actions&&test.actions.length?test.actions:
+      (test.element_find_text?[{type:test.test_type||'text_replace',element_find_text:test.element_find_text,control_text:test.control_text,variant_text:test.variant_text,position:test.position,style_changes:test.style_changes}]:[]);
+    if(!actions.length)return;
+
+    var variant=getVariant(test.id);
+    testParticipation[test.id]=variant;
+    recordTestResult(test.id,variant,false);
+    if(variant==='A')return;
+
+    actions.forEach(function(action){applyAction(action,test.id);});
   }
 
   try{
