@@ -2,7 +2,7 @@ import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { blogPosts, getPostBySlug } from '@/lib/blog-posts'
+import { blogPosts, getPostBySlug } from '../posts'
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }))

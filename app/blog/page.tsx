@@ -1,7 +1,7 @@
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
-import { blogPosts } from '@/lib/blog-posts'
+import { blogPosts } from './posts'
 
 export default function BlogPage() {
   return (
