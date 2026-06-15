@@ -76,7 +76,7 @@ Respond with this JSON only:
   }
 }
 
-IMPORTANT for ab_test_config - first identify the PRIMARY mechanism of the recommendation, then map it to a type. Do not default to "insert_element" out of caution - pick whichever type matches what the recommendation is actually asking for. All three types are equally valid and you should use whichever fits; over a series of recommendations they should be reasonably distributed, not dominated by one type.
+IMPORTANT for ab_test_config - the type must follow from the psychological reasoning above, not be chosen for variety. For THIS specific session, decide what the single most effective testable intervention is given the insight_principle and recommendation, then identify which mechanism that intervention fundamentally requires. Do not default to "insert_element" out of caution - if the strongest intervention is a wording change or a visual prominence change, use text_replace or style_change accordingly.
 
 Decision rule - ask in this order:
 1. Does the recommendation primarily say to CHANGE THE WORDING/MESSAGE of an existing button or link (different verb, framing, urgency phrase replacing the current label)? -> "text_replace".
