@@ -76,12 +76,22 @@ Respond with this JSON only:
   }
 }
 
-IMPORTANT for ab_test_config - pick the type that BEST implements the core idea of the recommendation:
-- "text_replace": the recommendation is fundamentally a copy/wording change on an existing button or link. element_find_text must exactly match text from one of the click events. Set control_text and variant_text, leave position/style_changes null.
-- "insert_element": the recommendation is to ADD something near an existing element (a trust badge, social proof line, urgency text, "no credit card required", testimonial snippet, etc.) - something short and purely textual. element_find_text identifies the anchor element (must match event text). variant_text is the short text to inject (plain text only, max ~80 chars, no HTML/markup). position is "before" or "after". Leave control_text/style_changes null.
-- "style_change": the recommendation is to make an existing element more/less prominent (bigger, different color, more padding) without changing its text or adding elements. element_find_text identifies the element. style_changes contains only whitelisted CSS properties. Leave control_text/variant_text/position null.
-- Set "testable": false and type/element_find_text/etc to null ONLY if the recommendation requires multi-step flows, forms, conditional logic, or structural page reorganization that cannot be expressed as one of the three types above. When testable is false, also leave "type" as null.
-- element_find_text MUST exactly match text from one of the click events provided whenever testable is true.`
+IMPORTANT for ab_test_config - first identify the PRIMARY mechanism of the recommendation, then map it to a type. Do not default to "insert_element" out of caution - pick whichever type matches what the recommendation is actually asking for. All three types are equally valid and you should use whichever fits; over a series of recommendations they should be reasonably distributed, not dominated by one type.
+
+Decision rule - ask in this order:
+1. Does the recommendation primarily say to CHANGE THE WORDING/MESSAGE of an existing button or link (different verb, framing, urgency phrase replacing the current label)? -> "text_replace".
+   Example: recommendation "change 'Sign up' to 'Start free - no card needed'" -> text_replace, element_find_text="Sign up", variant_text="Start free - no card needed".
+2. Else, does it primarily say to make an existing element MORE/LESS VISUALLY PROMINENT (bigger, bolder, higher-contrast color, more padding, more rounded) WITHOUT changing its wording or adding new content? -> "style_change".
+   Example: recommendation "make the primary CTA stand out more with a stronger color and larger size" -> style_change on that CTA, style_changes={"backgroundColor":"#1A3A2A","fontSize":"18px","padding":"14px 28px"}.
+3. Else, does it primarily say to ADD a new short piece of text near an element (trust badge, social proof count, urgency note, guarantee) while leaving the element itself unchanged? -> "insert_element".
+   Example: recommendation "add social proof near the signup button" -> insert_element, element_find_text="Create account", variant_text="Join 12,847 teams this week", position="after".
+4. If the recommendation needs multiple of the above combined, or needs new forms/steps/conditional logic/layout reorganization that can't be captured by ONE of the three types -> "testable": false, "type": null.
+
+Field rules per type:
+- "text_replace": set control_text (current label) and variant_text (new label). Leave position/style_changes null.
+- "style_change": set style_changes (1-3 properties from the whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border). Leave control_text/variant_text/position null.
+- "insert_element": set variant_text (plain text, max ~80 chars, no HTML) and position ("before" or "after"). Leave control_text/style_changes null.
+- element_find_text MUST exactly match text from one of the click events provided whenever testable is true, for all types.`
         }],
       })
       rawText = response.content[0].type === 'text' ? response.content[0].text : ''
