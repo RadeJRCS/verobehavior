@@ -51,7 +51,19 @@ Client: ${clientKey}
 Site: ${siteUrl || 'unknown'}
 Page: ${pageContext}
 Duration: ${sessionDuration}s, Scroll: ${scrollDepth}%, Referral: ${referral || 'direct'}
-Events: ${JSON.stringify(events.slice(-20))}
+
+Event types you may see, and what they typically indicate:
+- "click" / "conversion": a click on a button or link. data.text is the label, data.relatedText (if present) is the text of associated content (e.g. an FAQ answer).
+- "rage_click": 3+ rapid clicks on the same element within a second. Strong friction or bounce risk signal, the visitor expected something to happen and it did not.
+- "scroll_milestone": the visitor reached data.percent of the page (25/50/75/100). Look at the timestamps (ts, in ms) between milestones, large gaps mean slow/careful reading or hesitation, small gaps mean fast scanning. If 100 never appears, the visitor did not reach the bottom of the page.
+- "hover": the cursor stayed over data.tag (often an image, price, or rating/review element) for data.durationMs without clicking. Long hovers on images often mean the visitor cannot get information another way (cannot physically inspect the product) and is compensating visually. Long hovers on prices or ratings often mean price or trust evaluation.
+- "section_view": a heading, pricing, plan, testimonial, review, or FAQ section was in view for data.durationMs before scrolling past it. A very short durationMs on a pricing or testimonial section means the visitor scrolled past it without really reading it.
+- "exit_intent": the cursor moved toward the top of the browser window (toward closing the tab or navigating away). A meaningful bounce risk signal, especially if it happens before any conversion-like click.
+- "form_focus": the visitor focused a form field, named in data.field.
+
+Use the sequence and timing of these events together, not any single event in isolation, to decide the state and insight below.
+
+Events: ${JSON.stringify(events.slice(-25))}
 
 Respond with this JSON only:
 {

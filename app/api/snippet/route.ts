@@ -27,10 +27,76 @@ export async function GET(req: NextRequest) {
   var sessionId='vb_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
   var siteUrl=window.location.origin;
 
+  var scrollMilestones={25:false,50:false,75:false,100:false};
   window.addEventListener('scroll',function(){
     var d=Math.round((window.scrollY+window.innerHeight)/Math.max(document.body.scrollHeight,1)*100);
     if(d>scrollDepth)scrollDepth=Math.min(d,100);
+    [25,50,75,100].forEach(function(m){
+      if(scrollDepth>=m && !scrollMilestones[m]){
+        scrollMilestones[m]=true;
+        events.push({type:'scroll_milestone',ts:Date.now()-startTime,data:{percent:m}});
+      }
+    });
   },{passive:true});
+
+  // Exit intent: cursor leaves toward the top of the viewport (tab bar / close)
+  var exitIntentFired=false;
+  document.addEventListener('mouseout',function(e){
+    if(exitIntentFired)return;
+    if(e.clientY<=10 && e.relatedTarget===null){
+      exitIntentFired=true;
+      events.push({type:'exit_intent',ts:Date.now()-startTime,data:{}});
+    }
+  });
+
+  // Hover-dwell on images, prices, ratings/reviews: a pause here often
+  // signals the visitor is trying to compensate for information they
+  // cannot get any other way (e.g. cannot physically inspect a product).
+  var HOVER_SELECTOR='img,[class*="price" i],[class*="rating" i],[class*="review" i]';
+  var HOVER_DWELL_MS=1500;
+  var hoverTimers=new WeakMap();
+  document.addEventListener('mouseover',function(e){
+    var el=e.target.closest&&e.target.closest(HOVER_SELECTOR);
+    if(!el||hoverTimers.has(el))return;
+    var start=Date.now();
+    var timer=setTimeout(function(){
+      var txt=el.tagName==='IMG'?(el.alt||el.getAttribute('aria-label')||'image'):(el.textContent||'').trim().slice(0,80);
+      events.push({type:'hover',ts:Date.now()-startTime,data:{text:txt,tag:el.tagName.toLowerCase(),durationMs:Date.now()-start}});
+    },HOVER_DWELL_MS);
+    hoverTimers.set(el,timer);
+  },{passive:true});
+  document.addEventListener('mouseout',function(e){
+    var el=e.target.closest&&e.target.closest(HOVER_SELECTOR);
+    if(!el)return;
+    var timer=hoverTimers.get(el);
+    if(timer){clearTimeout(timer);hoverTimers.delete(el);}
+  },{passive:true});
+
+  // Section visibility: how long key sections (headings, pricing, plans,
+  // testimonials, reviews, FAQ) actually stayed in view.
+  var SECTION_SELECTOR='h1,h2,h3,[class*="price" i],[class*="plan" i],[class*="testimonial" i],[class*="review" i],[class*="faq" i],[class*="pricing" i]';
+  if(typeof IntersectionObserver!=='undefined'){
+    var sectionStart=new WeakMap();
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var el=entry.target;
+        if(entry.isIntersecting){
+          sectionStart.set(el,Date.now());
+        }else{
+          var start=sectionStart.get(el);
+          if(start){
+            var dur=Date.now()-start;
+            if(dur>800){
+              var txt=(el.textContent||'').trim().slice(0,80);
+              events.push({type:'section_view',ts:Date.now()-startTime,data:{text:txt,tag:el.tagName.toLowerCase(),durationMs:dur}});
+            }
+            sectionStart.delete(el);
+          }
+        }
+      });
+    },{threshold:0.4});
+    Array.from(document.querySelectorAll(SECTION_SELECTOR)).slice(0,30).forEach(function(el){io.observe(el);});
+  }
 
   var ACCORDION_GLYPH_RE=/[\\u25B8\\u25B9\\u25BA\\u25BC\\u25BE\\u25B6\\u203A\\u02C4\\u02C5\\u2304\\u2303]\\s*$/;
 
@@ -70,6 +136,8 @@ export async function GET(req: NextRequest) {
     return null;
   }
 
+  var lastClickEl=null, lastClickTime=0, clickStreak=0;
+
   document.addEventListener('click',function(e){
     var el=e.target.closest('button,a,[role="button"],[data-vb-event]');
     if(!el)return;
@@ -81,6 +149,16 @@ export async function GET(req: NextRequest) {
       if(related)evData.relatedText=related;
     }
     events.push({type:isConv?'conversion':'click',ts:Date.now()-startTime,data:evData});
+
+    // Rage click: 3+ clicks on the same element within 1 second usually
+    // means the visitor expected something to happen and it did not.
+    var now=Date.now();
+    if(el===lastClickEl&&(now-lastClickTime)<1000){clickStreak++;}else{clickStreak=1;}
+    lastClickEl=el;lastClickTime=now;
+    if(clickStreak===3){
+      events.push({type:'rage_click',ts:now-startTime,data:{text:text,tag:el.tagName.toLowerCase()}});
+    }
+
     var testId=el.getAttribute('data-vb-test');
     if(testId&&testParticipation[testId]){recordTestResult(testId,testParticipation[testId],true);}
     if(isConv)sendData(true);
