@@ -143,10 +143,42 @@ export async function GET(req: NextRequest) {
     return best;
   }
 
+  var ICON_GLYPHS='\u25B8\u25B9\u25BA\u25BC\u25BE\u25B6\u203A\u276E\u276F\u00AB\u00BB\u02C4\u02C5\u2304\u2303\u2192\u2190\u2193\u2191';
+  var ICON_TAIL_RE=new RegExp('[\\s]*['+ICON_GLYPHS+']+[\\s]*$');
+  var ICON_GLYPHS_ONLY_RE=new RegExp('^['+ICON_GLYPHS+'\\s]+$');
+
+  function isIconElement(el){
+    if(!el)return false;
+    var tag=el.tagName;
+    if(tag==='SVG'||tag==='IMG'||tag==='I')return true;
+    var cls=(el.className&&el.className.toString)?el.className.toString():'';
+    if(/icon|arrow|chevron|caret/i.test(cls))return true;
+    var txt=(el.textContent||'').trim();
+    return txt.length>0 && txt.length<=2 && ICON_GLYPHS_ONLY_RE.test(txt);
+  }
+
   function applyTextReplace(action,target,testId){
     if(!action.variant_text)return false;
-    if(target.tagName==='INPUT')target.value=action.variant_text;
-    else target.textContent=action.variant_text;
+    if(target.tagName==='INPUT'){
+      target.value=action.variant_text;
+      target.setAttribute('data-vb-test',testId);
+      return true;
+    }
+    var last=target.lastElementChild;
+    if(isIconElement(last)){
+      // Preserve a trailing icon element (e.g. an accordion arrow that
+      // rotates on expand). Only swap the label text in front of it.
+      var variantA=action.variant_text.replace(ICON_TAIL_RE,'').replace(/\s+$/,'');
+      while(target.firstChild && target.firstChild!==last){target.removeChild(target.firstChild);}
+      target.insertBefore(document.createTextNode(variantA+' '),last);
+    }else{
+      var variantB=action.variant_text;
+      var controlTail=(action.control_text||'').match(ICON_TAIL_RE);
+      if(controlTail && !ICON_TAIL_RE.test(variantB)){
+        variantB=variantB.replace(/\s+$/,'')+controlTail[0].trim();
+      }
+      target.textContent=variantB;
+    }
     target.setAttribute('data-vb-test',testId);
     return true;
   }

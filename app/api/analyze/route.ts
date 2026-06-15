@@ -94,6 +94,7 @@ For each action, ask in this order:
 
 Field rules per action type:
 - "text_replace": set control_text (current label) and variant_text (new label). Leave position/style_changes null.
+  If element_find_text reads as a question or ends with an expand/arrow icon character (it looks like an FAQ or accordion item), variant_text must reword the SAME underlying question or claim with different framing (e.g. tone, emphasis, reassurance), not introduce a new question or a new claim, because the answer content beneath it will not change. Do not include any trailing arrow/chevron icon character in variant_text, it is preserved automatically.
 - "style_change": set style_changes (1-3 properties from the whitelist: backgroundColor, color, fontSize, fontWeight, padding, borderRadius, border). Leave control_text/variant_text/position null.
 - "insert_element": set variant_text (plain text, max ~80 chars, no HTML) and position ("before" or "after"). Leave control_text/style_changes null.
 - element_find_text MUST exactly match text from one of the click events provided whenever testable is true, for every action.`
