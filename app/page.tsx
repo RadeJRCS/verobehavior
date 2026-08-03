@@ -7,7 +7,7 @@ const features = [
     icon: '🧠', tag: 'Psychology engine',
     title: 'Every session explained in the language of human psychology.',
     desc: 'Our proprietary AI analyzes user sessions and explains the why behind every behavior: citing Cialdini, Kahneman, cognitive load theory, and more. No black box. Every insight is explainable.',
-    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'XAI: every recommendation cites its psychological principle', 'Brand-voice tuning: insights match your communication style', 'Ethical AI — our commitment: fully explainable, human-in-the-loop'],
+    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'Explainable AI: every recommendation cites its psychological principle', 'Brand-voice tuning: insights match your communication style', 'Ethical AI — our commitment: fully explainable, human-in-the-loop'],
     accent: '#1A3A2A', bg: '#E8F2EC',
   },
   {
@@ -92,7 +92,7 @@ export default function Home() {
       <div className="bg-green overflow-hidden py-2.5">
         <div className="flex animate-ticker whitespace-nowrap gap-12" style={{ animationDuration: '22s' }}>
           {[...Array(2)].map((_, i) =>
-            ['Psychology Engine', 'Multi-Armed Bandit', 'Judge LLM', 'GEO Monitor', 'Behavioral Tagging', 'XAI Explanations', 'Ethical AI', 'Real-time Analysis'].map(item => (
+            ['Psychology Engine', 'Multi-Armed Bandit', 'Judge LLM', 'GEO Monitor', 'Behavioral Tagging', 'Explainable AI', 'Ethical AI', 'Real-time Analysis'].map(item => (
               <span key={`${i}-${item}`} className="inline-flex items-center gap-4 text-[11px] font-mono text-white/70 uppercase tracking-widest">
                 {item} <span className="text-gold text-sm">◆</span>
               </span>
