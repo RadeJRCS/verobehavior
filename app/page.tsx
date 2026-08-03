@@ -7,7 +7,7 @@ const features = [
     icon: '🧠', tag: 'Psychology engine',
     title: 'Every session explained in the language of human psychology.',
     desc: 'Our proprietary AI analyzes user sessions and explains the why behind every behavior: citing Cialdini, Kahneman, cognitive load theory, and more. No black box. Every insight is explainable.',
-    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'XAI: every recommendation cites its psychological principle', 'Brand-voice tuning: insights match your communication style', 'Ethical AI by design: fully explainable, human-in-the-loop'],
+    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'XAI: every recommendation cites its psychological principle', 'Brand-voice tuning: insights match your communication style', 'Ethical AI — our commitment: fully explainable, human-in-the-loop'],
     accent: '#1A3A2A', bg: '#E8F2EC',
   },
   {
@@ -27,9 +27,9 @@ const features = [
 ]
 
 const useCases = [
-  { industry: 'E-commerce', problem: 'High cart abandonment', insight: 'AI detects decision fatigue from too many product options', action: 'Recommends simplified layout based on cognitive load theory', principle: 'Hick\'s Law · choice architecture' },
-  { industry: 'SaaS', problem: 'Low trial signup conversion', insight: 'AI identifies hesitation behavior near the CTA button', action: 'Suggests reduced-commitment language + social proof placement', principle: 'Loss aversion · commitment bias (Cialdini)' },
-  { industry: 'Lead generation', problem: 'Form abandonment on long forms', insight: 'AI recognizes overwhelm and friction patterns', action: 'Proposes multi-step form with progress indicator', principle: 'Endowed progress effect' },
+  { title: 'Cart abandonment', subtitle: 'Shoppers add to cart, then vanish', insight: 'decision fatigue from too many options and add-ons', action: 'simpler choices and a clear default, based on cognitive load theory', principle: 'Hick\'s Law · choice architecture' },
+  { title: 'Checkout drop-off', subtitle: 'Visitors bail at the payment step', insight: 'hesitation and friction near payment and form fields', action: 'trust signals and reduced-commitment framing exactly where doubt appears', principle: 'Loss aversion · trust cues (Cialdini)' },
+  { title: 'Product page bounce', subtitle: 'They look, but don\'t add to cart', insight: 'shoppers can\'t evaluate the product — repeated image and spec inspection', action: 'richer visuals and social proof placed at the point of hesitation', principle: 'Elaboration Likelihood Model · social proof' },
 ]
 
 const faqs = [
@@ -58,7 +58,7 @@ export default function Home() {
             <em className="italic text-green">Start testing psychology.</em>
           </h1>
           <p className="text-lg text-ink-2 max-w-xl mx-auto mb-10 leading-relaxed font-light">
-            VeroBehavior is the first CRO platform that explains the <em>why</em> behind every click, scroll, and conversion: powered by AI trained on behavioral science.
+            VeroBehavior is the conversion platform for online stores that explains the <em>why</em> behind every click, scroll, and abandoned cart — powered by AI trained on behavioral science.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mb-6">
             <Link href="/demo" className="bg-green text-white px-7 py-3.5 rounded-lg text-[14px] font-semibold hover:opacity-90 transition-opacity">
@@ -69,7 +69,7 @@ export default function Home() {
             </Link>
           </div>
           <p className="text-[13px] text-ink-3 mb-14">
-            Free for design partners · One-line integration · GDPR compliant
+            Free for design partners · Works with Shopify & WooCommerce · GDPR compliant
           </p>
 
           {/* What it does: not fake stats */}
@@ -111,7 +111,7 @@ export default function Home() {
         </div>
         <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-6">
           {[
-            { step: '01', icon: '📋', title: 'Install the snippet', desc: 'Add one line of JavaScript to your site header. Under 10KB, async, no performance impact. Works with Shopify, WordPress, or any HTML site.' },
+            { step: '01', icon: '📋', title: 'Install the snippet', desc: 'Add one line of JavaScript to your site header. Under 10KB, async, no performance impact. Works with Shopify, WooCommerce, and any online store.' },
             { step: '02', icon: '🧠', title: 'AI analyzes behavior', desc: 'Our AI watches how users interact with your pages: detecting hesitation, decision fatigue, confusion, and high intent patterns in real time.' },
             { step: '03', icon: '💡', title: 'Get actionable insights', desc: 'The dashboard shows exactly why users behave the way they do, which psychological principles are at play, and what specific changes will improve conversion.' },
           ].map(s => (
@@ -162,7 +162,7 @@ export default function Home() {
                   <div className="text-4xl mb-4">{f.icon}</div>
                   <div className="text-[10px] font-mono tracking-widest uppercase mb-2" style={{ color: f.accent }}>How it works</div>
                   <div className="bg-white rounded-lg p-4 border border-white/60 shadow-sm">
-                    <div className="text-[11px] font-mono text-ink-3 mb-3">AI INSIGHT EXAMPLE</div>
+                    <div className="text-[11px] font-mono text-ink-3 mb-3">Example insight (illustrative)</div>
                     <div className="text-[13px] text-ink leading-relaxed">
                       {i === 0 && '"User shows decision fatigue: 12 product options exceed optimal choice architecture. Hick\'s Law predicts a 23% lift if options are reduced to 3."'}
                       {i === 1 && '"Variant C wins on conversion AND psychological alignment. Loss aversion framing is the correct trigger for this price-sensitive segment: allocating 68% traffic."'}
@@ -187,15 +187,15 @@ export default function Home() {
           <div className="text-center mb-12">
             <div className="text-[11px] font-mono tracking-widest text-green mb-3 uppercase">Use cases</div>
             <h2 className="font-serif text-4xl font-normal tracking-tight text-ink">
-              How VeroBehavior solves <em className="italic text-green">real problems.</em>
+              How VeroBehavior fixes your <em className="italic text-green">store&apos;s leaks.</em>
             </h2>
           </div>
           <div className="grid md:grid-cols-3 gap-5">
             {useCases.map(uc => (
-              <div key={uc.industry} className="bg-white border border-surface-3 rounded-xl overflow-hidden">
+              <div key={uc.title} className="bg-white border border-surface-3 rounded-xl overflow-hidden">
                 <div className="p-5">
-                  <div className="text-[10px] font-mono tracking-widest uppercase text-green mb-2">{uc.industry}</div>
-                  <div className="font-serif text-lg text-ink mb-3">{uc.problem}</div>
+                  <div className="text-[10px] font-mono tracking-widest uppercase text-green mb-2">{uc.title}</div>
+                  <div className="font-serif text-lg text-ink mb-3">{uc.subtitle}</div>
                   <div className="space-y-3">
                     {[
                       { label: 'AI detects', text: uc.insight },
@@ -288,7 +288,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="flex flex-wrap gap-5 justify-center mt-8">
-            {['Free for beta partners', 'One-line integration', 'GDPR compliant', 'Ethical AI by design'].map(t => (
+            {['Free for beta partners', 'One-line integration', 'GDPR compliant', 'Ethical AI — our commitment'].map(t => (
               <div key={t} className="flex items-center gap-1.5 text-[12px] text-white/40">
                 <span className="text-[#5DCAA5]">✓</span>{t}
               </div>

@@ -70,7 +70,7 @@ export default function DemoPage() {
   const [currentState, setCurrentState] = useState('browsing')
   const [convProb, setConvProb] = useState(8)
   const [intentScore, setIntentScore] = useState(12)
-  const [apiMode, setApiMode] = useState<'live' | 'demo'>('live')
+  const [apiMode, setApiMode] = useState<'live' | 'demo'>('demo')
   const startRef = useRef(Date.now())
   const lastAnalyzeRef = useRef(0)
 
@@ -541,6 +541,7 @@ export default function DemoPage() {
             <div>
               <div className="text-[11px] font-mono text-white/40 mb-1">This demo is powered by the VeroBehavior behavioral AI engine:</div>
               <code className="text-[11px] font-mono text-[#A8D4B8]">{'<script src="cdn.verobehavior.com/vb.min.js?key=vb_demo" async></script>'}</code>
+              <div className="text-[10px] font-mono text-white/30 mt-2">Demo insights are illustrative examples of the analysis VeroBehavior produces.</div>
             </div>
             <a href="/pricing" className="bg-gold text-white px-5 py-2 rounded-lg text-[13px] font-semibold whitespace-nowrap hover:opacity-90 transition-opacity">
               Get your snippet →

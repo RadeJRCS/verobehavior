@@ -16,7 +16,7 @@ export default function AboutPage() {
         </div>
         <div className="bg-surface rounded-xl p-6 my-10 border border-surface-3">
           <div className="font-serif text-xl text-green mb-3">Our ethical AI commitment</div>
-          <p className="text-[14px] text-ink-2 leading-relaxed font-light">We believe behavioral psychology in marketing can be used ethically or manipulatively. VeroBehavior is designed to help users make better, more confident decisions: not to coerce or deceive. Every recommendation our AI generates is explainable, citing the specific psychological principle behind it. We will never recommend dark patterns, manufactured urgency, or manipulative tactics.</p>
+          <p className="text-[14px] text-ink-2 leading-relaxed font-light">We believe behavioral psychology in marketing can be used ethically or manipulatively. Helping people make better, more confident decisions, not coercing or deceiving them, is a principle we're designing around from day one. It's not a status we've finished earning. Every recommendation our AI generates is meant to be explainable, citing the specific psychological principle behind it. We won't recommend dark patterns, manufactured urgency, or manipulative tactics, and we expect our design partners to hold us to that as the product grows.</p>
         </div>
         <div className="space-y-5 text-ink-2 text-[15px] leading-relaxed font-light">
           <h2 className="font-serif text-2xl text-ink font-normal mt-10 mb-3">Where we are now</h2>

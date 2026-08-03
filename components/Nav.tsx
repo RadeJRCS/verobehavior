@@ -28,14 +28,13 @@ export default function Nav() {
 
   const productLinks = [
     { href: '/demo', label: 'Live Demo', desc: 'See VeroBehavior analyze behavior in real time' },
-    { href: '/dashboard', label: 'Dashboard', desc: 'Track sessions, insights, and GEO monitor' },
     { href: '/docs', label: 'Documentation', desc: 'Integration guides, API reference, tutorials' },
   ]
 
   const solutionLinks = [
-    { href: '/demo', label: 'E-commerce', desc: 'Reduce cart abandonment with behavioral psychology' },
-    { href: '/demo', label: 'SaaS', desc: 'Increase trial signups and reduce churn' },
-    { href: '/demo', label: 'Agencies', desc: 'Scale your CRO services with AI-powered insights' },
+    { href: '/demo', label: 'Cart abandonment', desc: 'Recover abandoned carts with behavioral psychology' },
+    { href: '/demo', label: 'Checkout drop-off', desc: 'Reduce friction and hesitation at the payment step' },
+    { href: '/demo', label: 'Product page bounce', desc: 'Turn browsers into buyers with sharper product pages' },
   ]
 
   const simpleLinks = [
@@ -111,11 +110,8 @@ export default function Nav() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/dashboard" className="text-[13px] text-white/60 hover:text-white transition-colors px-3 py-1.5">
-            Log in
-          </Link>
           <Link href="/contact" className="bg-[#C8963C] text-white px-4 py-1.5 rounded-md text-[13px] font-semibold hover:opacity-90 transition-opacity">
-            Start Free Trial
+            Apply as design partner
           </Link>
         </div>
 
@@ -131,7 +127,6 @@ export default function Nav() {
           {[
             { href: '/', label: 'Home' },
             { href: '/demo', label: 'Live Demo' },
-            { href: '/dashboard', label: 'Dashboard' },
             { href: '/pricing', label: 'Pricing' },
             { href: '/blog', label: 'Blog' },
             { href: '/docs', label: 'Docs' },
@@ -145,7 +140,7 @@ export default function Nav() {
           ))}
           <Link href="/contact" onClick={() => setOpen(false)}
             className="mt-4 block text-center bg-[#C8963C] text-white px-4 py-2.5 rounded-md text-[13px] font-semibold">
-            Start Free Trial
+            Apply as design partner
           </Link>
         </div>
       )}
