@@ -92,7 +92,7 @@ export default function DocsPage() {
             <section id="installing-the-snippet">
               <SectionHeader eyebrow="Setup" color="#1A4A6E" bg="#E8F0F8" title="Installing the snippet" />
               <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
-                Add this single script tag inside the <code className="text-[13px] bg-surface-2 px-1.5 py-0.5 rounded font-mono">&lt;head&gt;</code> of your site, ideally as one of the first scripts to load.
+                Add this single script tag inside the <code className="text-[13px] bg-surface-2 px-1.5 py-0.5 rounded font-mono">&lt;head&gt;</code> of your store, whether it runs on Shopify, WooCommerce, or a custom setup, ideally as one of the first scripts to load.
               </p>
               <div className="bg-[#0E0E14] rounded-xl p-4 mb-4">
                 <code className="text-[12px] font-mono text-[#A8D4B8] break-all">{'<script src="https://verobehavior.vercel.app/api/snippet?key=YOUR_CLIENT_KEY" async></script>'}</code>
@@ -115,13 +115,13 @@ export default function DocsPage() {
             <section id="tracking-conversions">
               <SectionHeader eyebrow="Setup" color="#1A3A2A" bg="#E8F2EC" title="Tracking conversions" />
               <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
-                By default, the snippet infers likely conversions from the text and context of what visitors click, things like &ldquo;Add to cart&rdquo;, &ldquo;Start free trial&rdquo;, or &ldquo;Create account&rdquo; are recognized automatically.
+                By default, the snippet infers likely conversions from the text and context of what visitors click, things like &ldquo;Add to cart&rdquo;, &ldquo;Proceed to checkout&rdquo;, or &ldquo;Complete purchase&rdquo; are recognized automatically.
               </p>
               <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
                 For precise tracking, or for conversions that do not follow common wording, add a single attribute to the element:
               </p>
               <div className="bg-[#0E0E14] rounded-xl p-4 mb-4">
-                <code className="text-[12px] font-mono text-[#A8D4B8]">{'<button data-vb-event="conversion">Start free trial</button>'}</code>
+                <code className="text-[12px] font-mono text-[#A8D4B8]">{'<button data-vb-event="conversion">Add to cart</button>'}</code>
               </div>
               <p className="text-[15px] text-ink-2 leading-relaxed font-light">
                 This is the only code change needed beyond the snippet itself. Everything else, classifying the session, writing the insight, and generating a recommendation, happens automatically.
@@ -309,7 +309,7 @@ export default function DocsPage() {
                 {[
                   { q: 'Does the snippet slow down my site?', a: 'It is under 10KB, loads asynchronously, and does not block rendering. Most sites see no measurable change in load time.' },
                   { q: 'Will this conflict with Google Analytics or other tools?', a: 'No. The snippet runs independently, does not share cookies or storage with other tools, and does not modify how other scripts behave.' },
-                  { q: 'My site does not have a typical "buy now" button, is this still useful?', a: 'Yes. The platform infers the type of site (e-commerce, SaaS, documentation, and so on) from page content and behavior, and adapts what it looks for accordingly.' },
+                  { q: 'My store does not have a typical "buy now" button, is this still useful?', a: 'Yes. The platform adapts to how your store is built, whether you sell a single product or run a large catalog, and whether you are on Shopify, WooCommerce, or a custom setup, reading page content and behavior to know what to look for.' },
                   { q: 'How is a behavioral state decided?', a: 'From the full sequence of events in a session, click order and timing, scroll depth, time spent, and page context, read together rather than as isolated totals.' },
                   { q: 'Can I remove the changes an A/B test makes?', a: 'Yes. Pausing or removing a test stops the snippet from applying its changes to new visitors.' },
                 ].map((row) => (

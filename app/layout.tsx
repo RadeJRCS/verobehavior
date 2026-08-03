@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'VeroBehavior — The Psychology of Conversion, Decoded by AI',
-  description: 'Stop testing words. Start testing psychology. The only CRO platform that explains the why behind every click, scroll, and conversion.',
+  title: 'VeroBehavior: Understand why shoppers don\'t buy',
+  description: 'The conversion platform for online stores that explains the why behind every click, scroll, and abandoned cart, powered by AI trained on behavioral science.',
   openGraph: {
-    title: 'VeroBehavior',
-    description: 'Behavioral psychology meets AI. Understand why users convert.',
+    title: 'VeroBehavior: Understand why shoppers don\'t buy',
+    description: 'The conversion platform for online stores that explains the why behind every click, scroll, and abandoned cart, powered by AI trained on behavioral science.',
     type: 'website',
   },
 }

@@ -7,7 +7,7 @@ const features = [
     icon: '🧠', tag: 'Psychology engine',
     title: 'Every session explained in the language of human psychology.',
     desc: 'Our proprietary AI analyzes user sessions and explains the why behind every behavior: citing Cialdini, Kahneman, cognitive load theory, and more. No black box. Every insight is explainable.',
-    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'Explainable AI: every recommendation cites its psychological principle', 'Brand-voice tuning: insights match your communication style', 'Ethical AI — our commitment: fully explainable, human-in-the-loop'],
+    points: ['Auto-tagging: hesitation, decision fatigue, confusion, high intent', 'Explainable AI: every recommendation cites its psychological principle', 'Brand-voice tuning: insights match your communication style', 'Our commitment to ethical AI: fully explainable, human-in-the-loop'],
     accent: '#1A3A2A', bg: '#E8F2EC',
   },
   {
@@ -29,7 +29,7 @@ const features = [
 const useCases = [
   { title: 'Cart abandonment', subtitle: 'Shoppers add to cart, then vanish', insight: 'decision fatigue from too many options and add-ons', action: 'simpler choices and a clear default, based on cognitive load theory', principle: 'Hick\'s Law · choice architecture' },
   { title: 'Checkout drop-off', subtitle: 'Visitors bail at the payment step', insight: 'hesitation and friction near payment and form fields', action: 'trust signals and reduced-commitment framing exactly where doubt appears', principle: 'Loss aversion · trust cues (Cialdini)' },
-  { title: 'Product page bounce', subtitle: 'They look, but don\'t add to cart', insight: 'shoppers can\'t evaluate the product — repeated image and spec inspection', action: 'richer visuals and social proof placed at the point of hesitation', principle: 'Elaboration Likelihood Model · social proof' },
+  { title: 'Product page bounce', subtitle: 'They look, but don\'t add to cart', insight: 'shoppers can\'t evaluate the product, so they inspect images and specs repeatedly instead', action: 'richer visuals and social proof placed at the point of hesitation', principle: 'Elaboration Likelihood Model · social proof' },
 ]
 
 const faqs = [
@@ -58,7 +58,7 @@ export default function Home() {
             <em className="italic text-green">Start testing psychology.</em>
           </h1>
           <p className="text-lg text-ink-2 max-w-xl mx-auto mb-10 leading-relaxed font-light">
-            VeroBehavior is the conversion platform for online stores that explains the <em>why</em> behind every click, scroll, and abandoned cart — powered by AI trained on behavioral science.
+            VeroBehavior is the conversion platform for online stores that explains the <em>why</em> behind every click, scroll, and abandoned cart, powered by AI trained on behavioral science.
           </p>
           <div className="flex flex-wrap gap-3 justify-center mb-6">
             <Link href="/demo" className="bg-green text-white px-7 py-3.5 rounded-lg text-[14px] font-semibold hover:opacity-90 transition-opacity">
@@ -288,7 +288,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="flex flex-wrap gap-5 justify-center mt-8">
-            {['Free for beta partners', 'One-line integration', 'GDPR compliant', 'Ethical AI — our commitment'].map(t => (
+            {['Free for beta partners', 'One-line integration', 'GDPR compliant', 'Ethical AI: our commitment'].map(t => (
               <div key={t} className="flex items-center gap-1.5 text-[12px] text-white/40">
                 <span className="text-[#5DCAA5]">✓</span>{t}
               </div>

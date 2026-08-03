@@ -157,11 +157,11 @@ export default function DemoPage() {
       } else {
         await new Promise(r => setTimeout(r, 600))
         const demos: Record<string, Insight> = {
-          img_hover:      { state: 'engaged',    intentScore: 38, conversionProbability: 22, tags: ['visual-seeking'], insight: { type: 'ENGAGEMENT', text: 'User inspecting product image — tactile-visual compensation. Cannot physically inspect the product, compensating through visual information gathering.', principle: 'Elaboration Likelihood Model — high involvement processing' }, recommendation: 'Add 360° view to reduce tactile anxiety.', estimatedLift: '+12-18% add-to-cart' },
-          reviews_hover:  { state: 'engaged',    intentScore: 55, conversionProbability: 38, tags: ['social-proof-seeking'], insight: { type: 'SOCIAL PROOF', text: 'User seeking social validation before committing — classic loss aversion pattern. Fear of wrong choice drives review consultation.', principle: 'Social proof (Cialdini) + loss aversion (Kahneman)' }, recommendation: 'Surface top review summary above the fold near CTA.', estimatedLift: '+15-22% conversion' },
+          img_hover:      { state: 'engaged',    intentScore: 38, conversionProbability: 22, tags: ['visual-seeking'], insight: { type: 'ENGAGEMENT', text: 'User inspecting product image: a tactile-visual compensation signal. Cannot physically inspect the product, compensating through visual information gathering.', principle: 'Elaboration Likelihood Model: high involvement processing' }, recommendation: 'Add 360° view to reduce tactile anxiety.', estimatedLift: '+12-18% add-to-cart' },
+          reviews_hover:  { state: 'engaged',    intentScore: 55, conversionProbability: 38, tags: ['social-proof-seeking'], insight: { type: 'SOCIAL PROOF', text: 'User seeking social validation before committing: a classic loss aversion pattern. Fear of wrong choice drives review consultation.', principle: 'Social proof (Cialdini) + loss aversion (Kahneman)' }, recommendation: 'Surface top review summary above the fold near CTA.', estimatedLift: '+15-22% conversion' },
           add_to_cart:    { state: 'converted',  intentScore: 94, conversionProbability: 95, tags: ['converted', 'high-intent'], insight: { type: 'CONVERSION EVENT', text: 'Add to Cart triggered! Loss aversion framing ("SAVE $100 · Limited time") successfully activated scarcity response.', principle: 'Loss aversion + scarcity principle (Cialdini)' }, recommendation: 'Cross-sell within 3 seconds of cart add.', estimatedLift: '+28% AOV' },
-          wishlist:       { state: 'hesitating', intentScore: 45, conversionProbability: 28, tags: ['price-friction'], insight: { type: 'HESITATION', text: 'Wishlist instead of cart — price sensitivity or timing friction. Intent is present but commitment threshold not met.', principle: 'Commitment & consistency (Cialdini) — low foot-in-door' }, recommendation: 'Show "Pay over 3 months from $116/mo" near CTA.', estimatedLift: '+19% checkout starts' },
-          variant_change: { state: 'comparing',  intentScore: 52, conversionProbability: 35, tags: ['comparing', 'color_preference'], insight: { type: 'DECISION FATIGUE', text: 'User switching between variants — comparison mode active. Multiple option evaluation may create mild choice overload.', principle: "Hick's Law — decision time increases with number of choices" }, recommendation: 'Add "Most Popular" badge to Midnight Black to anchor decision.', estimatedLift: '+14% faster checkout' },
+          wishlist:       { state: 'hesitating', intentScore: 45, conversionProbability: 28, tags: ['price-friction'], insight: { type: 'HESITATION', text: 'Wishlist instead of cart: price sensitivity or timing friction. Intent is present but commitment threshold not met.', principle: 'Commitment & consistency (Cialdini): low foot-in-door' }, recommendation: 'Show "Pay over 3 months from $116/mo" near CTA.', estimatedLift: '+19% checkout starts' },
+          variant_change: { state: 'comparing',  intentScore: 52, conversionProbability: 35, tags: ['comparing', 'color_preference'], insight: { type: 'DECISION FATIGUE', text: 'User switching between variants: comparison mode active. Multiple option evaluation may create mild choice overload.', principle: "Hick's Law: decision time increases with number of choices" }, recommendation: 'Add "Most Popular" badge to Midnight Black to anchor decision.', estimatedLift: '+14% faster checkout' },
         }
         const key = Object.keys(demos).find(k => trigger.includes(k)) || 'img_hover'
         const d = demos[key]
@@ -238,7 +238,7 @@ export default function DemoPage() {
             Interact with the product page.<br />
             <em className="italic text-[#A8D4B8]">Watch the AI analyze in real time.</em>
           </h1>
-          <p className="text-[13px] text-white/50 font-mono">← Hover, click, scroll, compare variants — the VeroBehavior panel updates live using our behavioral AI engine →</p>
+          <p className="text-[13px] text-white/50 font-mono">← Hover, click, scroll, compare variants: the VeroBehavior panel updates live using our behavioral AI engine →</p>
           <div className="flex justify-center gap-3 mt-4">
             <button onClick={() => setApiMode('live')}
               className={`px-4 py-1.5 rounded-md text-[12px] font-mono transition-all ${apiMode === 'live' ? 'bg-gold text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}>
@@ -397,7 +397,7 @@ export default function DemoPage() {
                         background: cartAdded ? '#0F6E56' : '#1A3A2A',
                         color: '#fff',
                       }}>
-                      {cartAdded ? '✓ Added to Cart!' : `Add to Cart — $${currentPrice}`}
+                      {cartAdded ? '✓ Added to Cart!' : `Add to Cart · $${currentPrice}`}
                     </button>
                     <button onClick={() => trackEvent('wishlist')}
                       className="w-full py-2.5 rounded-lg border border-surface-3 text-[13px] text-ink-2 hover:border-ink-3 transition-colors">
