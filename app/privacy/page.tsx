@@ -9,7 +9,7 @@ const sections = [
   { t: '5. GDPR compliance', p: 'We follow GDPR principles and are working toward full compliance. We act as a data processor on behalf of our clients (data controllers). We support data subject access requests, right to erasure, and data portability.' },
   { t: '6. CCPA compliance', p: 'For California residents, we are working toward CCPA compliance. We do not sell personal information and provide mechanisms for consumers to request access to or deletion of their data through their website operator.' },
   { t: '7. Ethical AI commitment', p: 'We do not recommend manipulative or deceptive practices. All AI recommendations are designed to include explainable reasoning, citing the specific psychological principle behind each suggestion. This is a principle we\'re building toward, not a third-party certification, and we expect our design partners to hold us to it as the product grows.' },
-  { t: '8. Contact', p: 'For privacy-related inquiries, contact us at privacy@verobehavior.com or through our contact page.' },
+  { t: '8. Contact', p: 'For privacy-related inquiries, contact us at hello@verobehavior.com or through our contact page.' },
 ]
 
 export default function PrivacyPage() {
