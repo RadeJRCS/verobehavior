@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
+import { getOwnedKeys } from '@/lib/auth/getOwnedKeys'
 
 export const runtime = 'nodejs'
 
@@ -23,12 +24,32 @@ export async function OPTIONS() {
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = getSupabase()
+    // Dual-purpose route: the snippet calls this anonymously (no session)
+    // to fetch its own active tests, and the dashboard calls it with a
+    // session to manage tests. Only gate ownership when a session exists
+    // — an anonymous request keeps its old, unrestricted behavior so the
+    // snippet keeps working on client sites.
+    const owned = await getOwnedKeys()
     const { searchParams } = new URL(req.url)
     const clientKey = searchParams.get('key')
     const status = searchParams.get('status')
+
+    if (owned.authorized) {
+      if (clientKey && !owned.keys.includes(clientKey)) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: CORS })
+      }
+      if (owned.keys.length === 0) {
+        return NextResponse.json({ tests: [] }, { headers: CORS })
+      }
+    }
+
+    const supabase = getSupabase()
     let query = supabase.from('tests').select('*').order('created_at', { ascending: false })
-    if (clientKey) query = query.eq('client_key', clientKey)
+    if (owned.authorized) {
+      query = clientKey ? query.eq('client_key', clientKey) : query.in('client_key', owned.keys)
+    } else if (clientKey) {
+      query = query.eq('client_key', clientKey)
+    }
     if (status) query = query.eq('status', status)
     const { data, error } = await query
     if (error) throw error

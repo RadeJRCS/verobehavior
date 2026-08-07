@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getOwnedKeys } from '@/lib/auth/getOwnedKeys'
 
 export const runtime = 'nodejs'
 
@@ -49,10 +50,31 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
+    // Dashboard-only (the snippet never GETs this route, only POSTs to it).
+    const owned = await getOwnedKeys()
+    if (!owned.authorized) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: CORS })
+    }
+
     const supabase = getSupabase()
     const { searchParams } = new URL(req.url)
     const testId = searchParams.get('testId')
     if (!testId) return NextResponse.json({ error: 'Missing testId' }, { status: 400, headers: CORS })
+
+    // test_results rows don't carry enough to check ownership directly;
+    // resolve the owning client_key via the parent test first.
+    const { data: test, error: testError } = await supabase
+      .from('tests')
+      .select('client_key')
+      .eq('id', testId)
+      .single()
+    if (testError || !test) {
+      return NextResponse.json({ error: 'Test not found' }, { status: 404, headers: CORS })
+    }
+    if (!owned.keys.includes(test.client_key)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: CORS })
+    }
+
     const { data: results, error } = await supabase.from('test_results').select('*').eq('test_id', testId)
     if (error) throw error
     const aR = (results || []).filter((r) => r.variant === 'A')
