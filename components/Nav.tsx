@@ -110,6 +110,9 @@ export default function Nav() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
+          <Link href="/login" className="text-[12px] text-white/50 hover:text-white/80 transition-colors">
+            Log in
+          </Link>
           <Link href="/contact" className="bg-[#C8963C] text-white px-4 py-1.5 rounded-md text-[13px] font-semibold hover:opacity-90 transition-opacity">
             Apply as design partner
           </Link>
@@ -132,6 +135,7 @@ export default function Nav() {
             { href: '/docs', label: 'Docs' },
             { href: '/about', label: 'About' },
             { href: '/contact', label: 'Contact' },
+            { href: '/login', label: 'Log in' },
           ].map(l => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
               className="block py-2.5 text-[14px] text-white/70 hover:text-white border-b border-white/5">
