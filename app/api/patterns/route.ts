@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
+import { getOwnedKeys } from '@/lib/auth/getOwnedKeys'
 
 export const runtime = 'nodejs'
 
@@ -47,13 +48,26 @@ function groupSessions(sessions: SessionRow[]) {
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = getSupabase()
+    const owned = await getOwnedKeys()
+    if (!owned.authorized) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: CORS })
+    }
+
     const { searchParams } = new URL(req.url)
     const clientKey = searchParams.get('key')
     const minSize = parseInt(searchParams.get('minSize') || '3')
 
+    if (clientKey && !owned.keys.includes(clientKey)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers: CORS })
+    }
+
+    if (owned.keys.length === 0) {
+      return NextResponse.json({ patterns: [] }, { headers: CORS })
+    }
+
+    const supabase = getSupabase()
     let query = supabase.from('sessions').select('id, client_key, state, tags, insight_type, insight_text, recommendation, estimated_lift, page_context, ab_test_config, events').order('created_at', { ascending: false }).limit(200)
-    if (clientKey) query = query.eq('client_key', clientKey)
+    query = clientKey ? query.eq('client_key', clientKey) : query.in('client_key', owned.keys)
 
     const { data, error } = await query
     if (error) throw error

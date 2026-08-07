@@ -442,25 +442,31 @@ export default function DashboardPage() {
               <h1 className="font-serif text-2xl text-white font-normal">VeroBehavior Analytics</h1>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="relative">
-                <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-[13px] text-white/90 min-w-[180px] justify-between hover:bg-white/15 transition-colors">
-                  <span>{filterKey || 'All clients'}</span>
-                  <span className={`text-[10px] transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}>&#9662;</span>
-                </button>
-                {dropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                    <div className="absolute top-full left-0 mt-1 w-full bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50">
-                      <button onClick={() => handleFilter('')} className={`w-full text-left px-4 py-2.5 text-[13px] transition-colors ${filterKey === '' ? 'bg-green text-white font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>All clients</button>
-                      {allKeys.map((key: string) => (
-                        <button key={key} onClick={() => handleFilter(key)} className={`w-full text-left px-4 py-2.5 text-[13px] border-t border-gray-100 transition-colors flex items-center justify-between ${filterKey === key ? 'bg-green text-white font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>
-                          <span>{key}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
+              {allKeys.length <= 1 ? (
+                <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-[13px] text-white/90 min-w-[180px]">
+                  {allKeys[0] || 'No client yet'}
+                </div>
+              ) : (
+                <div className="relative">
+                  <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-[13px] text-white/90 min-w-[180px] justify-between hover:bg-white/15 transition-colors">
+                    <span>{filterKey || 'All clients'}</span>
+                    <span className={`text-[10px] transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}>&#9662;</span>
+                  </button>
+                  {dropdownOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                      <div className="absolute top-full left-0 mt-1 w-full bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50">
+                        <button onClick={() => handleFilter('')} className={`w-full text-left px-4 py-2.5 text-[13px] transition-colors ${filterKey === '' ? 'bg-green text-white font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>All clients</button>
+                        {allKeys.map((key: string) => (
+                          <button key={key} onClick={() => handleFilter(key)} className={`w-full text-left px-4 py-2.5 text-[13px] border-t border-gray-100 transition-colors flex items-center justify-between ${filterKey === key ? 'bg-green text-white font-medium' : 'text-gray-700 hover:bg-gray-50'}`}>
+                            <span>{key}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
               <button onClick={() => fetchData(filterKey || undefined)} className="bg-gold text-white px-4 py-2 rounded-lg text-[12px] font-mono hover:opacity-90">&#8635; Refresh</button>
               <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-[12px] font-mono text-[#A8D4B8]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#5EBA7D] animate-pulse" />

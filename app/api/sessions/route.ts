@@ -1,13 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { getOwnedKeys } from '@/lib/auth/getOwnedKeys'
 
 export const runtime = 'nodejs'
 
+function emptyStats() {
+  return { total: 0, avgConv: 0, avgIntent: 0, converted: 0, convRate: '0' }
+}
+
 export async function GET(req: NextRequest) {
   try {
+    const owned = await getOwnedKeys()
+    if (!owned.authorized) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(req.url)
     const clientKey = searchParams.get('key')
     const limit = parseInt(searchParams.get('limit') || '50')
+
+    if (clientKey && !owned.keys.includes(clientKey)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    if (owned.keys.length === 0) {
+      return NextResponse.json({ sessions: [], stats: emptyStats() })
+    }
 
     let query = supabase
       .from('sessions')
@@ -15,9 +33,7 @@ export async function GET(req: NextRequest) {
       .order('created_at', { ascending: false })
       .limit(limit)
 
-    if (clientKey) {
-      query = query.eq('client_key', clientKey)
-    }
+    query = clientKey ? query.eq('client_key', clientKey) : query.in('client_key', owned.keys)
 
     const { data, error } = await query
 

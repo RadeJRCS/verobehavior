@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getOwnedKeys } from '@/lib/auth/getOwnedKeys'
 
 export const runtime = 'nodejs'
 
@@ -12,11 +13,25 @@ function getSupabase() {
 
 export async function GET(req: NextRequest) {
   try {
+    const owned = await getOwnedKeys()
+    if (!owned.authorized) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const supabase = getSupabase()
     const { searchParams } = new URL(req.url)
     const clientKey = searchParams.get('key')
+
+    if (clientKey && !owned.keys.includes(clientKey)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    if (owned.keys.length === 0) {
+      return NextResponse.json({ items: [] })
+    }
+
     let query = supabase.from('backlog').select('*').order('created_at', { ascending: false })
-    if (clientKey) query = query.eq('client_key', clientKey)
+    query = clientKey ? query.eq('client_key', clientKey) : query.in('client_key', owned.keys)
     const { data, error } = await query
     if (error) throw error
     return NextResponse.json({ items: data || [] })
