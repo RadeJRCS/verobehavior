@@ -18,8 +18,8 @@ export default function ContactPage() {
               <div className="space-y-4">
                 {[
                   { icon: '✉', label: 'Email', value: 'hello@verobehavior.com' },
-                  { icon: '💬', label: 'Sales', value: 'sales@verobehavior.com' },
-                  { icon: '🛡', label: 'Privacy inquiries', value: 'privacy@verobehavior.com' },
+                  { icon: '💬', label: 'Sales', value: 'hello@verobehavior.com' },
+                  { icon: '🛡', label: 'Privacy inquiries', value: 'hello@verobehavior.com' },
                   { icon: '📍', label: 'Office', value: 'Remote-first · EU / US / APAC' },
                 ].map(c => (
                   <div key={c.label} className="flex items-center gap-3 py-3 border-b border-surface-3">

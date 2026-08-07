@@ -9,7 +9,7 @@ const sections = [
   { t: '5. Data ownership', p: 'You retain ownership of all data collected through your use of VeroBehavior. We process this data solely to provide our services. We delete your data on request and do not retain it longer than necessary, and you may request an export at any time.' },
   { t: '6. Service level agreement', p: 'VeroBehavior is currently in private beta and does not yet offer a formal uptime SLA. We aim for high reliability and will publish a formal SLA alongside paid plans. Planned maintenance windows will be communicated in advance.' },
   { t: '7. Limitation of liability', p: 'VeroBehavior AI-generated recommendations are informational and should not be considered professional advice. We are not liable for business decisions made based on our insights. Our total liability is limited to the fees paid in the 12 months preceding any claim.' },
-  { t: '8. Contact', p: 'For questions about these terms, contact legal@verobehavior.com.' },
+  { t: '8. Contact', p: 'For questions about these terms, contact hello@verobehavior.com.' },
 ]
 
 export default function TermsPage() {
