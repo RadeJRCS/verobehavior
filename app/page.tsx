@@ -33,7 +33,7 @@ const useCases = [
 ]
 
 const faqs = [
-  ['How is VeroBehavior different from VWO or Optimizely?', 'VWO and Optimizely show you what users did: click rates, scroll depth, conversions. VeroBehavior explains why they behaved that way, expressed in psychological terms. We don\'t replace those tools; we provide the intelligence layer that makes testing decisions more informed.'],
+  ['What makes VeroBehavior different?', 'Most analytics tools tell you what your shoppers did: which products they viewed, where they abandoned the cart. VeroBehavior explains why they hesitated or left, in the language of behavioral psychology, and tells you the specific change to make on your store. You get the reasoning behind every lost sale, not just the numbers.'],
   ['Does VeroBehavior slow down my website?', 'No. Our JavaScript snippet is under 10KB, loads asynchronously, and produces zero Cumulative Layout Shift (CLS). All AI processing happens server-side, not in the browser.'],
   ['How does the AI work?', 'We use leading AI models with strict privacy protection and zero data retention.'],
   ['Is my data safe?', 'All behavioral data is fully anonymized and tied to pseudonymous session IDs. We never collect personally identifiable information from website visitors. GDPR and CCPA compliant by design.'],
