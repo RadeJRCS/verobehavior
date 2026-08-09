@@ -9,6 +9,7 @@ const sections = [
   { id: 'behavioral-states', nav: 'Behavioral states and insights', eyebrow: 'Concepts', color: '#854F0B', bg: '#FBF3E4' },
   { id: 'ab-testing', nav: 'A/B testing', eyebrow: 'Feature', color: '#534AB7', bg: '#EEEDFE' },
   { id: 'patterns-and-backlog', nav: 'Patterns and the backlog', eyebrow: 'Feature', color: '#1A4A6E', bg: '#E8F0F8' },
+  { id: 'geo-readiness-audit', nav: 'GEO readiness audit', eyebrow: 'Feature', color: '#1A4A6E', bg: '#E8F0F8' },
   { id: 'privacy-and-data', nav: 'Privacy and data handling', eyebrow: 'Privacy', color: '#4A4947', bg: '#F3F2EC' },
   { id: 'api-reference', nav: 'API reference', eyebrow: 'Reference', color: '#1A3A2A', bg: '#E8F2EC' },
   { id: 'changelog-and-faq', nav: 'Changelog and FAQ', eyebrow: 'Reference', color: '#8F8D89', bg: '#F3F2EC' },
@@ -70,8 +71,8 @@ export default function DocsPage() {
               </p>
               <div className="space-y-3">
                 {[
-                  { n: '1', t: 'Add the snippet', d: 'One script tag in the head of your site. Takes a few minutes.' },
-                  { n: '2', t: 'Watch sessions arrive', d: 'Open your dashboard and visit your own site. Within moments, a session appears with a behavioral read and a recommendation.' },
+                  { n: '1', t: 'Add the snippet', d: 'One script tag in the head of your store. Takes a few minutes.' },
+                  { n: '2', t: 'Watch sessions arrive', d: 'Open your dashboard and visit your own store. Within moments, a session appears with a behavioral read and a recommendation.' },
                   { n: '3', t: 'Act on what you see', d: 'Save a recommendation to your backlog, or launch it as an A/B test directly from the session.' },
                 ].map((step) => (
                   <div key={step.n} className="flex gap-4 bg-white border border-surface-3 rounded-xl p-4">
@@ -84,7 +85,7 @@ export default function DocsPage() {
                 ))}
               </div>
               <p className="text-[13px] text-ink-3 mt-4 font-light">
-                Each site you track is identified by a client key. If you do not have one yet, get in touch and one will be set up for your site.
+                Each store you track is identified by a client key. If you do not have one yet, get in touch and one will be set up for your store.
               </p>
             </section>
 
@@ -98,7 +99,7 @@ export default function DocsPage() {
                 <code className="text-[12px] font-mono text-[#A8D4B8] break-all">{'<script src="https://verobehavior.vercel.app/api/snippet?key=YOUR_CLIENT_KEY" async></script>'}</code>
               </div>
               <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
-                Replace <code className="text-[13px] bg-surface-2 px-1.5 py-0.5 rounded font-mono">YOUR_CLIENT_KEY</code> with the key assigned to your site. Sessions from this site will appear in your dashboard under that key.
+                Replace <code className="text-[13px] bg-surface-2 px-1.5 py-0.5 rounded font-mono">YOUR_CLIENT_KEY</code> with the key assigned to your store. Sessions from this store will appear in your dashboard under that key.
               </p>
               <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
                 To confirm it is working, open your browser console on the page. You should see:
@@ -132,11 +133,11 @@ export default function DocsPage() {
             <section id="reading-your-dashboard">
               <SectionHeader eyebrow="Dashboard" color="#4A4947" bg="#F3F2EC" title="Reading your dashboard" />
               <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
-                The Sessions tab lists recent sessions across your sites, or filtered to one site using the dropdown at the top. Each row shows, at a glance:
+                The Sessions tab lists recent sessions across your stores, or filtered to one store using the dropdown at the top. Each row shows, at a glance:
               </p>
               <div className="space-y-2 mb-4">
                 {[
-                  { l: 'Client and time', d: 'which site the session belongs to, and when it happened' },
+                  { l: 'Client and time', d: 'which store the session belongs to, and when it happened' },
                   { l: 'Behavioral state', d: 'the overall read on the visitor, covered in the next section' },
                   { l: 'Intent score', d: 'a 0 to 99 scale reflecting how likely the visitor was to take a meaningful action' },
                   { l: 'Tags', d: 'short labels describing specific patterns observed in that session' },
@@ -236,7 +237,39 @@ export default function DocsPage() {
                 Opening a pattern and generating its summary produces one consolidated read for the whole group: what is happening, why, and one recommendation that addresses it at scale, with a priority based on how much of your traffic it affects. From there, launch one test or save one backlog item for the entire pattern, instead of repeating the same fix session by session.
               </p>
               <p className="text-[15px] text-ink-2 leading-relaxed font-light">
-                The backlog itself is a simple task list: each item moves from pending to in progress to done. It is the right place for recommendations that involve layout or structural changes beyond what an A/B test can apply automatically, things to implement directly on the site rather than test through the snippet.
+                The backlog itself is a simple task list: each item moves from pending to in progress to done. It is the right place for recommendations that involve layout or structural changes beyond what an A/B test can apply automatically, things to implement directly on the store rather than test through the snippet.
+              </p>
+            </section>
+
+            {/* GEO readiness audit */}
+            <section id="geo-readiness-audit">
+              <SectionHeader eyebrow="Feature" color="#1A4A6E" bg="#E8F0F8" title="GEO readiness audit" />
+              <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
+                Generative Engine Optimization (GEO) is about whether AI systems like ChatGPT, Perplexity, and Google SGE can read your store accurately: the same structured data and metadata that search engines and AI crawlers rely on. The GEO readiness audit checks your pages for exactly that.
+              </p>
+              <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
+                It checks for:
+              </p>
+              <div className="space-y-2 mb-4">
+                {[
+                  'Page title and meta description, present and well-sized',
+                  'Open Graph tags (og:title, og:description)',
+                  'Heading structure: exactly one H1 per page',
+                  'Organization schema (JSON-LD): name, url, and related entity data',
+                  'FAQPage schema, where the page has question-and-answer content',
+                  'Product and Offer schema, where the page shows pricing or products',
+                ].map((row, i) => (
+                  <div key={i} className="flex gap-3 text-[14px] items-start">
+                    <span className="text-green mt-0.5 flex-shrink-0">&#10003;</span>
+                    <span className="text-ink-2 font-light">{row}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[15px] text-ink-2 leading-relaxed font-light mb-4">
+                Each check contributes to a score out of 100. From the GEO Monitor tab in your dashboard, enter any URL from your store, such as your homepage or a product page, and run the audit. You get the score plus a per-check finding, and for anything missing, the specific fix to add.
+              </p>
+              <p className="text-[15px] text-ink-2 leading-relaxed font-light">
+                What this does not do yet: track how ChatGPT, Perplexity, or Gemini actually describe your brand when asked. That is a separate, planned capability, marked &ldquo;coming soon&rdquo; in the dashboard. The audit above only reads your page&rsquo;s own structure, it does not query any AI service.
               </p>
             </section>
 
@@ -252,7 +285,7 @@ export default function DocsPage() {
                   'No persistent cross site cookies and no fingerprinting.',
                   'Data collected is limited to anonymous behavioral signals: clicks, scroll depth, time on page, page title, URL path, and referral source.',
                   'Session data is stored within the EU.',
-                  'VeroBehavior acts as a data processor on your behalf for the data collected through your site.',
+                  'VeroBehavior acts as a data processor on your behalf (you are the data controller) for the data collected through your store.',
                 ].map((row, i) => (
                   <div key={i} className="flex gap-3 text-[14px] items-start">
                     <span className="text-green mt-0.5 flex-shrink-0">&#10003;</span>
@@ -270,9 +303,9 @@ export default function DocsPage() {
               </p>
               <div className="space-y-4">
                 {[
-                  { m: 'GET', p: '/api/snippet?key=YOUR_CLIENT_KEY', d: 'Returns the tracking script for your site.' },
+                  { m: 'GET', p: '/api/snippet?key=YOUR_CLIENT_KEY', d: 'Returns the tracking script for your store.' },
                   { m: 'POST', p: '/api/analyze', d: 'Receives anonymized session events and returns the behavioral analysis used to populate your dashboard.' },
-                  { m: 'GET', p: '/api/tests?key=YOUR_CLIENT_KEY&status=active', d: 'Returns active A/B tests for your site, used by the snippet to assign variants.' },
+                  { m: 'GET', p: '/api/tests?key=YOUR_CLIENT_KEY&status=active', d: 'Returns active A/B tests for your store, used by the snippet to assign variants.' },
                   { m: 'POST', p: '/api/test-results', d: 'Records which variant a visitor saw and whether they converted.' },
                 ].map((row) => (
                   <div key={row.p} className="bg-white border border-surface-3 rounded-lg p-3">
@@ -307,7 +340,7 @@ export default function DocsPage() {
               <div className="text-[12px] font-mono text-ink-3 uppercase tracking-widest mb-3">Frequently asked questions</div>
               <div className="space-y-4">
                 {[
-                  { q: 'Does the snippet slow down my site?', a: 'It is under 10KB, loads asynchronously, and does not block rendering. Most sites see no measurable change in load time.' },
+                  { q: 'Does the snippet slow down my store?', a: 'It is under 10KB, loads asynchronously, and does not block rendering. The snippet is designed for minimal impact on load time.' },
                   { q: 'Will this conflict with Google Analytics or other tools?', a: 'No. The snippet runs independently, does not share cookies or storage with other tools, and does not modify how other scripts behave.' },
                   { q: 'My store does not have a typical "buy now" button, is this still useful?', a: 'Yes. The platform adapts to how your store is built, whether you sell a single product or run a large catalog, and whether you are on Shopify, WooCommerce, or a custom setup, reading page content and behavior to know what to look for.' },
                   { q: 'How is a behavioral state decided?', a: 'From the full sequence of events in a session, click order and timing, scroll depth, time spent, and page context, read together rather than as isolated totals.' },
