@@ -1,9 +1,13 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// Protects /dashboard: refreshes the Supabase session on each request and
-// redirects signed-out visitors to /login. Public pages and /api/ routes
-// are untouched for now (see matcher below) — API protection comes later.
+// Runs on every page (see matcher) so the Supabase session gets refreshed
+// no matter where on the site a signed-in partner is browsing, not just on
+// /dashboard. /api/ routes are explicitly excluded from the matcher — the
+// snippet's routes (analyze, snippet, tests, test-results) must never be
+// gated by this and have no session to refresh anyway; their own
+// protection (where it exists) lives inside the route handlers themselves
+// (lib/auth/getOwnedKeys.ts), not here.
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -26,9 +30,17 @@ export async function middleware(request: NextRequest) {
     }
   )
 
+  // Refreshes the session (writes new cookies via setAll above if the
+  // access token was near/past expiry). Runs on every matched page now,
+  // so this happens regardless of which page a partner is browsing.
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
+  // Only /dashboard actually requires a session. The matcher below now
+  // covers the whole public site too (for the refresh above), so the
+  // redirect must stay scoped here — otherwise every anonymous visitor to
+  // the homepage, pricing, blog, etc. would get bounced to /login.
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard')
+  if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
@@ -38,5 +50,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard', '/dashboard/:path*'],
+  matcher: [
+    // Match every request path except: /api/*, Next.js static/image
+    // optimization internals, favicon.ico, and common static asset
+    // extensions. This is the standard @supabase/ssr "everything except
+    // assets and api" pattern.
+    '/((?!api|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }

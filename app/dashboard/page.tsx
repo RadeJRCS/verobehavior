@@ -2,8 +2,6 @@
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 type TestAction = {
   type: 'text_replace' | 'insert_element' | 'style_change'
@@ -155,7 +153,6 @@ function deriveClientProfile(clientKey: string, sessions: Session[]): ClientProf
 type LaunchModalState = { session: Session } | null
 
 export default function DashboardPage() {
-  const router = useRouter()
   const [sessions, setSessions] = useState<Session[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -324,12 +321,6 @@ export default function DashboardPage() {
 
   const handleFilter = (key: string) => { setFilterKey(key); setDropdownOpen(false); fetchData(key || undefined) }
 
-  const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.replace('/')
-  }
-
   const handleSaveToBacklog = async (session: Session) => {
     if (savedIds.has(session.id)) return
     try {
@@ -472,9 +463,6 @@ export default function DashboardPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#5EBA7D] animate-pulse" />
                 {loading ? 'Loading...' : `${sessions.length} sessions`}
               </div>
-              <button onClick={handleLogout} className="text-[12px] text-white/50 hover:text-white/80 transition-colors px-2">
-                Log out
-              </button>
             </div>
           </div>
         </div>
