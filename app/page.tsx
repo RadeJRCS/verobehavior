@@ -19,9 +19,9 @@ const features = [
   },
   {
     icon: '🌐', tag: 'Visibility engine',
-    title: 'Optimize how AI search finds your brand: and converts them.',
+    title: 'Every page checked for how AI search reads it.',
     desc: 'As ChatGPT, Perplexity, and Google SGE replace traditional search, your brand must be visible before the click and compelling after it. VeroBehavior connects both layers.',
-    points: ['Brand monitoring across ChatGPT, Perplexity, SGE', 'AEO + JSON-LD structured data engine', 'Machine readability score: 0 to 100, with specific fixes', 'Intent-to-conversion bridge: connect AI search to on-site psychology'],
+    points: ['Machine readability score: 0 to 100, with specific fixes', 'AEO + JSON-LD structured data engine', 'Brand visibility monitoring across ChatGPT, Perplexity, and Gemini (coming soon)', 'Intent-to-conversion bridge: connect AI search to on-site psychology'],
     accent: '#1A4A6E', bg: '#E8F0F8',
   },
 ]
@@ -92,7 +92,7 @@ export default function Home() {
       <div className="bg-green overflow-hidden py-2.5">
         <div className="flex animate-ticker whitespace-nowrap gap-12" style={{ animationDuration: '22s' }}>
           {[...Array(2)].map((_, i) =>
-            ['Psychology Engine', 'Multi-Armed Bandit', 'Judge LLM', 'GEO Monitor', 'Behavioral Tagging', 'Explainable AI', 'Ethical AI', 'Real-time Analysis'].map(item => (
+            ['Psychology Engine', 'Multi-Armed Bandit', 'Judge LLM', 'GEO Audit', 'Behavioral Tagging', 'Explainable AI', 'Ethical AI', 'Real-time Analysis'].map(item => (
               <span key={`${i}-${item}`} className="inline-flex items-center gap-4 text-[11px] font-mono text-white/70 uppercase tracking-widest">
                 {item} <span className="text-gold text-sm">◆</span>
               </span>
@@ -166,7 +166,7 @@ export default function Home() {
                     <div className="text-[13px] text-ink leading-relaxed">
                       {i === 0 && '"User shows decision fatigue: 12 product options exceed optimal choice architecture. Hick\'s Law predicts a 23% lift if options are reduced to 3."'}
                       {i === 1 && '"Variant C wins on conversion AND psychological alignment. Loss aversion framing is the correct trigger for this price-sensitive segment: allocating 68% traffic."'}
-                      {i === 2 && '"Brand cited in 94% of ChatGPT CRO queries. Add FAQ JSON-LD to pricing page: machine readability 62→89, projected +30% SGE presence."'}
+                      {i === 2 && '"Pricing page scores 62/100 for machine readability. Missing FAQPage and Product JSON-LD, so AI systems can\'t confirm what you sell or what it costs just by reading the page."'}
                     </div>
                     <div className="mt-2 text-[10px] font-mono" style={{ color: f.accent }}>
                       {i === 0 && '→ cognitive load theory · choice architecture'}
@@ -235,7 +235,7 @@ export default function Home() {
               { q: 'Current CRO tools tell you what users did.', a: 'VeroBehavior tells you why: in the language of Cialdini, Kahneman, and cognitive science. That changes what you test next.' },
               { q: 'A/B tests take weeks and often inconclusive.', a: 'Our multi-armed bandit + Judge LLM shifts traffic dynamically and evaluates results on psychological effectiveness, not just statistics.' },
               { q: 'Hiring a behavioral psychologist costs $150K+/year.', a: 'VeroBehavior makes that expertise available as a SaaS product for a fraction of the cost, improving with every session it analyzes.' },
-              { q: 'AI search is replacing traditional Google clicks.', a: 'Our GEO engine monitors how AI represents your brand in ChatGPT, Perplexity, and SGE: and connects that visibility to on-site conversion.' },
+              { q: 'AI search is replacing traditional Google clicks.', a: 'Our GEO engine audits how machine-readable your store is to AI search today, with live brand-visibility monitoring coming soon.' },
             ].map(item => (
               <div key={item.q} className="bg-white border border-surface-3 rounded-xl p-6">
                 <div className="font-serif text-[16px] text-ink mb-3 leading-snug">{item.q}</div>
