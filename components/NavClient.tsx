@@ -135,7 +135,7 @@ export default function NavClient({ user }: { user: NavUser }) {
             </>
           ) : (
             <>
-              <Link href="/login" className="text-[12px] text-white/50 hover:text-white/80 transition-colors">
+              <Link href="/login" className="border border-white/30 text-white px-4 py-1.5 rounded-md text-[13px] font-semibold hover:bg-white/10 hover:border-white/50 transition-colors">
                 Log in
               </Link>
               <Link href="/contact" className="bg-[#C8963C] text-white px-4 py-1.5 rounded-md text-[13px] font-semibold hover:opacity-90 transition-opacity">
@@ -162,7 +162,6 @@ export default function NavClient({ user }: { user: NavUser }) {
             { href: '/docs', label: 'Docs' },
             { href: '/about', label: 'About' },
             { href: '/contact', label: 'Contact' },
-            ...(user ? [] : [{ href: '/login', label: 'Log in' }]),
           ].map(l => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
               className="block py-2.5 text-[14px] text-white/70 hover:text-white border-b border-white/5">
@@ -184,10 +183,16 @@ export default function NavClient({ user }: { user: NavUser }) {
               </button>
             </>
           ) : (
-            <Link href="/contact" onClick={() => setOpen(false)}
-              className="mt-4 block text-center bg-[#C8963C] text-white px-4 py-2.5 rounded-md text-[13px] font-semibold">
-              Apply as design partner
-            </Link>
+            <>
+              <Link href="/login" onClick={() => setOpen(false)}
+                className="mt-4 block text-center border border-white/30 text-white px-4 py-2.5 rounded-md text-[13px] font-semibold hover:bg-white/10 hover:border-white/50 transition-colors">
+                Log in
+              </Link>
+              <Link href="/contact" onClick={() => setOpen(false)}
+                className="mt-2 block text-center bg-[#C8963C] text-white px-4 py-2.5 rounded-md text-[13px] font-semibold">
+                Apply as design partner
+              </Link>
+            </>
           )}
         </div>
       )}
