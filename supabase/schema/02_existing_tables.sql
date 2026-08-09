@@ -1,0 +1,79 @@
+-- =============================================================================
+-- sessions, tests, test_results, backlog — DOCUMENTATION ONLY, not DDL
+-- =============================================================================
+-- These four tables already exist in the live Supabase project, created
+-- manually through the console. Unlike clients (01_clients.sql), nobody on
+-- this side built these tables, so their exact column types, defaults,
+-- constraints, and full DDL are NOT reliably known here and are NOT
+-- reconstructed in this file — inventing a CREATE TABLE statement from
+-- guesswork would be worse than having none, since it could silently
+-- diverge from the real schema.
+--
+-- What follows is a column-level inventory of what the application CODE
+-- reads and writes, gathered by inspecting app/api/*.ts. This tells you
+-- what must exist, not the authoritative types/constraints.
+--
+-- Full DDL to be exported from Supabase — see supabase/NOTES.md for how.
+-- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- sessions
+-- -----------------------------------------------------------------------------
+-- Columns touched by code (app/api/analyze/route.ts insert/update,
+-- app/api/sessions/route.ts select, app/api/patterns/route.ts select):
+--   id                      -- likely uuid PK, not confirmed
+--   created_at              -- likely timestamptz, not confirmed
+--   updated_at              -- likely timestamptz, not confirmed
+--   client_key              -- text, links to clients.client_key (no FK confirmed)
+--   session_id              -- text, snippet-generated visitor session id
+--   site_url                -- text
+--   page_context            -- text
+--   session_duration        -- numeric/integer, seconds
+--   scroll_depth             -- numeric/integer, percent
+--   state                   -- text (browsing|engaged|hesitating|comparing|high_intent|converted)
+--   intent_score            -- numeric/integer, 0-99
+--   conversion_probability  -- numeric/integer, 0-100
+--   tags                    -- array (text[] or jsonb, not confirmed)
+--   insight_type            -- text
+--   insight_text            -- text
+--   insight_principle       -- text
+--   recommendation          -- text
+--   estimated_lift          -- text (free-form, e.g. "+12-18%")
+--   events                  -- jsonb (array of event objects)
+--   ab_test_config          -- jsonb (nullable)
+-- RLS: ENABLED live. Has 2 existing policies whose exact text is NOT known
+-- from this repo — NEEDS VERIFICATION. Suspected to be permissive for anon
+-- (the app currently reads/writes this table entirely through the anon
+-- key with no auth.uid() involved and it works), but this must be
+-- confirmed by reading the actual policy definitions in Supabase before
+-- any new policy is layered on top (see supabase/policies/02_PROPOSED_rls.sql
+-- for why this matters).
+
+-- -----------------------------------------------------------------------------
+-- tests
+-- -----------------------------------------------------------------------------
+-- Columns touched by code (app/api/tests/route.ts insert/update/select):
+--   id, created_at, client_key, name, hypothesis,
+--   actions          -- jsonb, array of action objects
+--   test_type, element_find_text, control_text, variant_text, position,
+--   style_changes    -- jsonb
+--   target_segment, status, winner, judge_analysis,
+--   min_sessions, started_at, completed_at, session_source_id
+-- RLS: ENABLED live. Policy text not known — NEEDS VERIFICATION.
+
+-- -----------------------------------------------------------------------------
+-- test_results
+-- -----------------------------------------------------------------------------
+-- Columns touched by code (app/api/test-results/route.ts insert/select):
+--   id, created_at, test_id, client_key, variant,
+--   converted, page_url, intent_score
+-- RLS: ENABLED live. Policy text not known — NEEDS VERIFICATION.
+
+-- -----------------------------------------------------------------------------
+-- backlog
+-- -----------------------------------------------------------------------------
+-- Columns touched by code (app/api/backlog/route.ts insert/update/select):
+--   id, created_at, client_key, session_id,
+--   insight_type, insight_text, recommendation, estimated_lift,
+--   state, status, priority
+-- RLS: ENABLED live. Policy text not known — NEEDS VERIFICATION.
