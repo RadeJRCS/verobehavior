@@ -1,0 +1,140 @@
+Loaded 32 results (4 threshold-skipped, 28/28 AI calls parsed OK) from eval/results/run-2026-08-16T08-46-34-408Z.json
+
+==============================================================================
+THRESHOLD CHECK — MIN_EVENTS_FOR_ANALYSIS = 3
+==============================================================================
+
+4 session(s) skipped — no AI call made, zero tokens spent:
+
+  ✓ 9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d — 1 events, insight_type="COLLECTING_DATA", usage=null (no API call)
+  ✓ d6020113-0b56-463e-b61d-9e700ac8621e — 1 events, insight_type="COLLECTING_DATA", usage=null (no API call)
+  ✓ 508f5391-1fef-434a-ae4a-f7d704cf884b — 2 events, insight_type="COLLECTING_DATA", usage=null (no API call)
+  ✓ 4dcfdef5-9604-480f-ac80-c4a8cb275973 — 2 events, insight_type="COLLECTING_DATA", usage=null (no API call)
+
+Threshold working correctly on all skipped sessions.
+
+==============================================================================
+TEST 4 — SCHEMA ADHERENCE
+==============================================================================
+
+insight_type — enum: FRICTION | CONVERSION_EVENT | DECISION_FATIGUE | HIGH_INTENT | SOCIAL_PROOF_SEEKING | BOUNCE_RISK | COMPARISON_BEHAVIOR
+
+All values seen:
+  ✓ "FRICTION" — 6
+  ✓ "SOCIAL_PROOF_SEEKING" — 6
+  ✓ "BOUNCE_RISK" — 5
+  ✓ "CONVERSION_EVENT" — 4
+  ✓ "HIGH_INTENT" — 3
+  ✓ "DECISION_FATIGUE" — 2
+  ✓ "COMPARISON_BEHAVIOR" — 2
+
+Exact match: 28/28 (100.0%)
+Format error (right concept, wrong format): 0/28 (0.0%)
+Out of enum entirely: 0/28 (0.0%)
+
+
+state — enum: browsing | engaged | hesitating | comparing | high_intent | converted
+
+All values seen:
+  ✓ "browsing" — 9
+  ✓ "hesitating" — 7
+  ✓ "high_intent" — 5
+  ✓ "comparing" — 4
+  ✓ "converted" — 3
+
+Exact match: 28/28 (100.0%)
+
+
+==============================================================================
+TEST 1 — GROUNDEDNESS
+==============================================================================
+
+GROUNDED: 26/28 (92.9%)
+SUSPECT:  2/28 (7.1%)
+
+SUSPECT sessions (sorted by event count, fewest first):
+
+  e1248b2d-e34f-49a7-8e5e-8210fda7ec83 — 4 events
+    - mentions "wishlist" but no wishlist event exists in this session
+
+  894965bb-0a84-446c-a154-334b73189638 — 8 events
+    - claims "90 seconds" (~90s) but actual session_duration is 15s
+
+Avg events — SUSPECT: 6.0 | GROUNDED: 5.7
+
+
+==============================================================================
+TEST 3 — PRINCIPLE & TYPE COVERAGE
+==============================================================================
+
+Normalization mapping applied (first-listed theory wins for compound answers):
+  /social proof/i -> "Social Proof (Cialdini)"
+  /commitment\s*(&|and)\s*consistency/i -> "Commitment & Consistency (Cialdini)"
+  /hick'?s law|choice overload|paradox of choice|analysis paralysis|choice paradox/i -> "Hick's Law / Choice Overload"
+  /reactance theory|goal frustration/i -> "Reactance Theory"
+  /information (foraging|scent)/i -> "Information Foraging / Scent Theory (Pirolli & Card)"
+  /zeigarnik/i -> "Zeigarnik Effect"
+  /loss aversion/i -> "Loss Aversion (Kahneman & Tversky)"
+  /endowed progress/i -> "Endowed Progress Effect"
+  /cognitive fluency/i -> "Cognitive Fluency Theory"
+  /cognitive ease|dual process|system 1\s*\/?\s*system 2/i -> "Kahneman: Cognitive Ease / Dual Process"
+  /cognitive load/i -> "Cognitive Load Theory"
+  /elaboration likelihood/i -> "Elaboration Likelihood Model (Petty & Cacioppo)"
+  /fogg/i -> "Fogg Behavior Model"
+  /peak-end/i -> "Peak-End Rule"
+  /dissonance/i -> "Cognitive / Post-Decision Dissonance"
+  /price anchoring|anchoring bias/i -> "Anchoring (Price/Reference Point)"
+  /operant conditioning|feedback loop/i -> "Operant Conditioning / Feedback Loop"
+  (anything not matching a rule above is kept as its own bucket, using the text before the first "+"/"combined with"/":")
+
+Distinct normalized principles: 17 (out of 28 sessions)
+
+  6x  Social Proof (Cialdini)
+  3x  Hick's Law / Choice Overload
+  2x  Operant Conditioning / Feedback Loop
+  2x  Commitment & Consistency (Cialdini)
+  2x  Loss Aversion (Kahneman & Tversky)
+  2x  Zeigarnik Effect
+  1x  Information Foraging / Scent Theory (Pirolli & Card)
+  1x  Approach-Avoidance Conflict — when the perceived cost (price, commitment) of an action rises as the visitor moves closer to it, ambivalence peaks and withdrawal becomes more likely than completion. The '
+  1x  Checkout Anxiety — the psychological discomfort triggered by commitment-stage friction (unexpected costs, trust gaps, or effort required) causes users to abandon just before converting, even after strong purchase intent is demonstrated.
+  1x  Cognitive Mismatch — When a category label activates an expectation that the content beneath it fails to satisfy, users experience a brief but decisive moment of disappointment and reorient, often exiting shortly after.
+  1x  Processing Fluency — when information is easy to process and the price feels accessible, decision speed increases and hesitation drops. This visitor experienced minimal friction, making the CTA click feel natural rather than deliberate.
+  1x  Effort Heuristic — When the perceived effort to complete an action (finding a contact method, filling a form) outweighs the expected reward, users abandon. A contact page with no visible value proposition or reassurance amplifies this perceived cost.
+  1x  Expectation-Reality Gap
+  1x  Post-Decision Anxiety (Buyer's Remorse Pre-emption)
+  1x  Cognitive Friction & Expectation Violation
+  1x  Escalating Commitment (Foot-in-the-Door Effect)
+  1x  Anchoring (Price/Reference Point)
+
+
+Distinct insight_type (raw, not normalized): 7
+
+  6x  FRICTION
+  6x  SOCIAL_PROOF_SEEKING
+  5x  BOUNCE_RISK
+  4x  CONVERSION_EVENT
+  3x  HIGH_INTENT
+  2x  DECISION_FATIGUE
+  2x  COMPARISON_BEHAVIOR
+
+
+Constructed COMPARISON_BEHAVIOR sessions — did the model recognize them?
+
+  constructed-comparison-01
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Paradox of Choice / Comparison Paralysis — when two alternatives are closely matched in a buyer's mind, the absence of a clear differentiator leads to deferral rather than a decision, and the visitor exits to avoid making the 'wrong' choice.
+    insight_text: The visitor actively compared the Merino Wool Sweater ($89) and the Alpine Wool Sweater ($104), hovering on each price for 2.6s and 3.1s respectively before navigating back and forth between the two products. Despite returning to the Merino Wool Sweater a second time — suggesting a slight preference — they triggered exit intent without adding anything to cart, indicating the price evaluation resolved in indecision rather than commitment. The lack of any scroll engagement (0%) suggests the visitor never engaged with product details, descriptions, or social proof that might have tipped the decision.
+
+  constructed-comparison-02
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Price Anchoring & Value Justification: when a visitor compares multiple price points and gravitates back to the cheapest option, they are seeking permission to buy — they need a value signal that makes the lower price feel like a smart choice, not a compromise.
+    insight_text: This visitor systematically cycled through three backpacks — Voyager ($89), Trailhead ($104), Summit ($95) — and then returned to the Voyager, the lowest-priced option, suggesting price anchoring is the dominant decision driver. The 2.6-second hover on the $104 price tag signals active price evaluation and possible sticker shock on the mid-tier product. Ending the session by clicking back to the Voyager without adding to cart indicates the visitor is narrowing but has not yet found sufficient justification to commit.
+
+
+
+==============================================================================
+END OF REPORT
+==============================================================================

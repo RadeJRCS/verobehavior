@@ -1,0 +1,897 @@
+{
+  "generated_at": "2026-08-09",
+  "source_db_project": "pnqcoyfkwfabinanksxy",
+  "note": "Sessions with source=real were pulled verbatim from the sessions table (client_key in terra-store, veroshop_test, demo/Lumina) via SELECT, no rows modified. Sessions with source=constructed were hand-written to cover insight_type=COMPARISON_BEHAVIOR, which does not appear anywhere in the real data sample. `reference` on real sessions is the insight already stored in the DB from a prior analysis run, kept for context, not as ground truth. `expected_direction` on constructed sessions is the scenario intent, not a strict expected answer.",
+  "sessions": [
+    {
+      "id": "0c5bad9f-dd24-40f3-8f20-015d9ccf7836",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /products",
+        "sessionDuration": 40,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 36476, "type": "click", "data": { "tag": "button", "text": "Add to cart" } },
+          { "ts": 37211, "type": "click", "data": { "tag": "button", "text": "Add to cart" } },
+          { "ts": 38859, "type": "click", "data": { "tag": "button", "text": "Add to cart" } },
+          { "ts": 39595, "type": "click", "data": { "tag": "button", "text": "Home Office" } },
+          { "ts": 40283, "type": "click", "data": { "tag": "button", "text": "Accessories" } }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "FRICTION",
+        "insight_principle": "BJ Fogg's Behavior Model: When ability is blocked (broken interaction), motivation crashes regardless of trigger strength. Without immediate feedback, users assume failure and disengage.",
+        "insight_text": "User clicked 'Add to cart' three times in rapid succession (3.4 seconds) without scrolling or viewing product details, suggesting the button is unresponsive or cart feedback is missing.",
+        "recommendation": "Implement instant visual feedback on cart button click: loading spinner, success animation, and slide-in cart preview.",
+        "estimated_lift": "+28-35% add-to-cart completion rate"
+      }
+    },
+    {
+      "id": "754d939d-15ac-4f13-a021-ad49fa811d20",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /",
+        "sessionDuration": 44,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 40939, "type": "click", "data": { "tag": "button", "text": "Tech" } },
+          { "ts": 41691, "type": "click", "data": { "tag": "button", "text": "Wearables" } },
+          { "ts": 42051, "type": "click", "data": { "tag": "button", "text": "Bags" } },
+          { "ts": 43259, "type": "click", "data": { "tag": "a", "text": "Home" } },
+          { "ts": 43627, "type": "click", "data": { "tag": "a", "text": "Shop" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "DECISION FATIGUE",
+        "insight_principle": "Hick's Law and Choice Overload Effect (Schwartz, Iyengar) - decision time increases logarithmically with number of choices, leading to paralysis and abandonment when options lack clear differentiation",
+        "insight_text": "User rapidly clicked through multiple categories (Tech→Wearables→Bags) within 3 seconds, then immediately navigated back to Home and Shop.",
+        "recommendation": "Implement a guided discovery flow: add a prominent 'Help me find' quiz/filter above category buttons.",
+        "estimated_lift": "+28-35% navigation depth, +18-24% time-on-site"
+      }
+    },
+    {
+      "id": "349a0b0b-cf5f-41d0-9d8c-50f3cedcde24",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /cart",
+        "sessionDuration": 47,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 44115, "type": "click", "data": { "tag": "a", "text": "Cart3" } },
+          { "ts": 44995, "type": "click", "data": { "tag": "button", "text": "+" } },
+          { "ts": 45211, "type": "click", "data": { "tag": "button", "text": "+" } },
+          { "ts": 46067, "type": "click", "data": { "tag": "button", "text": "Remove" } },
+          { "ts": 46771, "type": "click", "data": { "tag": "button", "text": "Remove" } }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "DECISION FATIGUE",
+        "insight_principle": "Hick's Law & Choice Paradox: Increased options and decision complexity exponentially increases decision time and abandonment.",
+        "insight_text": "User increased cart quantity twice then immediately removed all items within 1.7 seconds. Zero scroll depth on cart page suggests no review of shipping costs or trust signals before abandoning.",
+        "recommendation": "Implement a cart-level micro-commitment intervention: 'Save for Later' button with real-time social proof.",
+        "estimated_lift": "+31-38% cart completion rate"
+      }
+    },
+    {
+      "id": "be379dfe-d424-4097-967d-4e2dfb1a16f1",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /checkout",
+        "sessionDuration": 53,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 47459, "type": "click", "data": { "tag": "a", "text": "Proceed to checkout" } },
+          { "ts": 48715, "type": "click", "data": { "tag": "button", "text": "Continue to payment" } },
+          { "ts": 50843, "type": "click", "data": { "tag": "button", "text": "Review order" } },
+          { "ts": 52027, "type": "click", "data": { "tag": "button", "text": "Place order - $147" } },
+          { "ts": 53259, "type": "click", "data": { "tag": "a", "text": "Back to store" } }
+        ]
+      },
+      "reference": {
+        "state": "converted",
+        "insight_type": "CONVERSION EVENT",
+        "insight_principle": "Commitment & Consistency (Cialdini) — Once users begin a sequence of small commitments, they follow through to maintain psychological consistency with their initial decision.",
+        "insight_text": "User executed a perfect linear checkout flow in 53 seconds with zero hesitation signals.",
+        "recommendation": "Implement post-purchase upsell modal BEFORE 'Back to store' redirect showing complementary products.",
+        "estimated_lift": "+18-27% post-purchase AOV through immediate upsells"
+      }
+    },
+    {
+      "id": "d4227d31-0268-4de9-929a-dc480c71b4a4",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /checkout",
+        "sessionDuration": 62,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 57544, "type": "click", "data": { "tag": "a", "text": "Cart3" } },
+          { "ts": 59064, "type": "click", "data": { "tag": "a", "text": "Proceed to checkout" } },
+          { "ts": 59864, "type": "click", "data": { "tag": "button", "text": "Continue to payment" } },
+          { "ts": 60688, "type": "click", "data": { "tag": "button", "text": "Review order" } },
+          { "ts": 61616, "type": "click", "data": { "tag": "button", "text": "Place order - $147" } }
+        ]
+      },
+      "reference": {
+        "state": "converted",
+        "insight_type": "CONVERSION EVENT",
+        "insight_principle": "Commitment & Consistency (Cialdini) - Once users take small steps, they follow through with progressively larger commitments to remain consistent with their initial action.",
+        "insight_text": "User progressed through the entire checkout funnel in just 4 seconds with zero hesitation signals.",
+        "recommendation": "Analyze this successful conversion pattern; A/B test reducing steps by combining 'Continue to payment' and 'Review order'.",
+        "estimated_lift": "+8-12% checkout completion rate"
+      }
+    },
+    {
+      "id": "9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /",
+        "sessionDuration": 64,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 62408, "type": "click", "data": { "tag": "a", "text": "Back to store" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "FRICTION",
+        "insight_principle": "Information Scent Theory (Pirolli & Card): Users follow cues that promise desired information. When scent goes cold immediately, users backtrack.",
+        "insight_text": "User spent 64 seconds on page but showed zero scroll engagement before immediately clicking back to store.",
+        "recommendation": "A/B test hero section with pattern interrupt: replace static hero with dynamic social proof ticker.",
+        "estimated_lift": "+34-41% scroll engagement, +18-25% time-on-page"
+      }
+    },
+    {
+      "id": "32230ee7-8445-4b48-836b-dc4c99fa0490",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /checkout",
+        "sessionDuration": 89,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 76049, "type": "click", "data": { "tag": "a", "text": "New arrivals" } },
+          { "ts": 78305, "type": "click", "data": { "tag": "button", "text": "✓ Added" } },
+          { "ts": 80659, "type": "click", "data": { "tag": "a", "text": "Cart1" } },
+          { "ts": 83344, "type": "click", "data": { "tag": "a", "text": "Proceed to checkout" } },
+          { "ts": 89299, "type": "click", "data": { "tag": "a", "text": "Shop" } }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "FRICTION",
+        "insight_principle": "Commitment & Consistency (Cialdini) + Cognitive Dissonance: User made micro-commitments but encountered something at checkout that violated expectations.",
+        "insight_text": "User reached checkout page but immediately exited back to 'Shop' after clicking 'Proceed to checkout' — classic cart abandonment pattern.",
+        "recommendation": "Implement one-click checkout preview BEFORE the checkout page.",
+        "estimated_lift": "+28-35% checkout completion rate"
+      }
+    },
+    {
+      "id": "d6020113-0b56-463e-b61d-9e700ac8621e",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /",
+        "sessionDuration": 187,
+        "scrollDepth": 39,
+        "referral": null,
+        "events": [
+          { "ts": 173045, "type": "click", "data": { "tag": "a", "text": "terra" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "ENGAGEMENT",
+        "insight_principle": "Information Foraging Theory (Pirolli & Card): Users quickly assess information scent and abandon pages when the cost of continued search exceeds expected value.",
+        "insight_text": "User spent 187 seconds but only scrolled 39% before clicking the logo/brand link, indicating disorientation.",
+        "recommendation": "Implement a sticky value proposition bar in the top 20% of viewport.",
+        "estimated_lift": "+28-35% scroll engagement rate, +12-18% session duration"
+      }
+    },
+    {
+      "id": "a2ea8b54-ff3f-475c-ba43-c9de7fcdbb84",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /products",
+        "sessionDuration": 398,
+        "scrollDepth": 39,
+        "referral": null,
+        "events": [
+          { "ts": 394040, "type": "click", "data": { "tag": "a", "text": "New arrivals" } },
+          { "ts": 395599, "type": "click", "data": { "tag": "a", "text": "Shop" } },
+          { "ts": 396726, "type": "click", "data": { "tag": "button", "text": "Tech" } },
+          { "ts": 397504, "type": "click", "data": { "tag": "button", "text": "Accessories" } },
+          { "ts": 397850, "type": "click", "data": { "tag": "button", "text": "Home Office" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "DECISION FATIGUE",
+        "insight_principle": "Hick's Law and Choice Overload (Iyengar & Lepper) - decision time increases logarithmically with number of choices, leading to analysis paralysis.",
+        "insight_text": "User clicked through 5 navigation elements in just 4 seconds, indicating category overwhelm rather than purposeful exploration.",
+        "recommendation": "Implement guided shopping quiz ('Find Your Perfect Match') as primary CTA above category navigation.",
+        "estimated_lift": "+32-45% add-to-cart rate"
+      }
+    },
+    {
+      "id": "dad568e2-3b8a-42e4-b28f-47349149f91a",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": null,
+        "pageContext": "Terra Store - Premium Everyday Essentials — /",
+        "sessionDuration": 415,
+        "scrollDepth": 100,
+        "referral": null,
+        "events": [
+          { "ts": 398419, "type": "click", "data": { "tag": "button", "text": "Wearables" } },
+          { "ts": 406101, "type": "click", "data": { "tag": "button", "text": "All" } },
+          { "ts": 407067, "type": "click", "data": { "tag": "a", "text": "terra" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "ENGAGEMENT",
+        "insight_principle": "Hick's Law & Analysis Paralysis: Increased choice complexity exponentially increases decision time and reduces conversion likelihood.",
+        "insight_text": "User spent 6.9 minutes on page with 100% scroll depth but only 3 clicks, all navigation-focused.",
+        "recommendation": "Implement progressive disclosure with 3-5 curated product recommendations above-the-fold.",
+        "estimated_lift": "+28-35% product detail page visits"
+      }
+    },
+    {
+      "id": "12e1fc34-59a5-4765-a150-bd4e5ccdc2b3",
+      "source": "real",
+      "client_key": "terra-store",
+      "input": {
+        "clientKey": "terra-store",
+        "siteUrl": "https://terra-store-xi.vercel.app",
+        "pageContext": "Terra Store - Premium Everyday Essentials | /products",
+        "sessionDuration": 21,
+        "scrollDepth": 73,
+        "referral": null,
+        "events": [
+          { "ts": 1662, "type": "click", "data": { "tag": "a", "text": "Shop all products" } },
+          { "ts": 3882, "type": "click", "data": { "tag": "button", "text": "✓ Added" } },
+          { "ts": 5481, "type": "click", "data": { "tag": "a", "text": "Cart1" } },
+          { "ts": 9101, "type": "click", "data": { "tag": "button", "text": "+" } },
+          { "ts": 11427, "type": "click", "data": { "tag": "button", "text": "-" } },
+          { "ts": 16012, "type": "click", "data": { "tag": "a", "text": "Continue shopping" } }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "FRICTION",
+        "insight_principle": "Cognitive Dissonance Reduction: When users oscillate between adding/removing quantity, they are experiencing internal conflict between desire and perceived cost.",
+        "insight_text": "User added an item quickly, then adjusted quantity up and immediately back down, signaling price sensitivity or commitment anxiety.",
+        "recommendation": "Introduce a persistent value reinforcement nudge in the cart (free shipping threshold, trust badge).",
+        "estimated_lift": "+12-18% checkout initiation rate"
+      }
+    },
+    {
+      "id": "44b36990-1ab1-42c4-a42e-0a5978d34735",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "My Store | / | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 6,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 3188, "type": "section_view", "data": { "tag": "h2", "text": "Introducing", "durationMs": 3139 } },
+          { "ts": 3207, "type": "section_view", "data": { "tag": "h1", "text": "Our Newest Arrivals", "durationMs": 3158 } },
+          { "ts": 3228, "type": "section_view", "data": { "tag": "h3", "text": "Make Your Workspace Yours", "durationMs": 3179 } },
+          { "ts": 3312, "type": "section_view", "data": { "tag": "span", "text": "19.99 RSD", "durationMs": 1682 } },
+          { "ts": 4460, "type": "section_view", "data": { "tag": "span", "text": "19.99 RSD", "durationMs": 1232 } },
+          { "ts": 5920, "type": "click", "data": { "tag": "a", "text": "Shop Now" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "HIGH_INTENT",
+        "insight_principle": "Price Anchoring: Consumers use the first price they encounter as a reference point for value judgments.",
+        "insight_text": "Visitor spent the entire 6-second session viewing above-the-fold content, repeatedly dwelling on the 19.99 RSD price before clicking 'Shop Now'.",
+        "recommendation": "Add a brief value-reinforcing reassurance directly beneath the 'Shop Now' CTA.",
+        "estimated_lift": "+8-14% CTR to product page with intent retention"
+      }
+    },
+    {
+      "id": "d5b974d7-e792-464f-a58b-217d168a767c",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "Contact – My Store | /pages/contact | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com/pages/contact\"\n  }\n",
+        "sessionDuration": 275,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 2092, "type": "click", "data": { "tag": "button", "text": "Cart 0", "relatedText": "Your cart is empty. Have an account? Log in to check out faster. Continue shopping" } },
+          { "ts": 217719, "type": "exit_intent", "data": {} },
+          { "ts": 274598, "type": "click", "data": { "tag": "a", "text": "My Store" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Cognitive Ease (Kahneman): When a page requires effort to extract key information, users default to the low-effort choice of leaving.",
+        "insight_text": "Visitor clicked the empty cart, then sat idle for ~4 minutes without scrolling before triggering exit intent and navigating back to the homepage.",
+        "recommendation": "Add a short reassurance line near the contact page heading communicating response time.",
+        "estimated_lift": "+10-18% contact form starts"
+      }
+    },
+    {
+      "id": "e1248b2d-e34f-49a7-8e5e-8210fda7ec83",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "My Store | / | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 8,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 1396, "type": "click", "data": { "tag": "button", "text": "Cart 0", "relatedText": "Your cart is empty. Have an account? Log in to check out faster. Continue shopping" } },
+          { "ts": 1440, "type": "section_view", "data": { "tag": "h2", "text": "Your cart is empty", "durationMs": 1420 } },
+          { "ts": 2549, "type": "click", "data": { "tag": "button", "text": "Cart 0", "relatedText": "Your cart is empty. Have an account? Log in to check out faster. Continue shopping" } },
+          { "ts": 5553, "type": "click", "data": { "tag": "a", "text": "Log in" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "FRICTION",
+        "insight_principle": "Goal Frustration (Reactance Theory) — when a user arrives with a specific goal and the environment blocks it, motivation drops sharply.",
+        "insight_text": "Visitor opened the cart twice within ~1 second only to find it empty, then navigated to Log In.",
+        "recommendation": "Replace the generic 'Your cart is empty' heading with a warmer, action-oriented message.",
+        "estimated_lift": "+8-14% click-through to login or continue shopping"
+      }
+    },
+    {
+      "id": "508f5391-1fef-434a-ae4a-f7d704cf884b",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "Products – My Store | /collections/all | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 31,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 3252, "type": "form_focus", "data": { "field": "contact[email]" } },
+          { "ts": 4051, "type": "exit_intent", "data": {} }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Reactance Theory — when users encounter a commitment request before establishing perceived value, they experience psychological resistance and disengage.",
+        "insight_text": "Visitor focused the email field within 3 seconds but showed exit intent less than a second later.",
+        "recommendation": "Delay or reposition the email capture form so it appears only after meaningful engagement.",
+        "estimated_lift": "+8-15% email capture rate"
+      }
+    },
+    {
+      "id": "4dcfdef5-9604-480f-ac80-c4a8cb275973",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "Products – My Store | /collections/all | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 83,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 4738, "type": "exit_intent", "data": {} },
+          { "ts": 82703, "type": "click", "data": { "tag": "a", "text": "Home", "relatedText": "Catalog" } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Information Scent Theory — visitors abandon when the current page does not confirm they are on the right path toward their goal.",
+        "insight_text": "Visitor triggered exit intent within 5 seconds of landing on the collections page, then retreated to Home after 83 seconds.",
+        "recommendation": "Add a contextual banner acknowledging the visitor came from search and surface filtering options above the fold.",
+        "estimated_lift": "+8-15% scroll depth, +5-10% product page CTR"
+      }
+    },
+    {
+      "id": "481c21f5-7a7c-4cc3-92ae-31cd871f04f9",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "My Store | / | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 31,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 6576, "type": "click", "data": { "tag": "button", "text": "" } },
+          { "ts": 6633, "type": "section_view", "data": { "tag": "h2", "text": "Your cart is empty", "durationMs": 6581 } },
+          { "ts": 8591, "type": "exit_intent", "data": {} },
+          { "ts": 9697, "type": "section_view", "data": { "tag": "h2", "text": "Introducing", "durationMs": 9645 } },
+          { "ts": 9728, "type": "section_view", "data": { "tag": "h1", "text": "Our Newest Arrivals", "durationMs": 9676 } },
+          { "ts": 9783, "type": "section_view", "data": { "tag": "h3", "text": "Make Your Workspace Yours", "durationMs": 9731 } },
+          { "ts": 10833, "type": "section_view", "data": { "tag": "span", "text": "19.99 RSD", "durationMs": 3098 } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Zeigarnik Effect & Friction Cost: Unexpected interruptions break task continuity, and the cognitive cost of re-engaging often exceeds current motivation.",
+        "insight_text": "Visitor immediately triggered an empty cart view, likely a misclick, and showed exit intent within 8 seconds before any meaningful content engagement.",
+        "recommendation": "Soften the empty cart state with a warmer, action-oriented message that redirects back into browsing.",
+        "estimated_lift": "+8-14% bounce rate reduction on homepage"
+      }
+    },
+    {
+      "id": "310bf24d-94c5-437d-b8cd-c2cbdf2a1055",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "My Store | / | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 49,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 4702, "type": "section_view", "data": { "tag": "h3", "text": "Make Your Workspace Yours", "durationMs": 4642 } },
+          { "ts": 32138, "type": "section_view", "data": { "tag": "h2", "text": "Introducing", "durationMs": 32078 } },
+          { "ts": 32138, "type": "section_view", "data": { "tag": "h1", "text": "Our Newest Arrivals", "durationMs": 32078 } }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Cognitive Load & First Impression Effect: Visitors form a judgment about a page within seconds; if content fails to signal relevance, they disengage before scrolling.",
+        "insight_text": "Visitor spent nearly all 49 seconds on just two section views with zero scroll, suggesting the hero content did not create enough pull to drive exploration.",
+        "recommendation": "Reframe the primary headline to a benefit-led, specific hook anchored to the workspace identity.",
+        "estimated_lift": "+12-20% scroll depth past 25%"
+      }
+    },
+    {
+      "id": "3d39b02b-4c52-401d-bc79-4b0cb65bd804",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "Majica dugih rukava – My Store | /products/majica-dugih-rukava | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 17,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 2162, "type": "click", "data": { "tag": "button", "text": "Add to cart" } },
+          { "ts": 4963, "type": "section_view", "data": { "tag": "h1", "text": "Majica dugih rukava", "durationMs": 4944 } },
+          { "ts": 6919, "type": "section_view", "data": { "tag": "span", "text": "3,400.00 RSD", "durationMs": 6900 } },
+          { "ts": 10055, "type": "click", "data": { "tag": "button", "text": "Increase quantity" } },
+          { "ts": 10823, "type": "click", "data": { "tag": "button", "text": "Add to cart" } },
+          { "ts": 13727, "type": "exit_intent", "data": {} },
+          { "ts": 16230, "type": "click", "data": { "tag": "a", "text": "Catalog", "relatedText": "Contact" } }
+        ]
+      },
+      "reference": {
+        "state": "high_intent",
+        "insight_type": "FRICTION",
+        "insight_principle": "Post-Decision Dissonance: After making a commitment, visitors briefly re-evaluate their choice. Without clear confirmation, the window for doubt opens.",
+        "insight_text": "Visitor demonstrated strong purchase intent, adding to cart and increasing quantity, but then triggered exit intent and navigated to the Catalog instead of completing checkout.",
+        "recommendation": "Replace the 'Add to cart' button label with a more decisive, outcome-focused label.",
+        "estimated_lift": "+8-14% checkout initiation rate"
+      }
+    },
+    {
+      "id": "11aeb9f9-f822-4ac3-97a4-d3cfd92137d4",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "Majica kratkih rukava – My Store | /products/majica-kratkih-rukava | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 7,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 1619, "type": "click", "data": { "tag": "button", "text": "Add to cart" } },
+          { "ts": 3483, "type": "click", "data": { "tag": "button", "text": "Cart 4", "relatedText": "Total items in cart: 4" } },
+          { "ts": 6593, "type": "click", "data": { "tag": "button", "text": "Check out" } }
+        ]
+      },
+      "reference": {
+        "state": "converted",
+        "insight_type": "CONVERSION_EVENT",
+        "insight_principle": "Commitment and Consistency (Cialdini): Once a visitor takes a small commitment step, each subsequent step becomes psychologically easier.",
+        "insight_text": "Visitor exhibited a remarkably decisive purchase sequence: add to cart, review cart, checkout, all within 6.6 seconds with zero scroll.",
+        "recommendation": "Surface a 'Frequently bought together' cross-sell nudge in the cart drawer before checkout.",
+        "estimated_lift": "+8-15% average order value"
+      }
+    },
+    {
+      "id": "5d6a40b3-491a-4327-ae06-5f20e38fa235",
+      "source": "real",
+      "client_key": "veroshop_test",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "My Store | / | \n  {\n    \"@context\": \"http://schema.org\",\n    \"@type\": \"Organization\",\n    \"name\": \"My Store\",\n    \n    \"url\": \"https://v9gxdw-jt.myshopify.com\"\n  }\n",
+        "sessionDuration": 755,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 67883, "type": "click", "data": { "tag": "button", "text": "Check out" } },
+          { "ts": 272718, "type": "exit_intent", "data": {} },
+          { "ts": 754250, "type": "click", "data": { "tag": "button", "text": "Check out" } }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "FRICTION",
+        "insight_principle": "Zeigarnik Effect — incomplete tasks create cognitive tension. When a checkout attempt fails silently, the unresolved action creates lingering anxiety.",
+        "insight_text": "Visitor clicked 'Check out' twice, once early and again nearly 12 minutes later, with an exit intent signal in between.",
+        "recommendation": "Investigate whether the checkout button is failing silently; add reassurance micro-copy beneath the button.",
+        "estimated_lift": "+8-15% checkout completion rate"
+      }
+    },
+    {
+      "id": "d21bd2c7-8c43-4216-a938-23cf3deb98d1",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": null,
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 70,
+        "scrollDepth": 100,
+        "referral": null,
+        "events": [
+          { "ts": 29566, "type": "img_hover" },
+          { "ts": 29582, "type": "img_leave" },
+          { "ts": 30312, "type": "variant_change", "data": { "type": "color", "value": "Midnight Black" } },
+          { "ts": 31139, "type": "variant_change", "data": { "type": "color", "value": "Forest Green" } },
+          { "ts": 33542, "type": "variant_change", "data": { "type": "bundle", "value": "+ Case + Cable + Mic (+$59)" } },
+          { "ts": 35099, "type": "reviews_hover" },
+          { "ts": 36491, "type": "reviews_hover" },
+          { "ts": 70226, "type": "reviews_hover" }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "HESITATION",
+        "insight_principle": "Social Proof Dependency (Cialdini): User seeks validation from others' experiences to reduce purchase risk, especially at higher price points.",
+        "insight_text": "User exhibits high engagement (100% scroll, 70s) and product interest, but returns to reviews three separate times, including once at the very end of the session.",
+        "recommendation": "Implement floating reviews summary widget that persists during scroll with verified purchase badges.",
+        "estimated_lift": "+18-27% add-to-cart rate"
+      }
+    },
+    {
+      "id": "dadc92f2-8324-44e1-a50e-6faae4f0f5cf",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": null,
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 185,
+        "scrollDepth": 100,
+        "referral": null,
+        "events": [
+          { "ts": 17849, "type": "variant_change", "data": { "type": "bundle", "value": "+ Case + Cable + Mic (+$59)" } },
+          { "ts": 19575, "type": "variant_change", "data": { "type": "bundle", "value": "+ Carry case (+$29)" } },
+          { "ts": 41341, "type": "reviews_hover" },
+          { "ts": 67058, "type": "reviews_hover" },
+          { "ts": 85727, "type": "reviews_hover" },
+          { "ts": 112144, "type": "reviews_hover" },
+          { "ts": 182340, "type": "reviews_hover" },
+          { "ts": 185136, "type": "reviews_hover" }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "SOCIAL PROOF",
+        "insight_principle": "Cialdini's Social Proof + Information Asymmetry: When uncertain, people look to others' behavior to guide decisions.",
+        "insight_text": "User checked reviews 6 times over 185 seconds, demonstrating classic uncertainty reduction behavior despite full scroll and bundle exploration.",
+        "recommendation": "Implement floating review summary widget with verified purchase badges and a top-line recommend percentage.",
+        "estimated_lift": "+18-25% add-to-cart rate"
+      }
+    },
+    {
+      "id": "1cde6299-7b39-43cf-a77c-ddb88398eb3c",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": "",
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 19,
+        "scrollDepth": 100,
+        "referral": null,
+        "events": [
+          { "ts": 5096, "type": "reviews_hover" },
+          { "ts": 7038, "type": "reviews_hover" },
+          { "ts": 9116, "type": "variant_change", "data": { "type": "bundle", "value": "+ Carry case (+$29)" } },
+          { "ts": 9637, "type": "variant_change", "data": { "type": "bundle", "value": "+ Case + Cable + Mic (+$59)" } },
+          { "ts": 10124, "type": "reviews_hover" },
+          { "ts": 14882, "type": "reviews_hover" },
+          { "ts": 16717, "type": "img_hover" },
+          { "ts": 19034, "type": "img_leave" }
+        ]
+      },
+      "reference": {
+        "state": "comparing",
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_principle": "Social Proof & Risk Reduction (Cialdini): Users under uncertainty defer to the collective judgment of others.",
+        "insight_text": "User returned to reviews four times, actively explored bundle upgrades from base to full bundle, but stalled without sufficient reassurance and left without adding to cart.",
+        "recommendation": "Inject a high-signal social proof summary badge directly adjacent to the reviews section.",
+        "estimated_lift": "+8-14% add-to-cart rate"
+      }
+    },
+    {
+      "id": "4f54ba63-b364-41a8-a595-e246ce061d83",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": null,
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 59,
+        "scrollDepth": 100,
+        "referral": null,
+        "events": [
+          { "ts": 4442, "type": "img_leave" },
+          { "ts": 11484, "type": "img_hover" },
+          { "ts": 11601, "type": "img_leave" },
+          { "ts": 12517, "type": "variant_change", "data": { "type": "bundle", "value": "+ Carry case (+$29)" } },
+          { "ts": 13629, "type": "variant_change", "data": { "type": "bundle", "value": "+ Case + Cable + Mic (+$59)" } },
+          { "ts": 15805, "type": "wishlist" },
+          { "ts": 53724, "type": "add_to_cart" },
+          { "ts": 59910, "type": "img_hover" }
+        ]
+      },
+      "reference": {
+        "state": "converted",
+        "insight_type": "CONVERSION EVENT",
+        "insight_principle": "Endowed Progress Effect (Nunes & Drèze): Users who perceive they've made progress toward a goal are more likely to complete it.",
+        "insight_text": "User upgraded bundle tier, wishlisted, then converted to cart 38 seconds later, revealing a mental accounting reconciliation period before committing.",
+        "recommendation": "Implement a bundle comparison matrix with a progress indicator to amplify the endowed progress effect.",
+        "estimated_lift": "+18-25% conversion to higher-tier bundles, -30% decision time"
+      }
+    },
+    {
+      "id": "894965bb-0a84-446c-a154-334b73189638",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": null,
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 15,
+        "scrollDepth": 100,
+        "referral": null,
+        "events": [
+          { "ts": 1984, "type": "img_leave" },
+          { "ts": 4408, "type": "img_hover" },
+          { "ts": 4442, "type": "img_leave" },
+          { "ts": 11484, "type": "img_hover" },
+          { "ts": 11601, "type": "img_leave" },
+          { "ts": 12517, "type": "variant_change", "data": { "type": "bundle", "value": "+ Carry case (+$29)" } },
+          { "ts": 13629, "type": "variant_change", "data": { "type": "bundle", "value": "+ Case + Cable + Mic (+$59)" } },
+          { "ts": 15805, "type": "wishlist" }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "HESITATION",
+        "insight_principle": "Loss Aversion (Kahneman & Tversky) combined with Anchoring Bias: The base price anchor makes add-ons feel expensive; wishlist serves as a 'future self' delegation.",
+        "insight_text": "User rapidly explored bundle options, switching to the higher tier within 1.1 seconds, but retreated to wishlist instead of purchasing.",
+        "recommendation": "Show the higher bundle as 'Most Popular' with a crossed-out higher reference price and urgency copy.",
+        "estimated_lift": "+28-35% conversion from wishlist to cart"
+      }
+    },
+    {
+      "id": "a03dc5dc-0c53-45f1-b7a5-c66027fe680b",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": null,
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 25,
+        "scrollDepth": 100,
+        "referral": null,
+        "events": [
+          { "ts": 13716, "type": "reviews_hover" },
+          { "ts": 20911, "type": "thumb_click", "data": { "view": "Packaging", "thumb": 1 } },
+          { "ts": 21880, "type": "thumb_click", "data": { "view": "Specs", "thumb": 2 } },
+          { "ts": 22542, "type": "img_hover" },
+          { "ts": 22773, "type": "img_leave" },
+          { "ts": 24265, "type": "variant_change", "data": { "type": "color", "value": "Forest Green" } },
+          { "ts": 25427, "type": "variant_change", "data": { "type": "color", "value": "Pearl White" } }
+        ]
+      },
+      "reference": {
+        "state": "engaged",
+        "insight_type": "DECISION FATIGUE",
+        "insight_principle": "Hick's Law + Paradox of Choice: Increased options exponentially increase decision time and anxiety.",
+        "insight_text": "User shows strong product interest with 100% scroll and multi-angle inspection, but rapid color variant switching signals aesthetic indecision.",
+        "recommendation": "Offer a 'Color Match Quiz' or add a 'Most Popular' badge to the best-selling color variant.",
+        "estimated_lift": "+18-26% add-to-cart rate"
+      }
+    },
+    {
+      "id": "011aa77c-423b-47d6-b2f1-cf17ba57b4e6",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": null,
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 112,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 13522, "type": "variant_change", "data": { "type": "color", "value": "Forest Green" } },
+          { "ts": 15644, "type": "variant_change", "data": { "type": "bundle", "value": "+ Carry case (+$29)" } },
+          { "ts": 17849, "type": "variant_change", "data": { "type": "bundle", "value": "+ Case + Cable + Mic (+$59)" } },
+          { "ts": 19575, "type": "variant_change", "data": { "type": "bundle", "value": "+ Carry case (+$29)" } },
+          { "ts": 41341, "type": "reviews_hover" },
+          { "ts": 67058, "type": "reviews_hover" },
+          { "ts": 85727, "type": "reviews_hover" },
+          { "ts": 112144, "type": "reviews_hover" }
+        ]
+      },
+      "reference": {
+        "state": "hesitating",
+        "insight_type": "DECISION FATIGUE",
+        "insight_principle": "Hick's Law + Paradox of Choice: bundle toggling followed by repeated review hovering shows cognitive overwhelm leading to validation-seeking behavior rather than decision-making.",
+        "insight_text": "User toggled between bundle options 4 times in 6 seconds, then spent 92 seconds hovering over reviews 4 times without scrolling, stuck at the decision point.",
+        "recommendation": "Add a 'Most Popular' badge to the mid-tier bundle and surface reviews above the fold with a recommend percentage.",
+        "estimated_lift": "+24-31% add-to-cart rate"
+      }
+    },
+    {
+      "id": "dceb7910-994c-4789-b88d-099d17ee1f70",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": null,
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 7,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 1148, "type": "img_hover" },
+          { "ts": 1299, "type": "img_leave" },
+          { "ts": 7936, "type": "reviews_hover" }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "FRICTION",
+        "insight_principle": "Information Foraging Theory (Pirolli & Card): Users make rapid cost-benefit assessments of information patches.",
+        "insight_text": "Brief image interaction followed by a 6.6-second gap before minimal review engagement, then exit, with zero scroll depth.",
+        "recommendation": "Move primary value proposition and trust signal into immediate viewport alongside product image.",
+        "estimated_lift": "+28-35% time-on-page, +19-24% scroll engagement"
+      }
+    },
+    {
+      "id": "e3e20567-af15-4ba0-be28-ec9fb0530001",
+      "source": "real",
+      "client_key": "demo",
+      "input": {
+        "clientKey": "demo",
+        "siteUrl": "",
+        "pageContext": "E-commerce product page: Lumina Pro X Headphones ($349)",
+        "sessionDuration": 0,
+        "scrollDepth": 14,
+        "referral": null,
+        "events": [
+          { "ts": 395, "type": "img_hover" },
+          { "ts": 652, "type": "img_leave" },
+          { "ts": 750, "type": "reviews_hover" }
+        ]
+      },
+      "reference": {
+        "state": "browsing",
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Social Proof (Cialdini): When uncertain about a high-cost decision, people look to others' experiences to reduce perceived risk.",
+        "insight_text": "User briefly hovered the product image then immediately sought out reviews, a low-trust signal for a high-ticket item, with only 14% scroll depth.",
+        "recommendation": "Surface a prominent social proof summary badge directly beneath the product title, above the fold.",
+        "estimated_lift": "+8-14% engaged session rate"
+      }
+    },
+    {
+      "id": "constructed-comparison-01",
+      "source": "constructed",
+      "client_key": "veroshop_test",
+      "scenario_target": "COMPARISON_BEHAVIOR",
+      "scenario_note": "Two-product comparison via normal navigation (product page -> back to collection -> different product -> back -> revisit the first product), with deliberate, unhurried dwell time on each (seconds, not milliseconds), ending in an unresolved exit. No event names or labels the comparison explicitly; it must be inferred from the view-A / view-B / revisit-A pattern, matching the real event vocabulary and shape used by this client (click with tag/text, section_view and hover with tag/text/durationMs, exit_intent). A good insight should recognize this as comparison/evaluation between two specific alternatives, not generic choice overload, and should NOT default to FRICTION or BOUNCE_RISK given the deliberate pacing.",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "Merino Wool Sweater – My Store | /products/merino-wool-sweater",
+        "sessionDuration": 34,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 2100, "type": "section_view", "data": { "tag": "h1", "text": "Merino Wool Sweater", "durationMs": 4200 } },
+          { "ts": 6900, "type": "hover", "data": { "tag": "span", "text": "$89", "durationMs": 2600 } },
+          { "ts": 10100, "type": "click", "data": { "tag": "a", "text": "Back to Sweaters" } },
+          { "ts": 12400, "type": "click", "data": { "tag": "a", "text": "Alpine Wool Sweater" } },
+          { "ts": 16600, "type": "section_view", "data": { "tag": "h1", "text": "Alpine Wool Sweater", "durationMs": 4800 } },
+          { "ts": 21900, "type": "hover", "data": { "tag": "span", "text": "$104", "durationMs": 3100 } },
+          { "ts": 25400, "type": "click", "data": { "tag": "a", "text": "Back to Sweaters" } },
+          { "ts": 27900, "type": "click", "data": { "tag": "a", "text": "Merino Wool Sweater" } },
+          { "ts": 32100, "type": "exit_intent", "data": {} }
+        ]
+      }
+    },
+    {
+      "id": "constructed-comparison-02",
+      "source": "constructed",
+      "client_key": "veroshop_test",
+      "scenario_target": "COMPARISON_BEHAVIOR",
+      "scenario_note": "Three-way category comparison: visitor opens three different backpacks one at a time from a collection page, dwelling several seconds on each product's section before going back, then deliberately revisits the first item at the end (a callback comparison move). No cart/wishlist action at all, no rapid-fire thrashing. Targets the same gap as constructed-comparison-01 but via a collection-page pattern (product A vs B vs C) rather than a single product's own compare link, and ends on a revisit rather than an exit, to see if the model still reads this as comparison rather than HIGH_INTENT or plain ENGAGEMENT.",
+      "input": {
+        "clientKey": "veroshop_test",
+        "siteUrl": "https://v9gxdw-jt.myshopify.com",
+        "pageContext": "Backpacks – My Store | /collections/backpacks",
+        "sessionDuration": 38,
+        "scrollDepth": 0,
+        "referral": null,
+        "events": [
+          { "ts": 1200, "type": "click", "data": { "tag": "a", "text": "Voyager Backpack — $89" } },
+          { "ts": 4600, "type": "section_view", "data": { "tag": "h1", "text": "Voyager Backpack", "durationMs": 3400 } },
+          { "ts": 8200, "type": "click", "data": { "tag": "a", "text": "Back to Backpacks" } },
+          { "ts": 10500, "type": "click", "data": { "tag": "a", "text": "Trailhead Backpack — $104" } },
+          { "ts": 14900, "type": "section_view", "data": { "tag": "h1", "text": "Trailhead Backpack", "durationMs": 4100 } },
+          { "ts": 19200, "type": "hover", "data": { "tag": "span", "text": "$104", "durationMs": 2600 } },
+          { "ts": 22400, "type": "click", "data": { "tag": "a", "text": "Back to Backpacks" } },
+          { "ts": 25100, "type": "click", "data": { "tag": "a", "text": "Summit Backpack — $95" } },
+          { "ts": 29200, "type": "section_view", "data": { "tag": "h1", "text": "Summit Backpack", "durationMs": 3800 } },
+          { "ts": 33500, "type": "click", "data": { "tag": "a", "text": "Voyager Backpack — $89" } }
+        ]
+      }
+    }
+  ]
+}
