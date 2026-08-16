@@ -1,6 +1,7 @@
 'use client'
 import Footer from '@/components/Footer'
 import { useState, useEffect, useCallback } from 'react'
+import { COLLECTING_DATA_INSIGHT_TYPE } from '@/lib/analyze/prompt'
 
 type TestAction = {
   type: 'text_replace' | 'insert_element' | 'style_change'
@@ -61,6 +62,14 @@ const tagColor: Record<string, string> = { converted: '#1A3A2A', 'high-intent': 
 const statusStyle: Record<string, string> = { pending: 'bg-surface-2 text-ink-3', in_progress: 'bg-blue-50 text-blue-700', done: 'bg-green-light text-green', archived: 'bg-surface-2 text-ink-3' }
 const priorityStyle: Record<string, string> = { high: 'bg-red-50 text-red-700', medium: 'bg-amber-50 text-amber-700', low: 'bg-surface-2 text-ink-3' }
 const typeColor: Record<string, string> = { 'E-commerce': 'bg-amber-50 text-amber-700 border-amber-200', 'SaaS': 'bg-brand-light text-brand border-brand/20', 'B2B': 'bg-blue-50 text-blue-700 border-blue-200', 'Documentation': 'bg-purple-50 text-purple-700 border-purple-200', 'Website': 'bg-surface-2 text-ink-3 border-surface-3', 'Internal': 'bg-surface-2 text-ink-3 border-surface-3' }
+
+// Sessions the API skipped for the AI call (too few events — see
+// MIN_EVENTS_FOR_ANALYSIS) come back with this sentinel insight_type
+// instead of a real behavioral classification. Give them a readable label
+// instead of the raw enum string.
+function insightTypeLabel(insightType: string): string {
+  return insightType === COLLECTING_DATA_INSIGHT_TYPE ? 'Collecting data' : insightType
+}
 
 // --- TestAction helpers ---
 function emptyAction(): TestAction {
@@ -579,7 +588,7 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
                         <div className="px-5 pb-5 border-t border-surface-2">
                           <div className="grid md:grid-cols-2 gap-4 mt-4">
                             <div className="rounded-lg p-4" style={{ borderLeft: `3px solid ${stateColor[s.state] || '#4A4947'}`, background: stateBg[s.state] || '#F3F2EC' }}>
-                              <div className="text-[9px] font-mono uppercase tracking-widest mb-2" style={{ color: stateColor[s.state] || '#4A4947' }}>{s.insight_type || 'Behavioral Insight'}</div>
+                              <div className="text-[9px] font-mono uppercase tracking-widest mb-2" style={{ color: stateColor[s.state] || '#4A4947' }}>{s.insight_type ? insightTypeLabel(s.insight_type) : 'Behavioral Insight'}</div>
                               <p className="text-[13px] text-ink leading-relaxed mb-3">{s.insight_text || 'No insight generated.'}</p>
                               {s.insight_principle && <div className="text-[10px] font-mono" style={{ color: stateColor[s.state] || '#4A4947' }}>Principle: {s.insight_principle}</div>}
                             </div>
@@ -616,10 +625,10 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
           {activeTab === 'insights' && (
             sessions.length === 0 ? <div className="bg-white border border-surface-3 rounded-xl p-12 text-center text-ink-3 text-[13px]">No insights yet.</div> : (
               <div className="grid md:grid-cols-2 gap-4">
-                {sessions.filter((s: Session) => s.insight_text).slice(0, 8).map((s: Session) => (
+                {sessions.filter((s: Session) => s.insight_text && s.insight_type !== COLLECTING_DATA_INSIGHT_TYPE).slice(0, 8).map((s: Session) => (
                   <div key={s.id} className="bg-white border border-surface-3 rounded-xl p-5" style={{ borderLeftWidth: 3, borderLeftColor: stateColor[s.state] || '#4A4947' }}>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: stateColor[s.state] || '#4A4947' }}>{s.insight_type}</span>
+                      <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: stateColor[s.state] || '#4A4947' }}>{insightTypeLabel(s.insight_type)}</span>
                       <span className="text-[10px] font-mono bg-surface text-ink-3 px-2 py-0.5 rounded-full">{s.client_key}</span>
                     </div>
                     <p className="text-[13px] text-ink leading-relaxed mb-3">{s.insight_text}</p>

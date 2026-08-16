@@ -1,0 +1,1783 @@
+{
+  "ran_at": "2026-08-09T22:29:57.072Z",
+  "args": {
+    "repeat": 5,
+    "sessionIds": [
+      "d4227d31-0268-4de9-929a-dc480c71b4a4",
+      "0c5bad9f-dd24-40f3-8f20-015d9ccf7836",
+      "011aa77c-423b-47d6-b2f1-cf17ba57b4e6",
+      "dadc92f2-8324-44e1-a50e-6faae4f0f5cf",
+      "constructed-comparison-02",
+      "9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d"
+    ],
+    "model": "claude-sonnet-4-6",
+    "outDir": "eval/results"
+  },
+  "results": [
+    {
+      "session_id": "0c5bad9f-dd24-40f3-8f20-015d9ccf7836",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 0,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14598,
+      "usage": {
+        "input_tokens": 2393,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 688,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"high_intent\",\n  \"intent_score\": 82,\n  \"conversion_probability\": 71,\n  \"tags\": [\"repeated_cta_clicks\", \"cart_friction\", \"category_exploration\", \"high_intent\"],\n  \"insight_type\": \"FRICTION\",\n  \"insight_text\": \"The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal the button is not providing feedback — the cart is likely not updating visibly or the action is failing silently. Despite this friction, the visitor did not abandon; they pivoted to browse categories ('Home Office', 'Accessories'), suggesting genuine purchase intent that is being blocked by a broken or unresponsive cart interaction.\",\n  \"insight_principle\": \"Feedback Loop Principle — Users require immediate, clear system feedback to confirm their actions succeeded. When feedback is absent or delayed, users repeat the action (rage-click pattern), causing frustration. If the cart CTA provided visible confirmation (animation, count badge, toast), the visitor would have proceeded confidently rather than stalling.\",\n  \"recommendation\": \"Make the 'Add to cart' button visually distinct and high-contrast so it reads as a highly actionable primary CTA, but more critically, ensure the button provides unmistakable state feedback (color change, label swap to 'Added ✓', or cart badge increment) on click. As a testable proxy, change the button label to 'Add to Cart — See Bag' to set explicit expectations about what happens next, reducing uncertainty and the impulse to re-click.\",\n  \"estimated_lift\": \"+12-18% add-to-cart completion rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": \"Add to cart\",\n        \"variant_text\": \"Add to Cart — See Bag\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#1A3A2A\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"14px 28px\",\n          \"borderRadius\": \"8px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"By rewording the CTA to explicitly signal the next step ('See Bag') and making it visually dominant, we reduce post-click ambiguity and leverage Expectation Setting — users who know what will happen are less likely to re-click out of uncertainty, lowering friction and increasing confident single-click add-to-cart completions.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "high_intent",
+        "intent_score": 82,
+        "conversion_probability": 71,
+        "tags": [
+          "repeated_cta_clicks",
+          "cart_friction",
+          "category_exploration",
+          "high_intent"
+        ],
+        "insight_type": "FRICTION",
+        "insight_text": "The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal the button is not providing feedback — the cart is likely not updating visibly or the action is failing silently. Despite this friction, the visitor did not abandon; they pivoted to browse categories ('Home Office', 'Accessories'), suggesting genuine purchase intent that is being blocked by a broken or unresponsive cart interaction.",
+        "insight_principle": "Feedback Loop Principle — Users require immediate, clear system feedback to confirm their actions succeeded. When feedback is absent or delayed, users repeat the action (rage-click pattern), causing frustration. If the cart CTA provided visible confirmation (animation, count badge, toast), the visitor would have proceeded confidently rather than stalling.",
+        "recommendation": "Make the 'Add to cart' button visually distinct and high-contrast so it reads as a highly actionable primary CTA, but more critically, ensure the button provides unmistakable state feedback (color change, label swap to 'Added ✓', or cart badge increment) on click. As a testable proxy, change the button label to 'Add to Cart — See Bag' to set explicit expectations about what happens next, reducing uncertainty and the impulse to re-click.",
+        "estimated_lift": "+12-18% add-to-cart completion rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Add to cart",
+              "control_text": "Add to cart",
+              "variant_text": "Add to Cart — See Bag",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Add to cart",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#1A3A2A",
+                "color": "#FFFFFF",
+                "fontWeight": "700",
+                "padding": "14px 28px",
+                "borderRadius": "8px"
+              }
+            }
+          ],
+          "hypothesis": "By rewording the CTA to explicitly signal the next step ('See Bag') and making it visually dominant, we reduce post-click ambiguity and leverage Expectation Setting — users who know what will happen are less likely to re-click out of uncertainty, lowering friction and increasing confident single-click add-to-cart completions."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "0c5bad9f-dd24-40f3-8f20-015d9ccf7836",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 1,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 13986,
+      "usage": {
+        "input_tokens": 2393,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 693,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"high_intent\",\n  \"intent_score\": 82,\n  \"conversion_probability\": 71,\n  \"tags\": [\"repeated_cta_clicks\", \"category_exploration\", \"friction_signal\", \"cart_malfunction_risk\"],\n  \"insight_type\": \"FRICTION\",\n  \"insight_text\": \"The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal that the button did not provide clear feedback confirming the action succeeded. Rather than abandoning, the visitor then pivoted to category browsing (Home Office, Accessories), suggesting continued purchase intent despite the friction. This pattern is consistent with a 'broken feedback loop' — the user expected a visual confirmation (cart count increment, modal, animation) and received none.\",\n  \"insight_principle\": \"Feedback Loop Principle — humans require immediate, clear system responses to their actions to feel in control. When feedback is absent or delayed, users repeat actions (and may distrust the system), increasing abandonment risk even among high-intent visitors.\",\n  \"recommendation\": \"Make the 'Add to cart' button state change immediately and unambiguously on click — switch button text to 'Added to cart ✓' with a color change for 2–3 seconds before reverting. This closes the feedback loop and prevents repeat-click confusion. If the button already does this and the issue is rendering latency, investigate performance. As a testable CTA copy intervention, change 'Add to cart' to 'Add to Cart — See Confirmation' to prime the user to expect and notice the feedback.\",\n  \"estimated_lift\": \"+8-14% add-to-cart completion rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": \"Add to cart\",\n        \"variant_text\": \"Add to Cart — Item Saved\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#2D6A4F\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"700\",\n          \"borderRadius\": \"6px\",\n          \"padding\": \"12px 24px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"Rewording 'Add to cart' to 'Add to Cart — Item Saved' combined with higher visual contrast leverages the Feedback Loop Principle — users who see a success-framed label and a visually distinct button are less likely to repeat-click out of uncertainty, reducing friction and increasing single-click add-to-cart completions.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "high_intent",
+        "intent_score": 82,
+        "conversion_probability": 71,
+        "tags": [
+          "repeated_cta_clicks",
+          "category_exploration",
+          "friction_signal",
+          "cart_malfunction_risk"
+        ],
+        "insight_type": "FRICTION",
+        "insight_text": "The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal that the button did not provide clear feedback confirming the action succeeded. Rather than abandoning, the visitor then pivoted to category browsing (Home Office, Accessories), suggesting continued purchase intent despite the friction. This pattern is consistent with a 'broken feedback loop' — the user expected a visual confirmation (cart count increment, modal, animation) and received none.",
+        "insight_principle": "Feedback Loop Principle — humans require immediate, clear system responses to their actions to feel in control. When feedback is absent or delayed, users repeat actions (and may distrust the system), increasing abandonment risk even among high-intent visitors.",
+        "recommendation": "Make the 'Add to cart' button state change immediately and unambiguously on click — switch button text to 'Added to cart ✓' with a color change for 2–3 seconds before reverting. This closes the feedback loop and prevents repeat-click confusion. If the button already does this and the issue is rendering latency, investigate performance. As a testable CTA copy intervention, change 'Add to cart' to 'Add to Cart — See Confirmation' to prime the user to expect and notice the feedback.",
+        "estimated_lift": "+8-14% add-to-cart completion rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Add to cart",
+              "control_text": "Add to cart",
+              "variant_text": "Add to Cart — Item Saved",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Add to cart",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#2D6A4F",
+                "color": "#FFFFFF",
+                "fontWeight": "700",
+                "borderRadius": "6px",
+                "padding": "12px 24px"
+              }
+            }
+          ],
+          "hypothesis": "Rewording 'Add to cart' to 'Add to Cart — Item Saved' combined with higher visual contrast leverages the Feedback Loop Principle — users who see a success-framed label and a visually distinct button are less likely to repeat-click out of uncertainty, reducing friction and increasing single-click add-to-cart completions."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "0c5bad9f-dd24-40f3-8f20-015d9ccf7836",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 2,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 13405,
+      "usage": {
+        "input_tokens": 2393,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 651,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"high_intent\",\n  \"intent_score\": 82,\n  \"conversion_probability\": 71,\n  \"tags\": [\"repeated_cta_clicks\", \"cart_friction\", \"category_exploration\", \"high_intent_stall\"],\n  \"insight_type\": \"FRICTION\",\n  \"insight_text\": \"The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal that the button is not responding as expected — either the cart drawer is failing to open visibly, or there is no clear confirmation feedback. After failing to get expected feedback, the visitor pivoted to browsing categories ('Home Office', 'Accessories'), suggesting they did not abandon intent but redirected due to unresolved friction on the primary CTA.\",\n  \"insight_principle\": \"Feedback Loop Principle — Humans require immediate, clear system feedback after an action to feel confident the action succeeded. When feedback is absent or ambiguous, users repeat the action (rage-click pattern) and experience anxiety that undermines conversion confidence.\",\n  \"recommendation\": \"Ensure the 'Add to cart' button delivers immediate, unmistakable visual feedback (e.g. a state change to 'Added ✓' with a brief animation or color shift) to close the feedback loop and prevent repeat-click anxiety. As a testable proxy, change the button label to 'Add to Cart — Instant Confirm' to prime expectation of feedback and reduce uncertainty before the technical fix is deployed.\",\n  \"estimated_lift\": \"+8-14% add-to-cart completion rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": \"Add to cart\",\n        \"variant_text\": \"Add to Cart — See It in Your Cart\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#2A5C3F\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"14px 28px\",\n          \"borderRadius\": \"8px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"By rewording the CTA to explicitly reference the cart outcome and making it visually dominant, we leverage the Feedback Loop Principle to set clearer expectations before the click — reducing repeated clicks from uncertainty and increasing single-click add-to-cart completions.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "high_intent",
+        "intent_score": 82,
+        "conversion_probability": 71,
+        "tags": [
+          "repeated_cta_clicks",
+          "cart_friction",
+          "category_exploration",
+          "high_intent_stall"
+        ],
+        "insight_type": "FRICTION",
+        "insight_text": "The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal that the button is not responding as expected — either the cart drawer is failing to open visibly, or there is no clear confirmation feedback. After failing to get expected feedback, the visitor pivoted to browsing categories ('Home Office', 'Accessories'), suggesting they did not abandon intent but redirected due to unresolved friction on the primary CTA.",
+        "insight_principle": "Feedback Loop Principle — Humans require immediate, clear system feedback after an action to feel confident the action succeeded. When feedback is absent or ambiguous, users repeat the action (rage-click pattern) and experience anxiety that undermines conversion confidence.",
+        "recommendation": "Ensure the 'Add to cart' button delivers immediate, unmistakable visual feedback (e.g. a state change to 'Added ✓' with a brief animation or color shift) to close the feedback loop and prevent repeat-click anxiety. As a testable proxy, change the button label to 'Add to Cart — Instant Confirm' to prime expectation of feedback and reduce uncertainty before the technical fix is deployed.",
+        "estimated_lift": "+8-14% add-to-cart completion rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Add to cart",
+              "control_text": "Add to cart",
+              "variant_text": "Add to Cart — See It in Your Cart",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Add to cart",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#2A5C3F",
+                "color": "#FFFFFF",
+                "fontWeight": "700",
+                "padding": "14px 28px",
+                "borderRadius": "8px"
+              }
+            }
+          ],
+          "hypothesis": "By rewording the CTA to explicitly reference the cart outcome and making it visually dominant, we leverage the Feedback Loop Principle to set clearer expectations before the click — reducing repeated clicks from uncertainty and increasing single-click add-to-cart completions."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "0c5bad9f-dd24-40f3-8f20-015d9ccf7836",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 3,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12432,
+      "usage": {
+        "input_tokens": 2393,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 632,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"high_intent\",\n  \"intent_score\": 82,\n  \"conversion_probability\": 71,\n  \"tags\": [\"add-to-cart-friction\", \"category-exploration\", \"high-engagement\", \"possible-cart-malfunction\"],\n  \"insight_type\": \"FRICTION\",\n  \"insight_text\": \"The visitor clicked 'Add to Cart' three times in rapid succession within ~2.4 seconds — a strong rage-click pattern indicating the button may not have provided clear feedback that the item was added successfully. After failing to confirm the action, the user pivoted to category browsing (Home Office, Accessories), suggesting they are genuinely interested but frustrated by unclear system response.\",\n  \"insight_principle\": \"Feedback Loop Principle — users require immediate, unambiguous confirmation that their action registered. When a UI fails to confirm a state change (e.g. cart count update, button state change, toast notification), users interpret silence as failure and repeat the action or abandon the task entirely.\",\n  \"recommendation\": \"Redesign the 'Add to Cart' button to deliver unmistakable confirmation feedback: change its label momentarily to 'Added ✓' on click, AND make the button visually distinct (high-contrast color, bold weight) so the resting state clearly communicates interactivity. This reduces repeat clicks and cart anxiety.\",\n  \"estimated_lift\": \"+12-18% cart completion rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": \"Add to cart\",\n        \"variant_text\": \"Add to Cart — See Bag\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#1A3A2A\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"14px 28px\",\n          \"borderRadius\": \"8px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"By rewording the CTA to 'Add to Cart — See Bag' and making it visually dominant, the button signals both interactivity and a clear next step, reducing ambiguity about whether the action registered. This leverages the Feedback Loop Principle to eliminate repeat-click frustration and direct the user confidently toward checkout.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "high_intent",
+        "intent_score": 82,
+        "conversion_probability": 71,
+        "tags": [
+          "add-to-cart-friction",
+          "category-exploration",
+          "high-engagement",
+          "possible-cart-malfunction"
+        ],
+        "insight_type": "FRICTION",
+        "insight_text": "The visitor clicked 'Add to Cart' three times in rapid succession within ~2.4 seconds — a strong rage-click pattern indicating the button may not have provided clear feedback that the item was added successfully. After failing to confirm the action, the user pivoted to category browsing (Home Office, Accessories), suggesting they are genuinely interested but frustrated by unclear system response.",
+        "insight_principle": "Feedback Loop Principle — users require immediate, unambiguous confirmation that their action registered. When a UI fails to confirm a state change (e.g. cart count update, button state change, toast notification), users interpret silence as failure and repeat the action or abandon the task entirely.",
+        "recommendation": "Redesign the 'Add to Cart' button to deliver unmistakable confirmation feedback: change its label momentarily to 'Added ✓' on click, AND make the button visually distinct (high-contrast color, bold weight) so the resting state clearly communicates interactivity. This reduces repeat clicks and cart anxiety.",
+        "estimated_lift": "+12-18% cart completion rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Add to cart",
+              "control_text": "Add to cart",
+              "variant_text": "Add to Cart — See Bag",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Add to cart",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#1A3A2A",
+                "color": "#FFFFFF",
+                "fontWeight": "700",
+                "padding": "14px 28px",
+                "borderRadius": "8px"
+              }
+            }
+          ],
+          "hypothesis": "By rewording the CTA to 'Add to Cart — See Bag' and making it visually dominant, the button signals both interactivity and a clear next step, reducing ambiguity about whether the action registered. This leverages the Feedback Loop Principle to eliminate repeat-click frustration and direct the user confidently toward checkout."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "0c5bad9f-dd24-40f3-8f20-015d9ccf7836",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 4,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12447,
+      "usage": {
+        "input_tokens": 2393,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 601,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"high_intent\",\n  \"intent_score\": 82,\n  \"conversion_probability\": 71,\n  \"tags\": [\"rage_click_risk\", \"cart_friction\", \"category_navigation\", \"high_intent\"],\n  \"insight_type\": \"FRICTION\",\n  \"insight_text\": \"The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal that the button either failed to provide clear feedback or the cart action wasn't visually confirmed. After the failed attempts, they pivoted to category browsing ('Home Office', 'Accessories'), suggesting unresolved intent rather than abandonment — they still want to buy, but the friction broke their flow.\",\n  \"insight_principle\": \"Operant Feedback Loop — users expect immediate, unambiguous confirmation after an action (visual state change, animation, counter update). When feedback is absent or unclear, they repeat the action compulsively, eroding trust and momentum.\",\n  \"recommendation\": \"Make the 'Add to cart' button provide an unmistakable visual state change on click — change the button label momentarily to 'Added ✓' and apply a distinct success color. This directly addresses the rage-click pattern by closing the feedback loop and reducing uncertainty.\",\n  \"estimated_lift\": \"+12-18% add-to-cart completion rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": \"Add to cart\",\n        \"variant_text\": \"Add to Cart — Added ✓\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Add to cart\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#2D6A4F\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"700\",\n          \"borderRadius\": \"8px\",\n          \"padding\": \"14px 28px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"By rewording the CTA to include a confirmation signal and making it visually distinct with a high-contrast success color, the operant feedback loop is closed immediately on click, eliminating the uncertainty that drives rage-clicking and increasing completed add-to-cart actions.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "high_intent",
+        "intent_score": 82,
+        "conversion_probability": 71,
+        "tags": [
+          "rage_click_risk",
+          "cart_friction",
+          "category_navigation",
+          "high_intent"
+        ],
+        "insight_type": "FRICTION",
+        "insight_text": "The visitor clicked 'Add to cart' three times in rapid succession within ~2.4 seconds, a strong signal that the button either failed to provide clear feedback or the cart action wasn't visually confirmed. After the failed attempts, they pivoted to category browsing ('Home Office', 'Accessories'), suggesting unresolved intent rather than abandonment — they still want to buy, but the friction broke their flow.",
+        "insight_principle": "Operant Feedback Loop — users expect immediate, unambiguous confirmation after an action (visual state change, animation, counter update). When feedback is absent or unclear, they repeat the action compulsively, eroding trust and momentum.",
+        "recommendation": "Make the 'Add to cart' button provide an unmistakable visual state change on click — change the button label momentarily to 'Added ✓' and apply a distinct success color. This directly addresses the rage-click pattern by closing the feedback loop and reducing uncertainty.",
+        "estimated_lift": "+12-18% add-to-cart completion rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Add to cart",
+              "control_text": "Add to cart",
+              "variant_text": "Add to Cart — Added ✓",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Add to cart",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#2D6A4F",
+                "color": "#FFFFFF",
+                "fontWeight": "700",
+                "borderRadius": "8px",
+                "padding": "14px 28px"
+              }
+            }
+          ],
+          "hypothesis": "By rewording the CTA to include a confirmation signal and making it visually distinct with a high-contrast success color, the operant feedback loop is closed immediately on click, eliminating the uncertainty that drives rage-clicking and increasing completed add-to-cart actions."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "d4227d31-0268-4de9-929a-dc480c71b4a4",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 0,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 16170,
+      "usage": {
+        "input_tokens": 2396,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 635,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"converted\",\n  \"intent_score\": 99,\n  \"conversion_probability\": 100,\n  \"tags\": [\"fast_checkout\", \"high_intent\", \"sequential_funnel_completion\", \"no_hesitation\"],\n  \"insight_type\": \"CONVERSION_EVENT\",\n  \"insight_text\": \"This visitor completed the entire checkout funnel in under 5 seconds across 5 sequential clicks with zero hesitation, rage clicks, or exit intent signals. The rapid, linear progression from cart review through to order placement indicates a pre-committed buyer who arrived knowing exactly what they wanted. There is no evidence of friction, price sensitivity, or trust doubt in this session.\",\n  \"insight_principle\": \"Commitment and Consistency (Cialdini) — once a visitor takes the first small step (viewing cart), each subsequent micro-commitment (Proceed → Continue → Review → Place Order) reduces psychological friction and increases follow-through probability. This session is a textbook example of a frictionless commitment ladder.\",\n  \"recommendation\": \"Reinforce the final confirmation moment by making the 'Place order' button more visually distinct and rewarding — increase size, use a high-contrast success-oriented color, and add a brief post-click confirmation micro-copy near it to reduce post-purchase anxiety and increase repeat purchase likelihood.\",\n  \"estimated_lift\": \"+5-12% repeat purchase rate / reduced post-purchase regret\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Place order - $147\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#1A6B3A\",\n          \"fontSize\": \"18px\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"16px 36px\",\n          \"borderRadius\": \"8px\"\n        }\n      },\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"Place order - $147\",\n        \"control_text\": null,\n        \"variant_text\": \"✓ Secure checkout — you can review your order before it ships\",\n        \"position\": \"after\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Amplifying the visual weight of the final CTA triggers stronger closure satisfaction (peak-end rule), while the reassurance micro-copy beneath it reduces post-purchase anxiety at the moment of maximum commitment — together these should reduce order abandonment at the final step and improve post-purchase confidence, positively impacting repeat purchase behavior.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "converted",
+        "intent_score": 99,
+        "conversion_probability": 100,
+        "tags": [
+          "fast_checkout",
+          "high_intent",
+          "sequential_funnel_completion",
+          "no_hesitation"
+        ],
+        "insight_type": "CONVERSION_EVENT",
+        "insight_text": "This visitor completed the entire checkout funnel in under 5 seconds across 5 sequential clicks with zero hesitation, rage clicks, or exit intent signals. The rapid, linear progression from cart review through to order placement indicates a pre-committed buyer who arrived knowing exactly what they wanted. There is no evidence of friction, price sensitivity, or trust doubt in this session.",
+        "insight_principle": "Commitment and Consistency (Cialdini) — once a visitor takes the first small step (viewing cart), each subsequent micro-commitment (Proceed → Continue → Review → Place Order) reduces psychological friction and increases follow-through probability. This session is a textbook example of a frictionless commitment ladder.",
+        "recommendation": "Reinforce the final confirmation moment by making the 'Place order' button more visually distinct and rewarding — increase size, use a high-contrast success-oriented color, and add a brief post-click confirmation micro-copy near it to reduce post-purchase anxiety and increase repeat purchase likelihood.",
+        "estimated_lift": "+5-12% repeat purchase rate / reduced post-purchase regret",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "style_change",
+              "element_find_text": "Place order - $147",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#1A6B3A",
+                "fontSize": "18px",
+                "fontWeight": "700",
+                "padding": "16px 36px",
+                "borderRadius": "8px"
+              }
+            },
+            {
+              "type": "insert_element",
+              "element_find_text": "Place order - $147",
+              "control_text": null,
+              "variant_text": "✓ Secure checkout — you can review your order before it ships",
+              "position": "after",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Amplifying the visual weight of the final CTA triggers stronger closure satisfaction (peak-end rule), while the reassurance micro-copy beneath it reduces post-purchase anxiety at the moment of maximum commitment — together these should reduce order abandonment at the final step and improve post-purchase confidence, positively impacting repeat purchase behavior."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "d4227d31-0268-4de9-929a-dc480c71b4a4",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 1,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12192,
+      "usage": {
+        "input_tokens": 2396,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 566,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"converted\",\n  \"intent_score\": 99,\n  \"conversion_probability\": 100,\n  \"tags\": [\"completed_purchase\", \"rapid_checkout\", \"frictionless_flow\", \"high_value_order\"],\n  \"insight_type\": \"CONVERSION_EVENT\",\n  \"insight_text\": \"This visitor completed the entire checkout funnel in under 5 seconds across 5 sequential clicks, with no hesitation, rage clicks, or exit intent signals. The behavior reflects a highly committed buyer who had likely already decided to purchase before entering the checkout flow. The $147 order was placed with zero observable friction.\",\n  \"insight_principle\": \"Commitment and Consistency (Cialdini): Once a user initiates a checkout flow, each micro-commitment (cart → proceed → payment → review → place order) reinforces the decision and reduces cognitive resistance. This session is a textbook example of a frictionless commitment ladder executing perfectly.\",\n  \"recommendation\": \"This session itself needs no intervention — it is the ideal benchmark. However, the multi-step checkout (5 button clicks in 5 seconds) suggests the steps are well-structured but could be consolidated. Test making the final 'Place order' CTA more visually prominent and high-contrast to reinforce the reward moment and reduce any last-millisecond hesitation for less decisive visitors in similar funnels.\",\n  \"estimated_lift\": \"+3-6% checkout completion rate for hesitant segments\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Place order - $147\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#1A5C2E\",\n          \"color\": \"#FFFFFF\",\n          \"fontSize\": \"18px\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"16px 32px\",\n          \"borderRadius\": \"8px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"Making the final 'Place order' CTA visually dominant leverages the Commitment and Consistency principle — a high-contrast, oversized button signals that this is the rewarding conclusion of the checkout journey, reducing last-second drop-off among less confident buyers who reach this step.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "converted",
+        "intent_score": 99,
+        "conversion_probability": 100,
+        "tags": [
+          "completed_purchase",
+          "rapid_checkout",
+          "frictionless_flow",
+          "high_value_order"
+        ],
+        "insight_type": "CONVERSION_EVENT",
+        "insight_text": "This visitor completed the entire checkout funnel in under 5 seconds across 5 sequential clicks, with no hesitation, rage clicks, or exit intent signals. The behavior reflects a highly committed buyer who had likely already decided to purchase before entering the checkout flow. The $147 order was placed with zero observable friction.",
+        "insight_principle": "Commitment and Consistency (Cialdini): Once a user initiates a checkout flow, each micro-commitment (cart → proceed → payment → review → place order) reinforces the decision and reduces cognitive resistance. This session is a textbook example of a frictionless commitment ladder executing perfectly.",
+        "recommendation": "This session itself needs no intervention — it is the ideal benchmark. However, the multi-step checkout (5 button clicks in 5 seconds) suggests the steps are well-structured but could be consolidated. Test making the final 'Place order' CTA more visually prominent and high-contrast to reinforce the reward moment and reduce any last-millisecond hesitation for less decisive visitors in similar funnels.",
+        "estimated_lift": "+3-6% checkout completion rate for hesitant segments",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "style_change",
+              "element_find_text": "Place order - $147",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#1A5C2E",
+                "color": "#FFFFFF",
+                "fontSize": "18px",
+                "fontWeight": "700",
+                "padding": "16px 32px",
+                "borderRadius": "8px"
+              }
+            }
+          ],
+          "hypothesis": "Making the final 'Place order' CTA visually dominant leverages the Commitment and Consistency principle — a high-contrast, oversized button signals that this is the rewarding conclusion of the checkout journey, reducing last-second drop-off among less confident buyers who reach this step."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "d4227d31-0268-4de9-929a-dc480c71b4a4",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 2,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 16287,
+      "usage": {
+        "input_tokens": 2396,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 718,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "{\n  \"state\": \"converted\",\n  \"intent_score\": 99,\n  \"conversion_probability\": 100,\n  \"tags\": [\"fast_checkout\", \"zero_hesitation\", \"high_value_order\", \"direct_traffic\", \"sequential_funnel_completion\"],\n  \"insight_type\": \"CONVERSION_EVENT\",\n  \"insight_text\": \"This visitor completed a $147 purchase in under 5 seconds across 5 sequential clicks with zero hesitation, rage clicks, or exit signals — a textbook committed buyer who arrived already decided. The direct referral source and instant cart-to-order behavior suggest this was likely a returning customer or someone who completed research offline or on another device. The multi-step checkout funnel (Cart → Proceed → Continue to payment → Review order → Place order) was traversed at near-maximum speed, indicating no friction points caused pause.\",\n  \"insight_principle\": \"Commitment and Consistency (Cialdini): Once a person takes a small initial action aligned with a goal, they are psychologically compelled to follow through with subsequent steps. This visitor's momentum through the funnel reflects a pre-committed mental state — each micro-step reinforced the next with no cognitive resistance.\",\n  \"recommendation\": \"This is an optimized conversion to study, not fix. The primary opportunity is post-purchase: immediately reinforce the purchase decision with a strong order confirmation experience to reduce buyer's remorse on a $147 transaction. Additionally, the multi-step checkout is working well for committed buyers — consider whether a guest/returning customer fast-track option could reduce even these 5 clicks to 2-3 for recognized users, which could lift repeat purchase rate.\",\n  \"estimated_lift\": \"+8-15% repeat purchase rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Place order - $147\",\n        \"control_text\": \"Place order - $147\",\n        \"variant_text\": \"Complete my order - $147\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Place order - $147\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#1A3A2A\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"16px 32px\",\n          \"borderRadius\": \"8px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"Replacing 'Place order' with 'Complete my order' activates ownership language (Endowment Effect), making the buyer feel the items are already theirs before clicking — reinforcing commitment. Combined with a visually dominant, high-contrast button, the final CTA becomes the unambiguous focal point of the page, reducing any last-millisecond hesitation and potentially improving conversion among less committed visitors who reach this step.\"\n  }\n}",
+      "parsed": {
+        "state": "converted",
+        "intent_score": 99,
+        "conversion_probability": 100,
+        "tags": [
+          "fast_checkout",
+          "zero_hesitation",
+          "high_value_order",
+          "direct_traffic",
+          "sequential_funnel_completion"
+        ],
+        "insight_type": "CONVERSION_EVENT",
+        "insight_text": "This visitor completed a $147 purchase in under 5 seconds across 5 sequential clicks with zero hesitation, rage clicks, or exit signals — a textbook committed buyer who arrived already decided. The direct referral source and instant cart-to-order behavior suggest this was likely a returning customer or someone who completed research offline or on another device. The multi-step checkout funnel (Cart → Proceed → Continue to payment → Review order → Place order) was traversed at near-maximum speed, indicating no friction points caused pause.",
+        "insight_principle": "Commitment and Consistency (Cialdini): Once a person takes a small initial action aligned with a goal, they are psychologically compelled to follow through with subsequent steps. This visitor's momentum through the funnel reflects a pre-committed mental state — each micro-step reinforced the next with no cognitive resistance.",
+        "recommendation": "This is an optimized conversion to study, not fix. The primary opportunity is post-purchase: immediately reinforce the purchase decision with a strong order confirmation experience to reduce buyer's remorse on a $147 transaction. Additionally, the multi-step checkout is working well for committed buyers — consider whether a guest/returning customer fast-track option could reduce even these 5 clicks to 2-3 for recognized users, which could lift repeat purchase rate.",
+        "estimated_lift": "+8-15% repeat purchase rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Place order - $147",
+              "control_text": "Place order - $147",
+              "variant_text": "Complete my order - $147",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Place order - $147",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#1A3A2A",
+                "color": "#FFFFFF",
+                "fontWeight": "700",
+                "padding": "16px 32px",
+                "borderRadius": "8px"
+              }
+            }
+          ],
+          "hypothesis": "Replacing 'Place order' with 'Complete my order' activates ownership language (Endowment Effect), making the buyer feel the items are already theirs before clicking — reinforcing commitment. Combined with a visually dominant, high-contrast button, the final CTA becomes the unambiguous focal point of the page, reducing any last-millisecond hesitation and potentially improving conversion among less committed visitors who reach this step."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "d4227d31-0268-4de9-929a-dc480c71b4a4",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 3,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 13608,
+      "usage": {
+        "input_tokens": 2396,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 578,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "{\n  \"state\": \"converted\",\n  \"intent_score\": 99,\n  \"conversion_probability\": 100,\n  \"tags\": [\"fast_checkout\", \"high_intent\", \"no_friction\", \"direct_traffic\", \"completed_purchase\"],\n  \"insight_type\": \"CONVERSION_EVENT\",\n  \"insight_text\": \"This visitor completed the entire checkout funnel in under 5 seconds across 5 sequential clicks, demonstrating pre-committed, high-confidence purchase behavior with zero hesitation. The speed and linearity of the click sequence — cart → proceed → payment → review → place order — suggests the visitor arrived with a clear purchase goal already formed, consistent with direct traffic and a returning or highly motivated customer. No rage clicks, no pauses, no exit intent signals indicate a frictionless conversion experience.\",\n  \"insight_principle\": \"Implementation Intention — when a person has already mentally committed to an action before beginning it, they execute the steps with minimal deliberation and near-zero dropout risk. This visitor had effectively 'pre-decided' before hitting the checkout page.\",\n  \"recommendation\": \"Reinforce the final confirmation step 'Place order - $147' with a higher-contrast, action-affirming visual style to further reduce any last-millisecond hesitation for less pre-committed users who follow a similar path. The current neutral button style may underperform for users who are almost-but-not-quite committed at that final step.\",\n  \"estimated_lift\": \"+3-6% checkout completion rate among near-converted users\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Place order - $147\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#1A6B3A\",\n          \"color\": \"#FFFFFF\",\n          \"fontSize\": \"18px\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"16px 32px\",\n          \"borderRadius\": \"8px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"Making the final 'Place order' CTA visually dominant leverages the Commitment and Consistency principle — a high-contrast, large button visually validates the user's decision at the moment of highest cognitive stakes, reducing last-second doubt and increasing completion rates among users who have not yet fully pre-committed.\"\n  }\n}",
+      "parsed": {
+        "state": "converted",
+        "intent_score": 99,
+        "conversion_probability": 100,
+        "tags": [
+          "fast_checkout",
+          "high_intent",
+          "no_friction",
+          "direct_traffic",
+          "completed_purchase"
+        ],
+        "insight_type": "CONVERSION_EVENT",
+        "insight_text": "This visitor completed the entire checkout funnel in under 5 seconds across 5 sequential clicks, demonstrating pre-committed, high-confidence purchase behavior with zero hesitation. The speed and linearity of the click sequence — cart → proceed → payment → review → place order — suggests the visitor arrived with a clear purchase goal already formed, consistent with direct traffic and a returning or highly motivated customer. No rage clicks, no pauses, no exit intent signals indicate a frictionless conversion experience.",
+        "insight_principle": "Implementation Intention — when a person has already mentally committed to an action before beginning it, they execute the steps with minimal deliberation and near-zero dropout risk. This visitor had effectively 'pre-decided' before hitting the checkout page.",
+        "recommendation": "Reinforce the final confirmation step 'Place order - $147' with a higher-contrast, action-affirming visual style to further reduce any last-millisecond hesitation for less pre-committed users who follow a similar path. The current neutral button style may underperform for users who are almost-but-not-quite committed at that final step.",
+        "estimated_lift": "+3-6% checkout completion rate among near-converted users",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "style_change",
+              "element_find_text": "Place order - $147",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#1A6B3A",
+                "color": "#FFFFFF",
+                "fontSize": "18px",
+                "fontWeight": "700",
+                "padding": "16px 32px",
+                "borderRadius": "8px"
+              }
+            }
+          ],
+          "hypothesis": "Making the final 'Place order' CTA visually dominant leverages the Commitment and Consistency principle — a high-contrast, large button visually validates the user's decision at the moment of highest cognitive stakes, reducing last-second doubt and increasing completion rates among users who have not yet fully pre-committed."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "d4227d31-0268-4de9-929a-dc480c71b4a4",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 4,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12971,
+      "usage": {
+        "input_tokens": 2396,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 573,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "{\n  \"state\": \"converted\",\n  \"intent_score\": 99,\n  \"conversion_probability\": 100,\n  \"tags\": [\"completed_purchase\", \"high_velocity\", \"zero_friction\", \"direct_traffic\"],\n  \"insight_type\": \"CONVERSION_EVENT\",\n  \"insight_text\": \"This visitor completed a full checkout flow in under 5 seconds across 5 sequential clicks, indicating extremely high pre-formed intent — likely a returning customer or someone who had already made the decision before arriving. There was zero hesitation, no scroll, no form exploration, and no exit intent, suggesting the checkout UX presented no friction. The direct referral source reinforces that this was a deliberate, motivated visit.\",\n  \"insight_principle\": \"Commitment and Consistency (Cialdini) — once a user commits to a purchase decision mentally, they move through confirmation steps rapidly and without re-evaluation. This visitor had already crossed the psychological decision threshold before entering the checkout, making each step a motor action rather than a cognitive one.\",\n  \"recommendation\": \"Since this segment converts with near-zero friction, focus on post-purchase experience to maximize LTV: immediately after 'Place order', surface a personalized upsell or subscription prompt while commitment energy is highest. Additionally, make 'Place order - $147' more visually prominent to reduce any subconscious hesitation for future less-decided visitors at this final step.\",\n  \"estimated_lift\": \"+8-15% average order value via post-purchase upsell\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Place order - $147\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#1A3A2A\",\n          \"color\": \"#FFFFFF\",\n          \"fontSize\": \"18px\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"16px 32px\",\n          \"borderRadius\": \"8px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"Making the final 'Place order' CTA visually dominant leverages the Commitment and Consistency principle — reinforcing the user's already-formed decision with a clear, confident visual signal reduces any last-millisecond hesitation for future visitors who arrive with slightly less pre-formed intent than this session.\"\n  }\n}",
+      "parsed": {
+        "state": "converted",
+        "intent_score": 99,
+        "conversion_probability": 100,
+        "tags": [
+          "completed_purchase",
+          "high_velocity",
+          "zero_friction",
+          "direct_traffic"
+        ],
+        "insight_type": "CONVERSION_EVENT",
+        "insight_text": "This visitor completed a full checkout flow in under 5 seconds across 5 sequential clicks, indicating extremely high pre-formed intent — likely a returning customer or someone who had already made the decision before arriving. There was zero hesitation, no scroll, no form exploration, and no exit intent, suggesting the checkout UX presented no friction. The direct referral source reinforces that this was a deliberate, motivated visit.",
+        "insight_principle": "Commitment and Consistency (Cialdini) — once a user commits to a purchase decision mentally, they move through confirmation steps rapidly and without re-evaluation. This visitor had already crossed the psychological decision threshold before entering the checkout, making each step a motor action rather than a cognitive one.",
+        "recommendation": "Since this segment converts with near-zero friction, focus on post-purchase experience to maximize LTV: immediately after 'Place order', surface a personalized upsell or subscription prompt while commitment energy is highest. Additionally, make 'Place order - $147' more visually prominent to reduce any subconscious hesitation for future less-decided visitors at this final step.",
+        "estimated_lift": "+8-15% average order value via post-purchase upsell",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "style_change",
+              "element_find_text": "Place order - $147",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#1A3A2A",
+                "color": "#FFFFFF",
+                "fontSize": "18px",
+                "fontWeight": "700",
+                "padding": "16px 32px",
+                "borderRadius": "8px"
+              }
+            }
+          ],
+          "hypothesis": "Making the final 'Place order' CTA visually dominant leverages the Commitment and Consistency principle — reinforcing the user's already-formed decision with a clear, confident visual signal reduces any last-millisecond hesitation for future visitors who arrive with slightly less pre-formed intent than this session."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 0,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14378,
+      "usage": {
+        "input_tokens": 2298,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 718,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"browsing\",\n  \"intent_score\": 8,\n  \"conversion_probability\": 5,\n  \"tags\": [\"immediate-exit\", \"no-engagement\", \"navigation-only\"],\n  \"insight_type\": \"BOUNCE_RISK\",\n  \"insight_text\": \"The visitor spent 64 seconds on the homepage without scrolling at all, then clicked 'Back to store' — indicating they arrived, felt disoriented or mismatched with what they expected, and chose to retreat rather than explore. Zero scroll depth combined with a direct 'back' navigation suggests the landing experience failed to establish relevance or draw the visitor in above the fold. This is a classic above-the-fold failure: the value proposition did not resonate quickly enough to prompt any further engagement.\",\n  \"insight_principle\": \"Cognitive Fluency & First Impression Effect — visitors decide within seconds whether a page is relevant to them. If the above-the-fold content requires effort to parse or doesn't immediately mirror the visitor's mental model, they disengage before scrolling. The 64 seconds with zero scroll suggests passive hesitation (tab left open) rather than active reading.\",\n  \"recommendation\": \"Reframe the primary CTA or hero navigation link to be more directive and value-forward, reducing ambiguity about what 'the store' offers. Consider A/B testing the 'Back to store' link label itself to something like 'Shop All Essentials' to reduce the cognitive sense of 'retreating' and instead frame it as a forward action. More broadly, the above-the-fold hero copy and CTA should immediately signal what Terra Store sells and for whom.\",\n  \"estimated_lift\": \"+8-15% scroll engagement / -10-18% immediate bounce rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Back to store\",\n        \"control_text\": \"Back to store\",\n        \"variant_text\": \"Shop All Essentials\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Back to store\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#2D5A3D\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"700\",\n          \"padding\": \"12px 24px\",\n          \"borderRadius\": \"6px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"Replacing the passive, backward-framing 'Back to store' with the forward-action 'Shop All Essentials' removes the retreat signal and replaces it with a purposeful directive, reducing exit intent. Pairing it with higher visual prominence leverages the Von Restorff Effect to make the primary navigation action more salient, increasing the likelihood the visitor engages rather than closes the tab.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "browsing",
+        "intent_score": 8,
+        "conversion_probability": 5,
+        "tags": [
+          "immediate-exit",
+          "no-engagement",
+          "navigation-only"
+        ],
+        "insight_type": "BOUNCE_RISK",
+        "insight_text": "The visitor spent 64 seconds on the homepage without scrolling at all, then clicked 'Back to store' — indicating they arrived, felt disoriented or mismatched with what they expected, and chose to retreat rather than explore. Zero scroll depth combined with a direct 'back' navigation suggests the landing experience failed to establish relevance or draw the visitor in above the fold. This is a classic above-the-fold failure: the value proposition did not resonate quickly enough to prompt any further engagement.",
+        "insight_principle": "Cognitive Fluency & First Impression Effect — visitors decide within seconds whether a page is relevant to them. If the above-the-fold content requires effort to parse or doesn't immediately mirror the visitor's mental model, they disengage before scrolling. The 64 seconds with zero scroll suggests passive hesitation (tab left open) rather than active reading.",
+        "recommendation": "Reframe the primary CTA or hero navigation link to be more directive and value-forward, reducing ambiguity about what 'the store' offers. Consider A/B testing the 'Back to store' link label itself to something like 'Shop All Essentials' to reduce the cognitive sense of 'retreating' and instead frame it as a forward action. More broadly, the above-the-fold hero copy and CTA should immediately signal what Terra Store sells and for whom.",
+        "estimated_lift": "+8-15% scroll engagement / -10-18% immediate bounce rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Back to store",
+              "control_text": "Back to store",
+              "variant_text": "Shop All Essentials",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Back to store",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#2D5A3D",
+                "color": "#FFFFFF",
+                "fontWeight": "700",
+                "padding": "12px 24px",
+                "borderRadius": "6px"
+              }
+            }
+          ],
+          "hypothesis": "Replacing the passive, backward-framing 'Back to store' with the forward-action 'Shop All Essentials' removes the retreat signal and replaces it with a purposeful directive, reducing exit intent. Pairing it with higher visual prominence leverages the Von Restorff Effect to make the primary navigation action more salient, increasing the likelihood the visitor engages rather than closes the tab."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 1,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14479,
+      "usage": {
+        "input_tokens": 2298,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 664,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"browsing\",\n  \"intent_score\": 8,\n  \"conversion_probability\": 5,\n  \"tags\": [\"immediate-exit\", \"no-engagement\", \"navigation-away\"],\n  \"insight_type\": \"BOUNCE_RISK\",\n  \"insight_principle\": \"Cognitive Load & First Impression Effect — visitors form judgments within seconds; if the landing experience fails to establish immediate relevance or value, they exit before engaging with any content.\",\n  \"insight_text\": \"The visitor arrived via direct traffic, scrolled 0% of the page, and within ~62 seconds clicked 'Back to store' — indicating they landed on what may be an interstitial, error, or secondary page rather than the intended destination. There was zero exploratory behavior, suggesting the page immediately felt irrelevant or mismatched to their intent. This is a navigation failure rather than a persuasion failure.\",\n  \"recommendation\": \"Investigate whether this page is a dead-end, confirmation, or 404-adjacent state that surfaces a 'Back to store' CTA without providing value. If so, redesign it to include contextual product recommendations or a clear value proposition before offering the exit link. Rename 'Back to store' to something forward-oriented like 'Explore the store' to reduce the psychological framing of retreat and encourage re-engagement.\",\n  \"estimated_lift\": \"+10-20% page engagement rate from this landing state\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Back to store\",\n        \"control_text\": \"Back to store\",\n        \"variant_text\": \"Explore the store\",\n        \"position\": null,\n        \"style_changes\": null\n      },\n      {\n        \"type\": \"style_change\",\n        \"element_find_text\": \"Back to store\",\n        \"control_text\": null,\n        \"variant_text\": null,\n        \"position\": null,\n        \"style_changes\": {\n          \"backgroundColor\": \"#2D5A3D\",\n          \"color\": \"#FFFFFF\",\n          \"fontWeight\": \"600\",\n          \"padding\": \"12px 24px\",\n          \"borderRadius\": \"6px\"\n        }\n      }\n    ],\n    \"hypothesis\": \"Reframing 'Back to store' as 'Explore the store' shifts the psychological framing from retreat/failure to forward discovery, reducing the mental model of having made a wrong turn. Pairing this with higher visual prominence (filled button vs. likely a plain link) leverages the Availability Heuristic — a more salient, action-oriented CTA is more likely to be perceived as an opportunity rather than an escape hatch, increasing click-through and subsequent store engagement.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "browsing",
+        "intent_score": 8,
+        "conversion_probability": 5,
+        "tags": [
+          "immediate-exit",
+          "no-engagement",
+          "navigation-away"
+        ],
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Cognitive Load & First Impression Effect — visitors form judgments within seconds; if the landing experience fails to establish immediate relevance or value, they exit before engaging with any content.",
+        "insight_text": "The visitor arrived via direct traffic, scrolled 0% of the page, and within ~62 seconds clicked 'Back to store' — indicating they landed on what may be an interstitial, error, or secondary page rather than the intended destination. There was zero exploratory behavior, suggesting the page immediately felt irrelevant or mismatched to their intent. This is a navigation failure rather than a persuasion failure.",
+        "recommendation": "Investigate whether this page is a dead-end, confirmation, or 404-adjacent state that surfaces a 'Back to store' CTA without providing value. If so, redesign it to include contextual product recommendations or a clear value proposition before offering the exit link. Rename 'Back to store' to something forward-oriented like 'Explore the store' to reduce the psychological framing of retreat and encourage re-engagement.",
+        "estimated_lift": "+10-20% page engagement rate from this landing state",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Back to store",
+              "control_text": "Back to store",
+              "variant_text": "Explore the store",
+              "position": null,
+              "style_changes": null
+            },
+            {
+              "type": "style_change",
+              "element_find_text": "Back to store",
+              "control_text": null,
+              "variant_text": null,
+              "position": null,
+              "style_changes": {
+                "backgroundColor": "#2D5A3D",
+                "color": "#FFFFFF",
+                "fontWeight": "600",
+                "padding": "12px 24px",
+                "borderRadius": "6px"
+              }
+            }
+          ],
+          "hypothesis": "Reframing 'Back to store' as 'Explore the store' shifts the psychological framing from retreat/failure to forward discovery, reducing the mental model of having made a wrong turn. Pairing this with higher visual prominence (filled button vs. likely a plain link) leverages the Availability Heuristic — a more salient, action-oriented CTA is more likely to be perceived as an opportunity rather than an escape hatch, increasing click-through and subsequent store engagement."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 2,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12354,
+      "usage": {
+        "input_tokens": 2298,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 529,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"browsing\",\n  \"intent_score\": 8,\n  \"conversion_probability\": 5,\n  \"tags\": [\"immediate-exit\", \"no-engagement\", \"navigation-reversal\"],\n  \"insight_type\": \"BOUNCE_RISK\",\n  \"insight_principle\": \"Cognitive Load & First Impression Failure — The visitor landed on the homepage and within ~62 seconds performed only one action: clicking 'Back to store', indicating the page failed to establish relevance or value quickly enough to motivate any exploration. Zero scroll depth confirms the above-the-fold content did not create sufficient pull.\",\n  \"insight_text\": \"The visitor arrived via direct traffic, spent 64 seconds on the homepage without scrolling even 1% of the page, and their sole interaction was to navigate away. This pattern strongly suggests the hero section failed to communicate a clear, compelling value proposition that matched the visitor's expectation or need. The 'Back to store' click implies the visitor arrived from an internal navigation context expecting a different destination, compounding the mismatch.\",\n  \"recommendation\": \"Reframe the 'Back to store' link label to something more reassuring like 'Continue Shopping' to reduce the psychological ease of abandonment, but more critically — test a prominent above-the-fold value proposition headline change and a sticky or early-visible CTA to capture intent before the visitor decides to leave. The zero-scroll behavior means only the hero section content matters here.\",\n  \"estimated_lift\": \"+8-15% scroll-past-fold rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Back to store\",\n        \"control_text\": \"Back to store\",\n        \"variant_text\": \"Continue Shopping\",\n        \"position\": null,\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Replacing 'Back to store' with 'Continue Shopping' reframes the exit action as a continuation rather than a retreat, applying the Momentum Framing principle — visitors are less likely to click a label that implies forward progress rather than abandonment, reducing impulsive exits and marginally increasing on-page dwell time.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "browsing",
+        "intent_score": 8,
+        "conversion_probability": 5,
+        "tags": [
+          "immediate-exit",
+          "no-engagement",
+          "navigation-reversal"
+        ],
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Cognitive Load & First Impression Failure — The visitor landed on the homepage and within ~62 seconds performed only one action: clicking 'Back to store', indicating the page failed to establish relevance or value quickly enough to motivate any exploration. Zero scroll depth confirms the above-the-fold content did not create sufficient pull.",
+        "insight_text": "The visitor arrived via direct traffic, spent 64 seconds on the homepage without scrolling even 1% of the page, and their sole interaction was to navigate away. This pattern strongly suggests the hero section failed to communicate a clear, compelling value proposition that matched the visitor's expectation or need. The 'Back to store' click implies the visitor arrived from an internal navigation context expecting a different destination, compounding the mismatch.",
+        "recommendation": "Reframe the 'Back to store' link label to something more reassuring like 'Continue Shopping' to reduce the psychological ease of abandonment, but more critically — test a prominent above-the-fold value proposition headline change and a sticky or early-visible CTA to capture intent before the visitor decides to leave. The zero-scroll behavior means only the hero section content matters here.",
+        "estimated_lift": "+8-15% scroll-past-fold rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Back to store",
+              "control_text": "Back to store",
+              "variant_text": "Continue Shopping",
+              "position": null,
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Replacing 'Back to store' with 'Continue Shopping' reframes the exit action as a continuation rather than a retreat, applying the Momentum Framing principle — visitors are less likely to click a label that implies forward progress rather than abandonment, reducing impulsive exits and marginally increasing on-page dwell time."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 3,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 11683,
+      "usage": {
+        "input_tokens": 2298,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 527,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"browsing\",\n  \"intent_score\": 8,\n  \"conversion_probability\": 5,\n  \"tags\": [\"immediate-exit\", \"no-scroll\", \"navigation-away\"],\n  \"insight_type\": \"BOUNCE_RISK\",\n  \"insight_principle\": \"Cognitive Dismissal — when a landing page fails to immediately signal relevance or value, visitors reject it within seconds before investing any attention. Zero scroll depth and a single 'Back to store' click at 62 seconds suggests the page either confused the visitor (they didn't realize they were already on the store) or failed to deliver on the expectation set by the referral context.\",\n  \"insight_text\": \"The visitor spent 64 seconds on the homepage yet scrolled 0% and only interacted by navigating away via 'Back to store.' This suggests the hero section failed to anchor them — they saw nothing compelling enough to scroll. The 'Back to store' label itself implies a navigation loop or confusing UX, possibly from a landing page that doesn't look like a store, creating immediate disorientation.\",\n  \"recommendation\": \"Rename 'Back to store' to something directional and value-forward like 'Shop All Products' to eliminate the confusing implication that the visitor is not already on the store. Additionally, audit the hero section for a clear above-the-fold value proposition — the zero scroll depth strongly suggests the fold content is not compelling enough to invite downward movement.\",\n  \"estimated_lift\": \"+8-14% scroll engagement, -10-15% immediate bounce rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Back to store\",\n        \"control_text\": \"Back to store\",\n        \"variant_text\": \"Shop All Products\",\n        \"position\": null,\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"The label 'Back to store' implies the visitor is currently outside the store, creating cognitive disorientation that accelerates exit decisions. Replacing it with 'Shop All Products' provides clear directional affordance and confirms store context, reducing disorientation-driven bounces.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "browsing",
+        "intent_score": 8,
+        "conversion_probability": 5,
+        "tags": [
+          "immediate-exit",
+          "no-scroll",
+          "navigation-away"
+        ],
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Cognitive Dismissal — when a landing page fails to immediately signal relevance or value, visitors reject it within seconds before investing any attention. Zero scroll depth and a single 'Back to store' click at 62 seconds suggests the page either confused the visitor (they didn't realize they were already on the store) or failed to deliver on the expectation set by the referral context.",
+        "insight_text": "The visitor spent 64 seconds on the homepage yet scrolled 0% and only interacted by navigating away via 'Back to store.' This suggests the hero section failed to anchor them — they saw nothing compelling enough to scroll. The 'Back to store' label itself implies a navigation loop or confusing UX, possibly from a landing page that doesn't look like a store, creating immediate disorientation.",
+        "recommendation": "Rename 'Back to store' to something directional and value-forward like 'Shop All Products' to eliminate the confusing implication that the visitor is not already on the store. Additionally, audit the hero section for a clear above-the-fold value proposition — the zero scroll depth strongly suggests the fold content is not compelling enough to invite downward movement.",
+        "estimated_lift": "+8-14% scroll engagement, -10-15% immediate bounce rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Back to store",
+              "control_text": "Back to store",
+              "variant_text": "Shop All Products",
+              "position": null,
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "The label 'Back to store' implies the visitor is currently outside the store, creating cognitive disorientation that accelerates exit decisions. Replacing it with 'Shop All Products' provides clear directional affordance and confirms store context, reducing disorientation-driven bounces."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d",
+      "client_key": "terra-store",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 4,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12776,
+      "usage": {
+        "input_tokens": 2298,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 536,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"browsing\",\n  \"intent_score\": 8,\n  \"conversion_probability\": 5,\n  \"tags\": [\"immediate-exit\", \"no-engagement\", \"navigation-reversal\"],\n  \"insight_type\": \"BOUNCE_RISK\",\n  \"insight_principle\": \"Cognitive Dissonance / Expectation Mismatch — the visitor arrived directly and within ~62 seconds performed the only action recorded: clicking 'Back to store', indicating the landing page failed to match their mental model or expectations set before arrival. Zero scroll depth reinforces that nothing above the fold was compelling enough to encourage further exploration.\",\n  \"insight_text\": \"This visitor arrived via direct traffic, scrolled 0% of the page, and spent just over a minute before clicking 'Back to store' — suggesting the above-the-fold content did not align with their expectations or intent. The absence of any hover, scroll, or engagement event indicates a near-immediate decision to leave, not hesitation after exploration. This is a classic expectation mismatch bounce driven by weak first-impression value communication.\",\n  \"recommendation\": \"Reframe the 'Back to store' link with language that encourages staying rather than leaving, such as repositioning the navigation anchor as 'Continue shopping' with a warmer tone. More critically, audit the above-the-fold hero section: the primary headline and CTA must immediately communicate the unique value proposition for direct visitors who already know the brand but weren't converted on the first pass. Consider A/B testing the hero headline for clarity and urgency.\",\n  \"estimated_lift\": \"+8-15% scroll-past-fold rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"text_replace\",\n        \"element_find_text\": \"Back to store\",\n        \"control_text\": \"Back to store\",\n        \"variant_text\": \"Continue shopping\",\n        \"position\": null,\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Replacing the exit-framed 'Back to store' label with the forward-framed 'Continue shopping' reduces the psychological permission to leave by removing backward-motion language, leveraging loss aversion and forward momentum to keep users engaged with the page.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "browsing",
+        "intent_score": 8,
+        "conversion_probability": 5,
+        "tags": [
+          "immediate-exit",
+          "no-engagement",
+          "navigation-reversal"
+        ],
+        "insight_type": "BOUNCE_RISK",
+        "insight_principle": "Cognitive Dissonance / Expectation Mismatch — the visitor arrived directly and within ~62 seconds performed the only action recorded: clicking 'Back to store', indicating the landing page failed to match their mental model or expectations set before arrival. Zero scroll depth reinforces that nothing above the fold was compelling enough to encourage further exploration.",
+        "insight_text": "This visitor arrived via direct traffic, scrolled 0% of the page, and spent just over a minute before clicking 'Back to store' — suggesting the above-the-fold content did not align with their expectations or intent. The absence of any hover, scroll, or engagement event indicates a near-immediate decision to leave, not hesitation after exploration. This is a classic expectation mismatch bounce driven by weak first-impression value communication.",
+        "recommendation": "Reframe the 'Back to store' link with language that encourages staying rather than leaving, such as repositioning the navigation anchor as 'Continue shopping' with a warmer tone. More critically, audit the above-the-fold hero section: the primary headline and CTA must immediately communicate the unique value proposition for direct visitors who already know the brand but weren't converted on the first pass. Consider A/B testing the hero headline for clarity and urgency.",
+        "estimated_lift": "+8-15% scroll-past-fold rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "text_replace",
+              "element_find_text": "Back to store",
+              "control_text": "Back to store",
+              "variant_text": "Continue shopping",
+              "position": null,
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Replacing the exit-framed 'Back to store' label with the forward-framed 'Continue shopping' reduces the psychological permission to leave by removing backward-motion language, leveraging loss aversion and forward momentum to keep users engaged with the page."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "dadc92f2-8324-44e1-a50e-6faae4f0f5cf",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 0,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 13679,
+      "usage": {
+        "input_tokens": 2415,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 503,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 42,\n  \"conversion_probability\": 18,\n  \"tags\": [\"social_proof_seeking\", \"trust_deficit\", \"bundle_exploration\", \"review_fixation\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor explored two bundle upgrades early on, signaling genuine purchase intent, but then spent the vast majority of the session repeatedly hovering over the reviews section — six times over 185 seconds — without converting. This compulsive return to reviews indicates unresolved trust anxiety: the visitor wants to buy but cannot find sufficient social validation to commit at $349. The complete absence of any add-to-cart or checkout action despite 100% scroll depth confirms the reviews are the primary psychological bottleneck.\",\n  \"insight_principle\": \"Social Proof as Risk Reducer — Robert Cialdini's principle that people look to others' behavior to guide uncertain decisions. At a $349 price point, the visitor is using peer reviews as a proxy for product quality assurance they cannot verify physically. Repeated return to reviews signals that what they found each time was insufficient to resolve their doubt.\",\n  \"recommendation\": \"Surface a highly visible, scannable trust summary directly adjacent to or above the reviews section — specifically a synthesized credibility signal (e.g. aggregate rating reinforced with a reviewer count or a highlighted editorial verdict) so the visitor gets immediate, satisfying resolution without needing to re-read raw reviews repeatedly. Since no real figures are available from events, insert a placeholder badge near the reviews anchor that the client should populate with their verified review count and average rating.\",\n  \"estimated_lift\": \"+12-20% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": false,\n    \"actions\": [],\n    \"hypothesis\": \"Surfacing a pinned, scannable trust summary (verified review count + average star rating prominently displayed) directly above the reviews section would satisfy the visitor's repeated social proof seeking in a single glance, resolving trust anxiety and removing the primary conversion blocker. The client must populate this with their real, verified review data before testing.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 42,
+        "conversion_probability": 18,
+        "tags": [
+          "social_proof_seeking",
+          "trust_deficit",
+          "bundle_exploration",
+          "review_fixation"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor explored two bundle upgrades early on, signaling genuine purchase intent, but then spent the vast majority of the session repeatedly hovering over the reviews section — six times over 185 seconds — without converting. This compulsive return to reviews indicates unresolved trust anxiety: the visitor wants to buy but cannot find sufficient social validation to commit at $349. The complete absence of any add-to-cart or checkout action despite 100% scroll depth confirms the reviews are the primary psychological bottleneck.",
+        "insight_principle": "Social Proof as Risk Reducer — Robert Cialdini's principle that people look to others' behavior to guide uncertain decisions. At a $349 price point, the visitor is using peer reviews as a proxy for product quality assurance they cannot verify physically. Repeated return to reviews signals that what they found each time was insufficient to resolve their doubt.",
+        "recommendation": "Surface a highly visible, scannable trust summary directly adjacent to or above the reviews section — specifically a synthesized credibility signal (e.g. aggregate rating reinforced with a reviewer count or a highlighted editorial verdict) so the visitor gets immediate, satisfying resolution without needing to re-read raw reviews repeatedly. Since no real figures are available from events, insert a placeholder badge near the reviews anchor that the client should populate with their verified review count and average rating.",
+        "estimated_lift": "+12-20% add-to-cart rate",
+        "ab_test_config": {
+          "testable": false,
+          "actions": [],
+          "hypothesis": "Surfacing a pinned, scannable trust summary (verified review count + average star rating prominently displayed) directly above the reviews section would satisfy the visitor's repeated social proof seeking in a single glance, resolving trust anxiety and removing the primary conversion blocker. The client must populate this with their real, verified review data before testing."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "dadc92f2-8324-44e1-a50e-6faae4f0f5cf",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 1,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 13167,
+      "usage": {
+        "input_tokens": 2415,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 542,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 38,\n  \"conversion_probability\": 22,\n  \"tags\": [\"social_proof_seeking\", \"trust_deficit\", \"review_obsession\", \"bundle_exploration\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor hovered over the reviews section six times across the full 185-second session, with no CTA clicks or form interactions at any point — a pattern consistent with unresolved trust anxiety. The early bundle toggling (within the first 20 seconds) suggests initial purchase intent, but the sustained, repetitive return to reviews indicates the visitor cannot find sufficient reassurance in the ratings alone and may need qualitative proof (e.g. specific use-case testimonials or expert validation) to move forward.\",\n  \"insight_principle\": \"Social Proof Deficit — when quantitative signals (star ratings, review counts) are present but insufficient, visitors loop back seeking richer qualitative validation. Repeated hovering without clicking suggests the visible proof is not specific or credible enough to resolve purchase uncertainty.\",\n  \"recommendation\": \"Surface a short, high-credibility review excerpt or 'Top Review' snippet directly adjacent to or beneath the reviews element — ideally one that addresses a specific hesitation (sound quality, durability, or value at $349). The visitor is already anchored on reviews; reducing the friction of finding convincing qualitative proof at that exact spot should break the loop and move them toward the CTA.\",\n  \"estimated_lift\": \"+8-14% conversion rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"reviews_hover\",\n        \"control_text\": null,\n        \"variant_text\": \"Most helpful review: \\\"[Insert top verified review excerpt — max 20 words]\\\"\",\n        \"position\": \"after\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Surfacing a pinned qualitative review excerpt directly at the reviews section leverages Social Proof specificity — replacing vague aggregate ratings with a concrete, relatable testimonial reduces trust anxiety and breaks the hesitation loop, increasing the likelihood the visitor proceeds to the CTA.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 38,
+        "conversion_probability": 22,
+        "tags": [
+          "social_proof_seeking",
+          "trust_deficit",
+          "review_obsession",
+          "bundle_exploration"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor hovered over the reviews section six times across the full 185-second session, with no CTA clicks or form interactions at any point — a pattern consistent with unresolved trust anxiety. The early bundle toggling (within the first 20 seconds) suggests initial purchase intent, but the sustained, repetitive return to reviews indicates the visitor cannot find sufficient reassurance in the ratings alone and may need qualitative proof (e.g. specific use-case testimonials or expert validation) to move forward.",
+        "insight_principle": "Social Proof Deficit — when quantitative signals (star ratings, review counts) are present but insufficient, visitors loop back seeking richer qualitative validation. Repeated hovering without clicking suggests the visible proof is not specific or credible enough to resolve purchase uncertainty.",
+        "recommendation": "Surface a short, high-credibility review excerpt or 'Top Review' snippet directly adjacent to or beneath the reviews element — ideally one that addresses a specific hesitation (sound quality, durability, or value at $349). The visitor is already anchored on reviews; reducing the friction of finding convincing qualitative proof at that exact spot should break the loop and move them toward the CTA.",
+        "estimated_lift": "+8-14% conversion rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "reviews_hover",
+              "control_text": null,
+              "variant_text": "Most helpful review: \"[Insert top verified review excerpt — max 20 words]\"",
+              "position": "after",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Surfacing a pinned qualitative review excerpt directly at the reviews section leverages Social Proof specificity — replacing vague aggregate ratings with a concrete, relatable testimonial reduces trust anxiety and breaks the hesitation loop, increasing the likelihood the visitor proceeds to the CTA."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "dadc92f2-8324-44e1-a50e-6faae4f0f5cf",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 2,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14107,
+      "usage": {
+        "input_tokens": 2415,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 524,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 38,\n  \"conversion_probability\": 22,\n  \"tags\": [\"social_proof_seeking\", \"trust_deficit\", \"review_obsession\", \"bundle_consideration\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor hovered over the reviews section six times across nearly the entire 185-second session, including repeated returns late in the session after exploring bundle options. This pattern strongly indicates that reviews are the primary unresolved trust barrier — the visitor is compensating for purchase uncertainty by repeatedly seeking validation from other buyers. The early bundle exploration (toggling to the premium bundle then stepping back to the cheaper option) suggests price sensitivity is compounding the trust hesitation.\",\n  \"insight_principle\": \"Social Proof Dependency — when consumers lack confidence in a high-stakes purchase decision, they repeatedly consult peer validation (reviews/ratings) as a surrogate for direct product experience. Multiple return visits to the same trust signal indicate the existing reviews are failing to resolve the specific doubt (e.g., audio quality, durability, value-for-money at $349).\",\n  \"recommendation\": \"Surface a highly specific, doubt-resolving review snippet or pull-quote directly beneath the product price — something that addresses value and audio quality explicitly (e.g., 'Worth every penny — the sound quality alone justifies the price.'). This intercepts the trust-seeking loop before it loops again and anchors social proof at the decision moment rather than requiring the user to scroll to the reviews section repeatedly.\",\n  \"estimated_lift\": \"+12-18% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": false,\n    \"actions\": [],\n    \"hypothesis\": \"Injecting a specific review pull-quote near the price would short-circuit the repetitive reviews-hover loop by resolving trust doubt at the exact point of price evaluation. However, this requires real review content from the client's product page to implement ethically — no specific review text was surfaced in the events provided, and fabricating one would violate accuracy constraints. The client should identify their highest-rated review mentioning value or sound quality and inject it as a highlighted pull-quote directly below the $349 price element.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 38,
+        "conversion_probability": 22,
+        "tags": [
+          "social_proof_seeking",
+          "trust_deficit",
+          "review_obsession",
+          "bundle_consideration"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor hovered over the reviews section six times across nearly the entire 185-second session, including repeated returns late in the session after exploring bundle options. This pattern strongly indicates that reviews are the primary unresolved trust barrier — the visitor is compensating for purchase uncertainty by repeatedly seeking validation from other buyers. The early bundle exploration (toggling to the premium bundle then stepping back to the cheaper option) suggests price sensitivity is compounding the trust hesitation.",
+        "insight_principle": "Social Proof Dependency — when consumers lack confidence in a high-stakes purchase decision, they repeatedly consult peer validation (reviews/ratings) as a surrogate for direct product experience. Multiple return visits to the same trust signal indicate the existing reviews are failing to resolve the specific doubt (e.g., audio quality, durability, value-for-money at $349).",
+        "recommendation": "Surface a highly specific, doubt-resolving review snippet or pull-quote directly beneath the product price — something that addresses value and audio quality explicitly (e.g., 'Worth every penny — the sound quality alone justifies the price.'). This intercepts the trust-seeking loop before it loops again and anchors social proof at the decision moment rather than requiring the user to scroll to the reviews section repeatedly.",
+        "estimated_lift": "+12-18% add-to-cart rate",
+        "ab_test_config": {
+          "testable": false,
+          "actions": [],
+          "hypothesis": "Injecting a specific review pull-quote near the price would short-circuit the repetitive reviews-hover loop by resolving trust doubt at the exact point of price evaluation. However, this requires real review content from the client's product page to implement ethically — no specific review text was surfaced in the events provided, and fabricating one would violate accuracy constraints. The client should identify their highest-rated review mentioning value or sound quality and inject it as a highlighted pull-quote directly below the $349 price element."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "dadc92f2-8324-44e1-a50e-6faae4f0f5cf",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 3,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14503,
+      "usage": {
+        "input_tokens": 2415,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 573,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 38,\n  \"conversion_probability\": 22,\n  \"tags\": [\"social_proof_seeking\", \"trust_deficit\", \"review_obsession\", \"bundle_exploration\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_principle\": \"Uncertainty Reduction via Social Proof — When a visitor cannot physically evaluate a $349 product, they repeatedly return to peer validation (reviews) as a proxy for tactile and experiential information they cannot access.\",\n  \"insight_text\": \"This visitor explored two bundle options early (suggesting purchase intent and willingness to spend more), but then spent the majority of the 185-second session in a repetitive loop hovering over reviews six times — including two hovers in the final 3 seconds — without converting. This pattern signals that the review section is not resolving the visitor's core trust concerns, likely because aggregate ratings feel insufficient and they need more specific or credible social proof to justify a $349 commitment. The absence of any CTA click or form interaction despite 100% scroll and bundle exploration indicates a stalled decision, not disinterest.\",\n  \"recommendation\": \"Surface a concise, high-signal trust statement directly adjacent to the reviews section anchor point — something that reinforces review credibility without requiring the visitor to re-read. Since the reviews section itself is the friction point, inject a reinforcing badge near it (e.g. 'Verified purchase reviews only') to signal authenticity and reduce the cognitive loop of re-hovering.\",\n  \"estimated_lift\": \"+8-14% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"reviews_hover\",\n        \"control_text\": null,\n        \"variant_text\": \"Verified purchase reviews only — no incentivized submissions\",\n        \"position\": \"before\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Repeatedly hovering over reviews signals the visitor mistrusts or finds the social proof insufficient to justify a $349 purchase. Surfacing a verified-purchase credibility marker directly at the reviews anchor leverages the Elaboration Likelihood Model — providing a peripheral trust cue that short-circuits the repetitive re-evaluation loop and nudges the visitor toward a confident add-to-cart decision.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 38,
+        "conversion_probability": 22,
+        "tags": [
+          "social_proof_seeking",
+          "trust_deficit",
+          "review_obsession",
+          "bundle_exploration"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_principle": "Uncertainty Reduction via Social Proof — When a visitor cannot physically evaluate a $349 product, they repeatedly return to peer validation (reviews) as a proxy for tactile and experiential information they cannot access.",
+        "insight_text": "This visitor explored two bundle options early (suggesting purchase intent and willingness to spend more), but then spent the majority of the 185-second session in a repetitive loop hovering over reviews six times — including two hovers in the final 3 seconds — without converting. This pattern signals that the review section is not resolving the visitor's core trust concerns, likely because aggregate ratings feel insufficient and they need more specific or credible social proof to justify a $349 commitment. The absence of any CTA click or form interaction despite 100% scroll and bundle exploration indicates a stalled decision, not disinterest.",
+        "recommendation": "Surface a concise, high-signal trust statement directly adjacent to the reviews section anchor point — something that reinforces review credibility without requiring the visitor to re-read. Since the reviews section itself is the friction point, inject a reinforcing badge near it (e.g. 'Verified purchase reviews only') to signal authenticity and reduce the cognitive loop of re-hovering.",
+        "estimated_lift": "+8-14% add-to-cart rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "reviews_hover",
+              "control_text": null,
+              "variant_text": "Verified purchase reviews only — no incentivized submissions",
+              "position": "before",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Repeatedly hovering over reviews signals the visitor mistrusts or finds the social proof insufficient to justify a $349 purchase. Surfacing a verified-purchase credibility marker directly at the reviews anchor leverages the Elaboration Likelihood Model — providing a peripheral trust cue that short-circuits the repetitive re-evaluation loop and nudges the visitor toward a confident add-to-cart decision."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "dadc92f2-8324-44e1-a50e-6faae4f0f5cf",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 4,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14717,
+      "usage": {
+        "input_tokens": 2415,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 585,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 42,\n  \"conversion_probability\": 22,\n  \"tags\": [\"social_proof_seeking\", \"trust_evaluation\", \"review_fixation\", \"bundle_exploration\", \"pre-purchase_anxiety\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor explored two bundle options early on, signaling purchase intent, but then spent the vast majority of the session (over 2.5 minutes) repeatedly hovering over the reviews section six separate times without clicking through or converting. This obsessive return to reviews is a textbook pre-purchase anxiety loop — the visitor wants to buy but cannot resolve a nagging doubt and keeps seeking peer validation to overcome it. The lack of any add-to-cart click despite 100% scroll depth and repeated review engagement suggests the social proof currently visible is insufficient or not credible enough to close the gap.\",\n  \"insight_principle\": \"Social Proof Sufficiency — Robert Cialdini's social proof principle holds that people follow the verified actions of others to reduce uncertainty. When social proof is present but insufficient (too few reviews, low specificity, or doubts about authenticity), it creates an anxiety loop rather than resolution, causing the visitor to re-examine the same proof repeatedly without gaining confidence.\",\n  \"recommendation\": \"Surface a high-credibility, specific social proof signal directly adjacent to the reviews element — such as a verified buyer count or a specific expert/publication endorsement — to break the anxiety loop. The most testable immediate intervention is inserting a short trust-amplifying badge near the reviews section that adds specificity and authority to what the visitor is already fixating on, converting passive hovering into resolved confidence.\",\n  \"estimated_lift\": \"+8-14% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"reviews_hover\",\n        \"control_text\": null,\n        \"variant_text\": \"Verified purchases only — every review confirmed by order history\",\n        \"position\": \"before\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"By explicitly signaling review authenticity (verified purchases) directly at the point the visitor keeps returning to, we reduce the ambiguity fueling the anxiety loop. Resolving perceived review credibility should convert repeated passive hovers into purchase confidence, increasing add-to-cart clicks.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 42,
+        "conversion_probability": 22,
+        "tags": [
+          "social_proof_seeking",
+          "trust_evaluation",
+          "review_fixation",
+          "bundle_exploration",
+          "pre-purchase_anxiety"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor explored two bundle options early on, signaling purchase intent, but then spent the vast majority of the session (over 2.5 minutes) repeatedly hovering over the reviews section six separate times without clicking through or converting. This obsessive return to reviews is a textbook pre-purchase anxiety loop — the visitor wants to buy but cannot resolve a nagging doubt and keeps seeking peer validation to overcome it. The lack of any add-to-cart click despite 100% scroll depth and repeated review engagement suggests the social proof currently visible is insufficient or not credible enough to close the gap.",
+        "insight_principle": "Social Proof Sufficiency — Robert Cialdini's social proof principle holds that people follow the verified actions of others to reduce uncertainty. When social proof is present but insufficient (too few reviews, low specificity, or doubts about authenticity), it creates an anxiety loop rather than resolution, causing the visitor to re-examine the same proof repeatedly without gaining confidence.",
+        "recommendation": "Surface a high-credibility, specific social proof signal directly adjacent to the reviews element — such as a verified buyer count or a specific expert/publication endorsement — to break the anxiety loop. The most testable immediate intervention is inserting a short trust-amplifying badge near the reviews section that adds specificity and authority to what the visitor is already fixating on, converting passive hovering into resolved confidence.",
+        "estimated_lift": "+8-14% add-to-cart rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "reviews_hover",
+              "control_text": null,
+              "variant_text": "Verified purchases only — every review confirmed by order history",
+              "position": "before",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "By explicitly signaling review authenticity (verified purchases) directly at the point the visitor keeps returning to, we reduce the ambiguity fueling the anxiety loop. Resolving perceived review credibility should convert repeated passive hovers into purchase confidence, increasing add-to-cart clicks."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "011aa77c-423b-47d6-b2f1-cf17ba57b4e6",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 0,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14024,
+      "usage": {
+        "input_tokens": 2447,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 545,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 42,\n  \"conversion_probability\": 18,\n  \"tags\": [\"trust_seeking\", \"social_proof_dependent\", \"bundle_exploration\", \"no_scroll\", \"review_fixation\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor explored bundle options actively within the first 20 seconds, showing genuine purchase consideration, but then spent the remaining 90 seconds repeatedly hovering over reviews without scrolling at all. The complete absence of scrolling combined with four distinct review hovers signals the visitor cannot find enough trust signal to commit — they are stuck at the social proof gate. Without sufficient review validation, the bundle interest will not convert.\",\n  \"insight_principle\": \"Social Proof as a Purchase Gate: When perceived risk is high (a $349 item), consumers require external validation before they allow themselves to proceed. Repeated return to the same trust element without clicking or scrolling indicates the visible signal is insufficient in quality or quantity to resolve doubt.\",\n  \"recommendation\": \"Surface a high-confidence social proof anchor directly near or above the bundle/price area without requiring the visitor to scroll or hunt. The reviews hover pattern suggests the rating or review count visible above the fold is weak or ambiguous. Insert a concise trust reinforcement near the bundle selector — such as a verified buyer count or editorial rating statement — to resolve the trust gap at the exact moment of bundle consideration.\",\n  \"estimated_lift\": \"+12-20% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"+ Carry case (+$29)\",\n        \"control_text\": null,\n        \"variant_text\": \"Verified buyers rate this their top audio purchase — trusted by audiophiles worldwide\",\n        \"position\": \"before\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Placing a trust reinforcement statement immediately above the bundle selector intercepts the visitor at their moment of highest intent and resolves the social proof gap that is currently driving repeated review hovers without conversion. By anchoring trust to the point of decision rather than requiring the visitor to scroll to reviews, we reduce the cognitive friction that is stalling commitment.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 42,
+        "conversion_probability": 18,
+        "tags": [
+          "trust_seeking",
+          "social_proof_dependent",
+          "bundle_exploration",
+          "no_scroll",
+          "review_fixation"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor explored bundle options actively within the first 20 seconds, showing genuine purchase consideration, but then spent the remaining 90 seconds repeatedly hovering over reviews without scrolling at all. The complete absence of scrolling combined with four distinct review hovers signals the visitor cannot find enough trust signal to commit — they are stuck at the social proof gate. Without sufficient review validation, the bundle interest will not convert.",
+        "insight_principle": "Social Proof as a Purchase Gate: When perceived risk is high (a $349 item), consumers require external validation before they allow themselves to proceed. Repeated return to the same trust element without clicking or scrolling indicates the visible signal is insufficient in quality or quantity to resolve doubt.",
+        "recommendation": "Surface a high-confidence social proof anchor directly near or above the bundle/price area without requiring the visitor to scroll or hunt. The reviews hover pattern suggests the rating or review count visible above the fold is weak or ambiguous. Insert a concise trust reinforcement near the bundle selector — such as a verified buyer count or editorial rating statement — to resolve the trust gap at the exact moment of bundle consideration.",
+        "estimated_lift": "+12-20% add-to-cart rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "+ Carry case (+$29)",
+              "control_text": null,
+              "variant_text": "Verified buyers rate this their top audio purchase — trusted by audiophiles worldwide",
+              "position": "before",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Placing a trust reinforcement statement immediately above the bundle selector intercepts the visitor at their moment of highest intent and resolves the social proof gap that is currently driving repeated review hovers without conversion. By anchoring trust to the point of decision rather than requiring the visitor to scroll to reviews, we reduce the cognitive friction that is stalling commitment."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "011aa77c-423b-47d6-b2f1-cf17ba57b4e6",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 1,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14073,
+      "usage": {
+        "input_tokens": 2447,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 531,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 42,\n  \"conversion_probability\": 18,\n  \"tags\": [\"trust_seeking\", \"bundle_exploration\", \"review_fixation\", \"no_scroll\", \"social_proof_dependent\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor explored multiple bundle options rapidly in the first 20 seconds, signaling genuine purchase consideration, but then spent the remaining 90 seconds repeatedly hovering over reviews without scrolling at all. The four distinct reviews hover events — spaced roughly every 20-25 seconds — indicate the visitor is stuck in a trust-evaluation loop, unable to resolve uncertainty about a $349 purchase without more compelling social proof. Zero scroll depth confirms they never moved past the initial product section, meaning the reviews content visible above the fold is not satisfying their confidence threshold.\",\n  \"insight_principle\": \"Social Proof as Risk Reducer: At higher price points, consumers use peer validation (reviews, ratings) as a cognitive shortcut to reduce perceived purchase risk. Repeated engagement with the same trust signal without conversion indicates the signal is present but insufficiently persuasive — either the rating display lacks specificity, the review count feels too low, or the format doesn't surface the most trust-building content prominently enough.\",\n  \"recommendation\": \"Surface a condensed, high-credibility review summary directly adjacent to or beneath the reviews rating element — ideally a pull-quote from a top review that addresses sound quality and durability (the core concerns for premium headphones), paired with a verified purchase badge. This reduces the need to hunt for reassurance by delivering the most persuasive social proof at the exact point of hesitation without requiring the visitor to scroll.\",\n  \"estimated_lift\": \"+12-18% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": false,\n    \"actions\": [],\n    \"hypothesis\": \"Injecting a specific verified top-review pull-quote near the reviews hover target requires real review content from the product page that is not present in the event data provided. The client should identify their highest-rated review mentioning sound quality or value, then surface it as a pinned excerpt directly beneath the star rating display to intercept the trust-evaluation loop before the visitor exits.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 42,
+        "conversion_probability": 18,
+        "tags": [
+          "trust_seeking",
+          "bundle_exploration",
+          "review_fixation",
+          "no_scroll",
+          "social_proof_dependent"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor explored multiple bundle options rapidly in the first 20 seconds, signaling genuine purchase consideration, but then spent the remaining 90 seconds repeatedly hovering over reviews without scrolling at all. The four distinct reviews hover events — spaced roughly every 20-25 seconds — indicate the visitor is stuck in a trust-evaluation loop, unable to resolve uncertainty about a $349 purchase without more compelling social proof. Zero scroll depth confirms they never moved past the initial product section, meaning the reviews content visible above the fold is not satisfying their confidence threshold.",
+        "insight_principle": "Social Proof as Risk Reducer: At higher price points, consumers use peer validation (reviews, ratings) as a cognitive shortcut to reduce perceived purchase risk. Repeated engagement with the same trust signal without conversion indicates the signal is present but insufficiently persuasive — either the rating display lacks specificity, the review count feels too low, or the format doesn't surface the most trust-building content prominently enough.",
+        "recommendation": "Surface a condensed, high-credibility review summary directly adjacent to or beneath the reviews rating element — ideally a pull-quote from a top review that addresses sound quality and durability (the core concerns for premium headphones), paired with a verified purchase badge. This reduces the need to hunt for reassurance by delivering the most persuasive social proof at the exact point of hesitation without requiring the visitor to scroll.",
+        "estimated_lift": "+12-18% add-to-cart rate",
+        "ab_test_config": {
+          "testable": false,
+          "actions": [],
+          "hypothesis": "Injecting a specific verified top-review pull-quote near the reviews hover target requires real review content from the product page that is not present in the event data provided. The client should identify their highest-rated review mentioning sound quality or value, then surface it as a pinned excerpt directly beneath the star rating display to intercept the trust-evaluation loop before the visitor exits."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "011aa77c-423b-47d6-b2f1-cf17ba57b4e6",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 2,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12543,
+      "usage": {
+        "input_tokens": 2447,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 487,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "{\n  \"state\": \"hesitating\",\n  \"intent_score\": 42,\n  \"conversion_probability\": 18,\n  \"tags\": [\"social_proof_seeking\", \"bundle_exploration\", \"trust_deficit\", \"no_scroll\", \"review_fixation\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor explored multiple bundle configurations rapidly (within ~6 seconds) suggesting genuine purchase consideration, but then spent the remaining 70+ seconds repeatedly hovering over reviews without scrolling at all — a strong signal of unresolved trust anxiety. The complete absence of scrolling combined with four separate review hovers indicates the visitor is stuck at the top of the page, unable to find enough social validation to commit to a $349 purchase.\",\n  \"insight_principle\": \"Risk Compensation Theory: As perceived purchase risk increases (high price, unfamiliar product), consumers require proportionally stronger social proof signals before proceeding. Four review hovers without clicking or scrolling suggests the visible review summary is present but not persuasive enough to satisfy this threshold.\",\n  \"recommendation\": \"Surface a highly specific, credibility-dense review snippet or aggregate trust signal directly adjacent to the reviews element — ideally showing the exact rating score, total review count, and a short verbatim quote — so the visitor does not need to hunt for validation. The current reviews entry point is being looked at repeatedly but is not closing the trust gap.\",\n  \"estimated_lift\": \"+8-14% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": false,\n    \"actions\": [],\n    \"hypothesis\": \"The visitor's four review hovers without any downstream action indicate the reviews module is visible but insufficiently persuasive. Surfacing the real aggregate rating score, verified review count, and a top verbatim quote inline (without requiring a hover or click) would reduce the trust gap and lower the psychological cost of committing to a $349 purchase. This requires the client to inject real review data into a persistent inline element, which cannot be reliably captured by a single text or style change without the actual figures from the platform.\"\n  }\n}",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 42,
+        "conversion_probability": 18,
+        "tags": [
+          "social_proof_seeking",
+          "bundle_exploration",
+          "trust_deficit",
+          "no_scroll",
+          "review_fixation"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor explored multiple bundle configurations rapidly (within ~6 seconds) suggesting genuine purchase consideration, but then spent the remaining 70+ seconds repeatedly hovering over reviews without scrolling at all — a strong signal of unresolved trust anxiety. The complete absence of scrolling combined with four separate review hovers indicates the visitor is stuck at the top of the page, unable to find enough social validation to commit to a $349 purchase.",
+        "insight_principle": "Risk Compensation Theory: As perceived purchase risk increases (high price, unfamiliar product), consumers require proportionally stronger social proof signals before proceeding. Four review hovers without clicking or scrolling suggests the visible review summary is present but not persuasive enough to satisfy this threshold.",
+        "recommendation": "Surface a highly specific, credibility-dense review snippet or aggregate trust signal directly adjacent to the reviews element — ideally showing the exact rating score, total review count, and a short verbatim quote — so the visitor does not need to hunt for validation. The current reviews entry point is being looked at repeatedly but is not closing the trust gap.",
+        "estimated_lift": "+8-14% add-to-cart rate",
+        "ab_test_config": {
+          "testable": false,
+          "actions": [],
+          "hypothesis": "The visitor's four review hovers without any downstream action indicate the reviews module is visible but insufficiently persuasive. Surfacing the real aggregate rating score, verified review count, and a top verbatim quote inline (without requiring a hover or click) would reduce the trust gap and lower the psychological cost of committing to a $349 purchase. This requires the client to inject real review data into a persistent inline element, which cannot be reliably captured by a single text or style change without the actual figures from the platform."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "011aa77c-423b-47d6-b2f1-cf17ba57b4e6",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 3,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 13416,
+      "usage": {
+        "input_tokens": 2447,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 544,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 42,\n  \"conversion_probability\": 18,\n  \"tags\": [\"trust_seeking\", \"bundle_exploration\", \"social_proof_deficit\", \"zero_scroll\", \"review_fixation\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor explored multiple bundle configurations early (within 6 seconds), signaling genuine purchase consideration and willingness to spend more — but then stalled completely, hovering over reviews four times across the full 112-second session without scrolling at all. The repeated reviews hover pattern, combined with zero page scroll and no add-to-cart action, reveals that trust validation is the primary blocker: the visitor cannot get enough confidence from the review summary visible above the fold to commit.\",\n  \"insight_principle\": \"Social Proof Salience — Robert Cialdini's principle that people look to the behavior and endorsements of others to reduce uncertainty in decisions. When social proof is present but not sufficiently prominent or detailed at the point of decision, visitors loop back to it repeatedly rather than proceeding, creating a hesitation trap.\",\n  \"recommendation\": \"Surface a concise, specific trust signal directly adjacent to the reviews element above the fold — ideally a verified buyer count or aggregate rating callout — so the visitor can resolve their trust evaluation without needing to scroll. If real review counts and ratings are available, inject them as a visible inline badge near the review stars. This breaks the hover-loop and gives the hesitating visitor the external validation needed to move toward the cart.\",\n  \"estimated_lift\": \"+8-14% add-to-cart rate\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"reviews_hover\",\n        \"control_text\": null,\n        \"variant_text\": \"Verified buyer reviews — read what customers say before you decide\",\n        \"position\": \"before\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"By placing a reassuring, action-oriented trust prompt directly above the reviews element, we convert the passive hover loop into an active engagement cue, reducing ambiguity and increasing the likelihood the visitor reads reviews and proceeds to purchase.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 42,
+        "conversion_probability": 18,
+        "tags": [
+          "trust_seeking",
+          "bundle_exploration",
+          "social_proof_deficit",
+          "zero_scroll",
+          "review_fixation"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor explored multiple bundle configurations early (within 6 seconds), signaling genuine purchase consideration and willingness to spend more — but then stalled completely, hovering over reviews four times across the full 112-second session without scrolling at all. The repeated reviews hover pattern, combined with zero page scroll and no add-to-cart action, reveals that trust validation is the primary blocker: the visitor cannot get enough confidence from the review summary visible above the fold to commit.",
+        "insight_principle": "Social Proof Salience — Robert Cialdini's principle that people look to the behavior and endorsements of others to reduce uncertainty in decisions. When social proof is present but not sufficiently prominent or detailed at the point of decision, visitors loop back to it repeatedly rather than proceeding, creating a hesitation trap.",
+        "recommendation": "Surface a concise, specific trust signal directly adjacent to the reviews element above the fold — ideally a verified buyer count or aggregate rating callout — so the visitor can resolve their trust evaluation without needing to scroll. If real review counts and ratings are available, inject them as a visible inline badge near the review stars. This breaks the hover-loop and gives the hesitating visitor the external validation needed to move toward the cart.",
+        "estimated_lift": "+8-14% add-to-cart rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "reviews_hover",
+              "control_text": null,
+              "variant_text": "Verified buyer reviews — read what customers say before you decide",
+              "position": "before",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "By placing a reassuring, action-oriented trust prompt directly above the reviews element, we convert the passive hover loop into an active engagement cue, reducing ambiguity and increasing the likelihood the visitor reads reviews and proceeds to purchase."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "011aa77c-423b-47d6-b2f1-cf17ba57b4e6",
+      "client_key": "demo",
+      "source": "real",
+      "scenario_target": null,
+      "repeat_index": 4,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14281,
+      "usage": {
+        "input_tokens": 2447,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 572,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"hesitating\",\n  \"intent_score\": 42,\n  \"conversion_probability\": 18,\n  \"tags\": [\"trust_seeking\", \"variant_exploration\", \"social_proof_loop\", \"no_scroll\", \"stalled_session\"],\n  \"insight_type\": \"SOCIAL_PROOF_SEEKING\",\n  \"insight_text\": \"This visitor explored color and bundle options rapidly in the first 20 seconds — signaling genuine purchase interest — but then stalled completely, hovering over the reviews section four separate times across the remaining 90 seconds without scrolling or clicking. The repeated return to reviews without any progress toward the cart suggests the visitor is stuck in a trust-validation loop: they want to buy but cannot find enough social proof to feel confident at the $349 price point. Zero scroll depth means the product's deeper content (specs, guarantees, detailed reviews) was never reached.\",\n  \"insight_principle\": \"Risk Aversion / Social Proof Theory: Consumers facing high-stakes purchases (high price, intangible inspection) anchor heavily on peer validation before committing. When social proof feels insufficient or inaccessible, the decision stalls rather than proceeds, even when product interest is demonstrated.\",\n  \"recommendation\": \"Surface a concise, high-credibility review summary directly within or immediately below the reviews hover zone — without requiring any scroll. A star rating count badge or a pinned 'Top Review' snippet visible above the fold would break the trust loop. Consider inserting a short social proof anchor near the reviews element to give the visitor the signal they are repeatedly seeking.\",\n  \"estimated_lift\": \"+12-18% add-to-cart rate for high-dwell, zero-scroll sessions\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"reviews_hover\",\n        \"control_text\": null,\n        \"variant_text\": \"Customers rate this their #1 headphone upgrade — verified purchase reviews below\",\n        \"position\": \"before\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Placing a trust-reinforcing anchor label directly at the reviews section intercepts the visitor's repeated social proof search at the exact point of hesitation, leveraging Social Proof Theory to reduce perceived purchase risk and nudge the stalled visitor toward add-to-cart without requiring them to scroll for validation.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "hesitating",
+        "intent_score": 42,
+        "conversion_probability": 18,
+        "tags": [
+          "trust_seeking",
+          "variant_exploration",
+          "social_proof_loop",
+          "no_scroll",
+          "stalled_session"
+        ],
+        "insight_type": "SOCIAL_PROOF_SEEKING",
+        "insight_text": "This visitor explored color and bundle options rapidly in the first 20 seconds — signaling genuine purchase interest — but then stalled completely, hovering over the reviews section four separate times across the remaining 90 seconds without scrolling or clicking. The repeated return to reviews without any progress toward the cart suggests the visitor is stuck in a trust-validation loop: they want to buy but cannot find enough social proof to feel confident at the $349 price point. Zero scroll depth means the product's deeper content (specs, guarantees, detailed reviews) was never reached.",
+        "insight_principle": "Risk Aversion / Social Proof Theory: Consumers facing high-stakes purchases (high price, intangible inspection) anchor heavily on peer validation before committing. When social proof feels insufficient or inaccessible, the decision stalls rather than proceeds, even when product interest is demonstrated.",
+        "recommendation": "Surface a concise, high-credibility review summary directly within or immediately below the reviews hover zone — without requiring any scroll. A star rating count badge or a pinned 'Top Review' snippet visible above the fold would break the trust loop. Consider inserting a short social proof anchor near the reviews element to give the visitor the signal they are repeatedly seeking.",
+        "estimated_lift": "+12-18% add-to-cart rate for high-dwell, zero-scroll sessions",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "reviews_hover",
+              "control_text": null,
+              "variant_text": "Customers rate this their #1 headphone upgrade — verified purchase reviews below",
+              "position": "before",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Placing a trust-reinforcing anchor label directly at the reviews section intercepts the visitor's repeated social proof search at the exact point of hesitation, leveraging Social Proof Theory to reduce perceived purchase risk and nudge the stalled visitor toward add-to-cart without requiring them to scroll for validation."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "constructed-comparison-02",
+      "client_key": "veroshop_test",
+      "source": "constructed",
+      "scenario_target": "COMPARISON_BEHAVIOR",
+      "repeat_index": 0,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14777,
+      "usage": {
+        "input_tokens": 2609,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 583,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"comparing\",\n  \"intent_score\": 62,\n  \"conversion_probability\": 28,\n  \"tags\": [\"multi-product-comparison\", \"price-sensitive\", \"decision-fatigue\", \"returning-to-original\"],\n  \"insight_type\": \"COMPARISON_BEHAVIOR\",\n  \"insight_text\": \"The visitor systematically cycled through three backpacks — Voyager ($89), Trailhead ($104), Summit ($95) — pausing meaningfully on each product page (3.4–4.1s section views), then returned to the Voyager, the cheapest option. The 2.6s price hover on the Trailhead ($104) reveals active price evaluation and likely sticker hesitation. Ending back on the Voyager after viewing pricier alternatives is a classic 'anchor reversion' pattern, suggesting the visitor is price-anchored to $89 but not yet confident enough to commit.\",\n  \"insight_principle\": \"Compromise Effect / Anchoring: When presented with multiple options, consumers often return to the lowest-price anchor after evaluating higher-priced alternatives. Confidence in the anchor choice can be increased by reducing perceived risk at the moment of re-engagement.\",\n  \"recommendation\": \"On the Voyager Backpack listing link in the collection, insert a short reassurance element (e.g. a free returns or money-back note) directly beneath the product name/price to reduce purchase risk and convert the return visit into a click-to-cart. This targets the exact moment the visitor re-engages with their preferred product after a price comparison loop.\",\n  \"estimated_lift\": \"+8-14% click-to-product-page conversion for price-anchored returning visitors\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"Voyager Backpack — $89\",\n        \"control_text\": null,\n        \"variant_text\": \"Free returns · Risk-free purchase\",\n        \"position\": \"after\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Visitors who return to the lowest-priced product after comparing alternatives are price-anchored but risk-hesitant. Surfacing a low-friction reassurance (free returns) at the point of re-engagement reduces perceived purchase risk and leverages loss aversion to tip the visitor toward committing to the Voyager.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "comparing",
+        "intent_score": 62,
+        "conversion_probability": 28,
+        "tags": [
+          "multi-product-comparison",
+          "price-sensitive",
+          "decision-fatigue",
+          "returning-to-original"
+        ],
+        "insight_type": "COMPARISON_BEHAVIOR",
+        "insight_text": "The visitor systematically cycled through three backpacks — Voyager ($89), Trailhead ($104), Summit ($95) — pausing meaningfully on each product page (3.4–4.1s section views), then returned to the Voyager, the cheapest option. The 2.6s price hover on the Trailhead ($104) reveals active price evaluation and likely sticker hesitation. Ending back on the Voyager after viewing pricier alternatives is a classic 'anchor reversion' pattern, suggesting the visitor is price-anchored to $89 but not yet confident enough to commit.",
+        "insight_principle": "Compromise Effect / Anchoring: When presented with multiple options, consumers often return to the lowest-price anchor after evaluating higher-priced alternatives. Confidence in the anchor choice can be increased by reducing perceived risk at the moment of re-engagement.",
+        "recommendation": "On the Voyager Backpack listing link in the collection, insert a short reassurance element (e.g. a free returns or money-back note) directly beneath the product name/price to reduce purchase risk and convert the return visit into a click-to-cart. This targets the exact moment the visitor re-engages with their preferred product after a price comparison loop.",
+        "estimated_lift": "+8-14% click-to-product-page conversion for price-anchored returning visitors",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "Voyager Backpack — $89",
+              "control_text": null,
+              "variant_text": "Free returns · Risk-free purchase",
+              "position": "after",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Visitors who return to the lowest-priced product after comparing alternatives are price-anchored but risk-hesitant. Surfacing a low-friction reassurance (free returns) at the point of re-engagement reduces perceived purchase risk and leverages loss aversion to tip the visitor toward committing to the Voyager."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "constructed-comparison-02",
+      "client_key": "veroshop_test",
+      "source": "constructed",
+      "scenario_target": "COMPARISON_BEHAVIOR",
+      "repeat_index": 1,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 13644,
+      "usage": {
+        "input_tokens": 2609,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 572,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"comparing\",\n  \"intent_score\": 62,\n  \"conversion_probability\": 28,\n  \"tags\": [\"price-sensitive\", \"multi-product-comparison\", \"indecisive\", \"returning-to-lowest-price\"],\n  \"insight_type\": \"COMPARISON_BEHAVIOR\",\n  \"insight_text\": \"The visitor systematically toured three backpacks—Voyager ($89), Trailhead ($104), and Summit ($95)—spending meaningful time on each product page, then returned to the cheapest option (Voyager at $89) as their final action. The 2.6-second price hover on the Trailhead's $104 tag signals active price evaluation, and the circular navigation pattern (collection → product → back → next product) suggests a classic price-anchoring resolution where the mid-range and premium options made the entry price feel more justified. No add-to-cart or conversion event occurred despite clear intent signals.\",\n  \"insight_principle\": \"Price Anchoring & Compromise Effect — Exposure to higher-priced options ($104, $95) recalibrates perceived value, making the lowest price ($89) feel like a smart deal. The visitor used the comparison journey to rationalize a choice they may have been hesitant about initially.\",\n  \"recommendation\": \"On the Voyager Backpack listing link in the collection view, add a short value-framing badge near the product that reinforces it as the best-value pick relative to the other options the visitor just evaluated. This surfaces the implicit conclusion the visitor already reached and reduces the remaining friction to clicking 'Add to Cart'.\",\n  \"estimated_lift\": \"+12-18% add-to-cart rate for return visitors\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"Voyager Backpack — $89\",\n        \"control_text\": null,\n        \"variant_text\": \"Best Value in This Collection\",\n        \"position\": \"before\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Surfacing a 'Best Value' label on the Voyager listing leverages the price anchoring the visitor already performed mentally, validating their implicit conclusion and reducing decision paralysis—expected to increase add-to-cart clicks from comparison-stage visitors who return to the lowest-priced option.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "comparing",
+        "intent_score": 62,
+        "conversion_probability": 28,
+        "tags": [
+          "price-sensitive",
+          "multi-product-comparison",
+          "indecisive",
+          "returning-to-lowest-price"
+        ],
+        "insight_type": "COMPARISON_BEHAVIOR",
+        "insight_text": "The visitor systematically toured three backpacks—Voyager ($89), Trailhead ($104), and Summit ($95)—spending meaningful time on each product page, then returned to the cheapest option (Voyager at $89) as their final action. The 2.6-second price hover on the Trailhead's $104 tag signals active price evaluation, and the circular navigation pattern (collection → product → back → next product) suggests a classic price-anchoring resolution where the mid-range and premium options made the entry price feel more justified. No add-to-cart or conversion event occurred despite clear intent signals.",
+        "insight_principle": "Price Anchoring & Compromise Effect — Exposure to higher-priced options ($104, $95) recalibrates perceived value, making the lowest price ($89) feel like a smart deal. The visitor used the comparison journey to rationalize a choice they may have been hesitant about initially.",
+        "recommendation": "On the Voyager Backpack listing link in the collection view, add a short value-framing badge near the product that reinforces it as the best-value pick relative to the other options the visitor just evaluated. This surfaces the implicit conclusion the visitor already reached and reduces the remaining friction to clicking 'Add to Cart'.",
+        "estimated_lift": "+12-18% add-to-cart rate for return visitors",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "Voyager Backpack — $89",
+              "control_text": null,
+              "variant_text": "Best Value in This Collection",
+              "position": "before",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Surfacing a 'Best Value' label on the Voyager listing leverages the price anchoring the visitor already performed mentally, validating their implicit conclusion and reducing decision paralysis—expected to increase add-to-cart clicks from comparison-stage visitors who return to the lowest-priced option."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "constructed-comparison-02",
+      "client_key": "veroshop_test",
+      "source": "constructed",
+      "scenario_target": "COMPARISON_BEHAVIOR",
+      "repeat_index": 2,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 15356,
+      "usage": {
+        "input_tokens": 2609,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 629,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "{\n  \"state\": \"comparing\",\n  \"intent_score\": 62,\n  \"conversion_probability\": 28,\n  \"tags\": [\"price-sensitive\", \"comparison-shopping\", \"indecisive\", \"multi-product-explorer\", \"returning-to-cheaper-option\"],\n  \"insight_type\": \"COMPARISON_BEHAVIOR\",\n  \"insight_principle\": \"Paradox of Choice — when presented with multiple similar options, decision difficulty increases, leading to paralysis or reversion to the most familiar/lowest-risk option. The visitor cycled through three backpacks and returned to the cheapest ($89 Voyager), suggesting price anchoring is overriding preference signals gathered during browsing.\",\n  \"insight_text\": \"The visitor systematically visited three backpacks in ascending price order ($89, $104, $95), spent 2.6 seconds hovering on the $104 price tag — a clear price evaluation signal — then abandoned that product and ultimately circled back to the lowest-priced option. This comparison loop without any add-to-cart action indicates the visitor is motivated but stuck in evaluation paralysis, likely unsure whether the higher-priced bags justify the premium. The return to the Voyager at $89 suggests price sensitivity is the dominant friction point rather than product fit.\",\n  \"recommendation\": \"Add a short value-anchoring reassurance near the Trailhead Backpack price to justify the premium and reduce price hesitation. Since the visitor hovered on $104 for 2.6s, surfacing a concrete differentiator (e.g. what makes it worth more than the Voyager) directly near the price would intercept the evaluation moment. Consider inserting a brief benefit badge like 'Best value for weekend trips' or 'Most durable — [material/warranty detail]' adjacent to the price display to give the visitor a reason to commit rather than retreat to cheapest.\",\n  \"estimated_lift\": \"+8-14% add-to-cart rate on Trailhead Backpack\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"Trailhead Backpack — $104\",\n        \"control_text\": null,\n        \"variant_text\": \"Most popular pick — built for weekend adventures\",\n        \"position\": \"after\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"Visitors hovering on a higher price without converting are experiencing value uncertainty. Adding a brief social-proof or benefit anchor near the price leverages the 'justification effect' — giving the visitor a reason to rationalize the premium, reducing reversion to the cheaper default option.\"\n  }\n}",
+      "parsed": {
+        "state": "comparing",
+        "intent_score": 62,
+        "conversion_probability": 28,
+        "tags": [
+          "price-sensitive",
+          "comparison-shopping",
+          "indecisive",
+          "multi-product-explorer",
+          "returning-to-cheaper-option"
+        ],
+        "insight_type": "COMPARISON_BEHAVIOR",
+        "insight_principle": "Paradox of Choice — when presented with multiple similar options, decision difficulty increases, leading to paralysis or reversion to the most familiar/lowest-risk option. The visitor cycled through three backpacks and returned to the cheapest ($89 Voyager), suggesting price anchoring is overriding preference signals gathered during browsing.",
+        "insight_text": "The visitor systematically visited three backpacks in ascending price order ($89, $104, $95), spent 2.6 seconds hovering on the $104 price tag — a clear price evaluation signal — then abandoned that product and ultimately circled back to the lowest-priced option. This comparison loop without any add-to-cart action indicates the visitor is motivated but stuck in evaluation paralysis, likely unsure whether the higher-priced bags justify the premium. The return to the Voyager at $89 suggests price sensitivity is the dominant friction point rather than product fit.",
+        "recommendation": "Add a short value-anchoring reassurance near the Trailhead Backpack price to justify the premium and reduce price hesitation. Since the visitor hovered on $104 for 2.6s, surfacing a concrete differentiator (e.g. what makes it worth more than the Voyager) directly near the price would intercept the evaluation moment. Consider inserting a brief benefit badge like 'Best value for weekend trips' or 'Most durable — [material/warranty detail]' adjacent to the price display to give the visitor a reason to commit rather than retreat to cheapest.",
+        "estimated_lift": "+8-14% add-to-cart rate on Trailhead Backpack",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "Trailhead Backpack — $104",
+              "control_text": null,
+              "variant_text": "Most popular pick — built for weekend adventures",
+              "position": "after",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Visitors hovering on a higher price without converting are experiencing value uncertainty. Adding a brief social-proof or benefit anchor near the price leverages the 'justification effect' — giving the visitor a reason to rationalize the premium, reducing reversion to the cheaper default option."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "constructed-comparison-02",
+      "client_key": "veroshop_test",
+      "source": "constructed",
+      "scenario_target": "COMPARISON_BEHAVIOR",
+      "repeat_index": 3,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 14184,
+      "usage": {
+        "input_tokens": 2609,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 562,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "```json\n{\n  \"state\": \"comparing\",\n  \"intent_score\": 62,\n  \"conversion_probability\": 28,\n  \"tags\": [\"price-sensitive\", \"comparison-shopping\", \"decision-fatigue\", \"returning-to-lowest-price\"],\n  \"insight_type\": \"COMPARISON_BEHAVIOR\",\n  \"insight_text\": \"The visitor systematically toured three backpacks in ascending price order ($89 → $104 → $95), pausing 2.6 seconds on the $104 price tag before retreating, then circled back to the cheapest option — the Voyager at $89. This classic anchoring-driven return suggests the mid- and high-tier options set a price ceiling that made the $89 feel like the safe choice, but no add-to-cart action was recorded, indicating residual hesitation even at the preferred price point. The lack of any scroll depth and the short session duration (38s) confirm the visitor is evaluating value, not absorbing product detail.\",\n  \"insight_principle\": \"Anchoring Effect: exposure to higher price points ($104, $95) elevates the perceived value of the lowest option ($89), but without a trust or value anchor on that product page (reviews, guarantee, comparison callout), the visitor still cannot commit.\",\n  \"recommendation\": \"On the Voyager Backpack product page, insert a short reassurance element directly near the price that surfaces a value-anchoring message — something like a 'Best value in our lineup' badge or a money-back guarantee note — to convert the anchoring comparison already happening in the visitor's head into a confident purchase decision.\",\n  \"estimated_lift\": \"+12-18% add-to-cart rate on Voyager Backpack\",\n  \"ab_test_config\": {\n    \"testable\": true,\n    \"actions\": [\n      {\n        \"type\": \"insert_element\",\n        \"element_find_text\": \"Voyager Backpack — $89\",\n        \"control_text\": null,\n        \"variant_text\": \"Our best value pick — satisfaction guaranteed or your money back\",\n        \"position\": \"after\",\n        \"style_changes\": null\n      }\n    ],\n    \"hypothesis\": \"By surfacing a value-anchoring reassurance message near the Voyager's price, we convert the anchoring comparison the visitor has already done mentally into a purchase trigger, reducing residual hesitation at the decision point.\"\n  }\n}\n```",
+      "parsed": {
+        "state": "comparing",
+        "intent_score": 62,
+        "conversion_probability": 28,
+        "tags": [
+          "price-sensitive",
+          "comparison-shopping",
+          "decision-fatigue",
+          "returning-to-lowest-price"
+        ],
+        "insight_type": "COMPARISON_BEHAVIOR",
+        "insight_text": "The visitor systematically toured three backpacks in ascending price order ($89 → $104 → $95), pausing 2.6 seconds on the $104 price tag before retreating, then circled back to the cheapest option — the Voyager at $89. This classic anchoring-driven return suggests the mid- and high-tier options set a price ceiling that made the $89 feel like the safe choice, but no add-to-cart action was recorded, indicating residual hesitation even at the preferred price point. The lack of any scroll depth and the short session duration (38s) confirm the visitor is evaluating value, not absorbing product detail.",
+        "insight_principle": "Anchoring Effect: exposure to higher price points ($104, $95) elevates the perceived value of the lowest option ($89), but without a trust or value anchor on that product page (reviews, guarantee, comparison callout), the visitor still cannot commit.",
+        "recommendation": "On the Voyager Backpack product page, insert a short reassurance element directly near the price that surfaces a value-anchoring message — something like a 'Best value in our lineup' badge or a money-back guarantee note — to convert the anchoring comparison already happening in the visitor's head into a confident purchase decision.",
+        "estimated_lift": "+12-18% add-to-cart rate on Voyager Backpack",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "Voyager Backpack — $89",
+              "control_text": null,
+              "variant_text": "Our best value pick — satisfaction guaranteed or your money back",
+              "position": "after",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "By surfacing a value-anchoring reassurance message near the Voyager's price, we convert the anchoring comparison the visitor has already done mentally into a purchase trigger, reducing residual hesitation at the decision point."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    },
+    {
+      "session_id": "constructed-comparison-02",
+      "client_key": "veroshop_test",
+      "source": "constructed",
+      "scenario_target": "COMPARISON_BEHAVIOR",
+      "repeat_index": 4,
+      "temperature": null,
+      "model": "claude-sonnet-4-6",
+      "elapsed_ms": 12715,
+      "usage": {
+        "input_tokens": 2609,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 454,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "raw_text": "{\"state\":\"comparing\",\"intent_score\":62,\"conversion_probability\":28,\"tags\":[\"multi-product-comparison\",\"price-sensitive\",\"returning-to-cheapest\",\"no-add-to-cart\"],\"insight_type\":\"COMPARISON_BEHAVIOR\",\"insight_text\":\"The visitor methodically browsed three backpacks in sequence, spending 3-4 seconds on each product page, then returned to the cheapest option (Voyager at $89) after a notable 2.6-second price hover on the Trailhead ($104). The circular navigation pattern — visiting three products and circling back to the first — is a classic paradox-of-choice signal where the visitor is struggling to commit despite clear interest. No add-to-cart action was taken, suggesting the comparison process has not resolved into a decision.\",\"insight_principle\":\"Paradox of Choice: Too many similar options of comparable quality increase cognitive load and reduce the likelihood of any choice being made. The visitor's return to the cheapest option after price-hovering on a more expensive one suggests price anchoring is influencing evaluation, but without a clear differentiator, the decision stalls.\",\"recommendation\":\"Add a short value-differentiator badge or label near the Voyager Backpack listing on the collection page that frames it as the 'Best Value' option, reducing the cognitive burden of comparison and validating the price-sensitive visitor's instinct to return to it.\",\"estimated_lift\":\"+8-14% add-to-cart rate\",\"ab_test_config\":{\"testable\":true,\"actions\":[{\"type\":\"insert_element\",\"element_find_text\":\"Voyager Backpack — $89\",\"control_text\":null,\"variant_text\":\"Best Value Pick\",\"position\":\"before\",\"style_changes\":null}],\"hypothesis\":\"Labeling the Voyager as 'Best Value' leverages the Paradox of Choice principle by reducing comparison fatigue — it gives the price-conscious visitor who already returned to this product an external cue that validates their instinct, making commitment more likely.\"}}",
+      "parsed": {
+        "state": "comparing",
+        "intent_score": 62,
+        "conversion_probability": 28,
+        "tags": [
+          "multi-product-comparison",
+          "price-sensitive",
+          "returning-to-cheapest",
+          "no-add-to-cart"
+        ],
+        "insight_type": "COMPARISON_BEHAVIOR",
+        "insight_text": "The visitor methodically browsed three backpacks in sequence, spending 3-4 seconds on each product page, then returned to the cheapest option (Voyager at $89) after a notable 2.6-second price hover on the Trailhead ($104). The circular navigation pattern — visiting three products and circling back to the first — is a classic paradox-of-choice signal where the visitor is struggling to commit despite clear interest. No add-to-cart action was taken, suggesting the comparison process has not resolved into a decision.",
+        "insight_principle": "Paradox of Choice: Too many similar options of comparable quality increase cognitive load and reduce the likelihood of any choice being made. The visitor's return to the cheapest option after price-hovering on a more expensive one suggests price anchoring is influencing evaluation, but without a clear differentiator, the decision stalls.",
+        "recommendation": "Add a short value-differentiator badge or label near the Voyager Backpack listing on the collection page that frames it as the 'Best Value' option, reducing the cognitive burden of comparison and validating the price-sensitive visitor's instinct to return to it.",
+        "estimated_lift": "+8-14% add-to-cart rate",
+        "ab_test_config": {
+          "testable": true,
+          "actions": [
+            {
+              "type": "insert_element",
+              "element_find_text": "Voyager Backpack — $89",
+              "control_text": null,
+              "variant_text": "Best Value Pick",
+              "position": "before",
+              "style_changes": null
+            }
+          ],
+          "hypothesis": "Labeling the Voyager as 'Best Value' leverages the Paradox of Choice principle by reducing comparison fatigue — it gives the price-conscious visitor who already returned to this product an external cue that validates their instinct, making commitment more likely."
+        }
+      },
+      "parse_ok": true,
+      "error": null
+    }
+  ]
+}

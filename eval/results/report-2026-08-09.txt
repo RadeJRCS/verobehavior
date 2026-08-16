@@ -1,0 +1,126 @@
+Loaded 32 results (32 parsed OK) from eval/results/run-2026-08-09T21-59-23-260Z.json
+
+==============================================================================
+TEST 4 — SCHEMA ADHERENCE
+==============================================================================
+
+insight_type — enum: FRICTION | CONVERSION_EVENT | DECISION_FATIGUE | HIGH_INTENT | SOCIAL_PROOF_SEEKING | BOUNCE_RISK | COMPARISON_BEHAVIOR
+
+All values seen:
+  ✓ "BOUNCE_RISK" — 9
+  ✓ "FRICTION" — 6
+  ✓ "SOCIAL_PROOF_SEEKING" — 6
+  ✓ "HIGH_INTENT" — 4
+  ✓ "CONVERSION_EVENT" — 3
+  ✓ "DECISION_FATIGUE" — 2
+  ✓ "COMPARISON_BEHAVIOR" — 2
+
+Exact match: 32/32 (100.0%)
+Format error (right concept, wrong format): 0/32 (0.0%)
+Out of enum entirely: 0/32 (0.0%)
+
+
+state — enum: browsing | engaged | hesitating | comparing | high_intent | converted
+
+All values seen:
+  ✓ "browsing" — 12
+  ✓ "hesitating" — 8
+  ✓ "high_intent" — 6
+  ✓ "converted" — 3
+  ✓ "comparing" — 3
+
+Exact match: 32/32 (100.0%)
+
+
+==============================================================================
+TEST 1 — GROUNDEDNESS
+==============================================================================
+
+GROUNDED: 31/32 (96.9%)
+SUSPECT:  1/32 (3.1%)
+
+SUSPECT sessions (sorted by event count, fewest first):
+
+  dad568e2-3b8a-42e4-b28f-47349149f91a — 3 events
+    - claims no/zero scrolling but actual scrollDepth is 100%
+
+Avg events — SUSPECT: 3.0 | GROUNDED: 5.3
+
+
+==============================================================================
+TEST 3 — PRINCIPLE & TYPE COVERAGE
+==============================================================================
+
+Normalization mapping applied (first-listed theory wins for compound answers):
+  /social proof/i -> "Social Proof (Cialdini)"
+  /commitment\s*(&|and)\s*consistency/i -> "Commitment & Consistency (Cialdini)"
+  /hick'?s law|choice overload|paradox of choice|analysis paralysis|choice paradox/i -> "Hick's Law / Choice Overload"
+  /reactance theory|goal frustration/i -> "Reactance Theory"
+  /information (foraging|scent)/i -> "Information Foraging / Scent Theory (Pirolli & Card)"
+  /zeigarnik/i -> "Zeigarnik Effect"
+  /loss aversion/i -> "Loss Aversion (Kahneman & Tversky)"
+  /endowed progress/i -> "Endowed Progress Effect"
+  /cognitive fluency/i -> "Cognitive Fluency Theory"
+  /cognitive ease|dual process|system 1\s*\/?\s*system 2/i -> "Kahneman: Cognitive Ease / Dual Process"
+  /cognitive load/i -> "Cognitive Load Theory"
+  /elaboration likelihood/i -> "Elaboration Likelihood Model (Petty & Cacioppo)"
+  /fogg/i -> "Fogg Behavior Model"
+  /peak-end/i -> "Peak-End Rule"
+  /dissonance/i -> "Cognitive / Post-Decision Dissonance"
+  /price anchoring|anchoring bias/i -> "Anchoring (Price/Reference Point)"
+  /operant conditioning|feedback loop/i -> "Operant Conditioning / Feedback Loop"
+  (anything not matching a rule above is kept as its own bucket, using the text before the first "+"/"combined with"/":")
+
+Distinct normalized principles: 19 (out of 32 sessions)
+
+  5x  Social Proof (Cialdini)
+  3x  Cognitive Fluency Theory
+  3x  Hick's Law / Choice Overload
+  2x  Operant Conditioning / Feedback Loop
+  2x  Cognitive Load Theory
+  2x  Loss Aversion (Kahneman & Tversky)
+  2x  Cognitive / Post-Decision Dissonance
+  2x  Zeigarnik Effect
+  1x  Implementation Intention — When a buyer has mentally rehearsed a purchase decision before arriving, their behavior becomes scripted and automatic. This visitor's behavior mirrors the psychological state of someone who had already decided to buy, converting the checkout into a mere execution step rather than a decision point.
+  1x  Checkout Abandonment Friction
+  1x  Fluency Effect
+  1x  Expectation-Reality Gap
+  1x  Endowment Effect — once a user mentally 'owns' an item by adding it to cart, they are more likely to complete purchase. Reinforcing cart progress and offering a seamless 'continue shopping
+  1x  Committed Action & Purchase Momentum — once a user takes an initial commitment step (Add to Cart), subsequent actions follow rapidly due to consistency bias and reduced cognitive friction.
+  1x  Ambiguity Effect — When users encounter unexpected friction (surprise shipping costs, required account creation, unclear payment options) at a critical decision point, they disengage rather than proceed. The second CTA click after an exit intent suggests motivation remains but the barrier was not resolved.
+  1x  Endowment Effect
+  1x  Commitment & Consistency (Cialdini)
+  1x  Elaboration Likelihood Model (Petty & Cacioppo)
+  1x  Anchoring Effect
+
+
+Distinct insight_type (raw, not normalized): 7
+
+  9x  BOUNCE_RISK
+  6x  FRICTION
+  6x  SOCIAL_PROOF_SEEKING
+  4x  HIGH_INTENT
+  3x  CONVERSION_EVENT
+  2x  DECISION_FATIGUE
+  2x  COMPARISON_BEHAVIOR
+
+
+Constructed COMPARISON_BEHAVIOR sessions — did the model recognize them?
+
+  constructed-comparison-01
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Paradox of Choice / Insufficient Value Anchoring — when two similar products compete on price without clear differentiation signals, the cognitive burden of justifying either purchase increases and the most common resolution is abandonment rather than conversion.
+    insight_text: The visitor engaged in a deliberate back-and-forth comparison loop between the Merino Wool Sweater ($89) and the Alpine Wool Sweater ($104), hovering on both price points for extended durations before returning to the original product and then triggering exit intent. The zero scroll depth across both pages suggests they never engaged with product details — the price alone was the decision axis, and neither product gave them enough differentiation to justify the cost. The exit intent after returning to the Merino sweater signals the cheaper option still didn't clear their value threshold.
+
+  constructed-comparison-02
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Anchoring Effect: The first price encountered ($89) becomes the reference point against which subsequent options are judged. Higher prices feel less justified without clear differentiation, causing the visitor to retreat to the cheapest anchor.
+    insight_text: This visitor systematically navigated through three different backpacks — Voyager ($89), Trailhead ($104), and Summit ($95) — before returning to the lowest-priced option, Voyager. The 2.6-second hover on the $104 price tag signals active price evaluation and likely sticker hesitation on the Trailhead. Returning to Voyager at the end suggests price anchoring is driving the decision rather than features.
+
+
+
+==============================================================================
+END OF REPORT
+==============================================================================

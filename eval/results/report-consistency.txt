@@ -1,0 +1,168 @@
+Loaded 30 results (30 parsed OK) from eval/results/run-2026-08-09T22-29-57-070Z.json
+
+==============================================================================
+TEST 4 — SCHEMA ADHERENCE
+==============================================================================
+
+insight_type — enum: FRICTION | CONVERSION_EVENT | DECISION_FATIGUE | HIGH_INTENT | SOCIAL_PROOF_SEEKING | BOUNCE_RISK | COMPARISON_BEHAVIOR
+
+All values seen:
+  ✓ "SOCIAL_PROOF_SEEKING" — 10
+  ✓ "FRICTION" — 5
+  ✓ "CONVERSION_EVENT" — 5
+  ✓ "BOUNCE_RISK" — 5
+  ✓ "COMPARISON_BEHAVIOR" — 5
+
+Exact match: 30/30 (100.0%)
+Format error (right concept, wrong format): 0/30 (0.0%)
+Out of enum entirely: 0/30 (0.0%)
+
+
+state — enum: browsing | engaged | hesitating | comparing | high_intent | converted
+
+All values seen:
+  ✓ "hesitating" — 10
+  ✓ "high_intent" — 5
+  ✓ "converted" — 5
+  ✓ "browsing" — 5
+  ✓ "comparing" — 5
+
+Exact match: 30/30 (100.0%)
+
+
+==============================================================================
+TEST 1 — GROUNDEDNESS
+==============================================================================
+
+GROUNDED: 30/30 (100.0%)
+SUSPECT:  0/30 (0.0%)
+
+
+
+==============================================================================
+TEST 3 — PRINCIPLE & TYPE COVERAGE
+==============================================================================
+
+Normalization mapping applied (first-listed theory wins for compound answers):
+  /social proof/i -> "Social Proof (Cialdini)"
+  /commitment\s*(&|and)\s*consistency/i -> "Commitment & Consistency (Cialdini)"
+  /hick'?s law|choice overload|paradox of choice|analysis paralysis|choice paradox/i -> "Hick's Law / Choice Overload"
+  /reactance theory|goal frustration/i -> "Reactance Theory"
+  /information (foraging|scent)/i -> "Information Foraging / Scent Theory (Pirolli & Card)"
+  /zeigarnik/i -> "Zeigarnik Effect"
+  /loss aversion/i -> "Loss Aversion (Kahneman & Tversky)"
+  /endowed progress/i -> "Endowed Progress Effect"
+  /cognitive fluency/i -> "Cognitive Fluency Theory"
+  /cognitive ease|dual process|system 1\s*\/?\s*system 2/i -> "Kahneman: Cognitive Ease / Dual Process"
+  /cognitive load/i -> "Cognitive Load Theory"
+  /elaboration likelihood/i -> "Elaboration Likelihood Model (Petty & Cacioppo)"
+  /fogg/i -> "Fogg Behavior Model"
+  /peak-end/i -> "Peak-End Rule"
+  /dissonance/i -> "Cognitive / Post-Decision Dissonance"
+  /price anchoring|anchoring bias/i -> "Anchoring (Price/Reference Point)"
+  /operant conditioning|feedback loop/i -> "Operant Conditioning / Feedback Loop"
+  (anything not matching a rule above is kept as its own bucket, using the text before the first "+"/"combined with"/":")
+
+Distinct normalized principles: 13 (out of 30 sessions)
+
+  9x  Social Proof (Cialdini)
+  5x  Operant Conditioning / Feedback Loop
+  4x  Commitment & Consistency (Cialdini)
+  2x  Cognitive Load Theory
+  2x  Hick's Law / Choice Overload
+  1x  Implementation Intention — when a person has already mentally committed to an action before beginning it, they execute the steps with minimal deliberation and near-zero dropout risk. This visitor had effectively 'pre-decided' before hitting the checkout page.
+  1x  Cognitive Fluency Theory
+  1x  Cognitive Dismissal — when a landing page fails to immediately signal relevance or value, visitors reject it within seconds before investing any attention. Zero scroll depth and a single 'Back to store' click at 62 seconds suggests the page either confused the visitor (they didn't realize they were already on the store) or failed to deliver on the expectation set by the referral context.
+  1x  Cognitive / Post-Decision Dissonance
+  1x  Risk Compensation Theory
+  1x  Compromise Effect / Anchoring
+  1x  Anchoring (Price/Reference Point)
+  1x  Anchoring Effect
+
+
+Distinct insight_type (raw, not normalized): 5
+
+  10x  SOCIAL_PROOF_SEEKING
+  5x  FRICTION
+  5x  CONVERSION_EVENT
+  5x  BOUNCE_RISK
+  5x  COMPARISON_BEHAVIOR
+
+
+Constructed COMPARISON_BEHAVIOR sessions — did the model recognize them?
+
+  constructed-comparison-02
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Compromise Effect / Anchoring: When presented with multiple options, consumers often return to the lowest-price anchor after evaluating higher-priced alternatives. Confidence in the anchor choice can be increased by reducing perceived risk at the moment of re-engagement.
+    insight_text: The visitor systematically cycled through three backpacks — Voyager ($89), Trailhead ($104), Summit ($95) — pausing meaningfully on each product page (3.4–4.1s section views), then returned to the Voyager, the cheapest option. The 2.6s price hover on the Trailhead ($104) reveals active price evaluation and likely sticker hesitation. Ending back on the Voyager after viewing pricier alternatives is a classic 'anchor reversion' pattern, suggesting the visitor is price-anchored to $89 but not yet confident enough to commit.
+
+  constructed-comparison-02
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Price Anchoring & Compromise Effect — Exposure to higher-priced options ($104, $95) recalibrates perceived value, making the lowest price ($89) feel like a smart deal. The visitor used the comparison journey to rationalize a choice they may have been hesitant about initially.
+    insight_text: The visitor systematically toured three backpacks—Voyager ($89), Trailhead ($104), and Summit ($95)—spending meaningful time on each product page, then returned to the cheapest option (Voyager at $89) as their final action. The 2.6-second price hover on the Trailhead's $104 tag signals active price evaluation, and the circular navigation pattern (collection → product → back → next product) suggests a classic price-anchoring resolution where the mid-range and premium options made the entry price feel more justified. No add-to-cart or conversion event occurred despite clear intent signals.
+
+  constructed-comparison-02
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Paradox of Choice — when presented with multiple similar options, decision difficulty increases, leading to paralysis or reversion to the most familiar/lowest-risk option. The visitor cycled through three backpacks and returned to the cheapest ($89 Voyager), suggesting price anchoring is overriding preference signals gathered during browsing.
+    insight_text: The visitor systematically visited three backpacks in ascending price order ($89, $104, $95), spent 2.6 seconds hovering on the $104 price tag — a clear price evaluation signal — then abandoned that product and ultimately circled back to the lowest-priced option. This comparison loop without any add-to-cart action indicates the visitor is motivated but stuck in evaluation paralysis, likely unsure whether the higher-priced bags justify the premium. The return to the Voyager at $89 suggests price sensitivity is the dominant friction point rather than product fit.
+
+  constructed-comparison-02
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Anchoring Effect: exposure to higher price points ($104, $95) elevates the perceived value of the lowest option ($89), but without a trust or value anchor on that product page (reviews, guarantee, comparison callout), the visitor still cannot commit.
+    insight_text: The visitor systematically toured three backpacks in ascending price order ($89 → $104 → $95), pausing 2.6 seconds on the $104 price tag before retreating, then circled back to the cheapest option — the Voyager at $89. This classic anchoring-driven return suggests the mid- and high-tier options set a price ceiling that made the $89 feel like the safe choice, but no add-to-cart action was recorded, indicating residual hesitation even at the preferred price point. The lack of any scroll depth and the short session duration (38s) confirm the visitor is evaluating value, not absorbing product detail.
+
+  constructed-comparison-02
+    state: comparing
+    insight_type: COMPARISON_BEHAVIOR  ✓ MATCHES target
+    insight_principle: Paradox of Choice: Too many similar options of comparable quality increase cognitive load and reduce the likelihood of any choice being made. The visitor's return to the cheapest option after price-hovering on a more expensive one suggests price anchoring is influencing evaluation, but without a clear differentiator, the decision stalls.
+    insight_text: The visitor methodically browsed three backpacks in sequence, spending 3-4 seconds on each product page, then returned to the cheapest option (Voyager at $89) after a notable 2.6-second price hover on the Trailhead ($104). The circular navigation pattern — visiting three products and circling back to the first — is a classic paradox-of-choice signal where the visitor is struggling to commit despite clear interest. No add-to-cart action was taken, suggesting the comparison process has not resolved into a decision.
+
+
+
+==============================================================================
+TEST 2 — CONSISTENCY (same session, repeated calls)
+==============================================================================
+
+0c5bad9f-dd24-40f3-8f20-015d9ccf7836  (5 events, 5 repeats)
+  state:              ✓ STABLE  — high_intent | high_intent | high_intent | high_intent | high_intent
+  insight_type:       ✓ STABLE  — FRICTION | FRICTION | FRICTION | FRICTION | FRICTION
+  insight_principle:  ✓ STABLE  — Operant Conditioning / Feedback Loop
+
+d4227d31-0268-4de9-929a-dc480c71b4a4  (5 events, 5 repeats)
+  state:              ✓ STABLE  — converted | converted | converted | converted | converted
+  insight_type:       ✓ STABLE  — CONVERSION_EVENT | CONVERSION_EVENT | CONVERSION_EVENT | CONVERSION_EVENT | CONVERSION_EVENT
+  insight_principle:  ✗ VARIES (2 distinct)  — Commitment & Consistency (Cialdini) | Implementation Intention — when a person has already mentally committed to an action before beginning it, they execute the steps with minimal deliberation and near-zero dropout risk. This visitor had effectively 'pre-decided' before hitting the checkout page.
+
+9b6341c0-7ae5-4bdd-a05b-cb4f0c033a7d  (1 events, 5 repeats)
+  state:              ✓ STABLE  — browsing | browsing | browsing | browsing | browsing
+  insight_type:       ✓ STABLE  — BOUNCE_RISK | BOUNCE_RISK | BOUNCE_RISK | BOUNCE_RISK | BOUNCE_RISK
+  insight_principle:  ✗ VARIES (4 distinct)  — Cognitive Fluency Theory | Cognitive Load Theory | Cognitive Dismissal — when a landing page fails to immediately signal relevance or value, visitors reject it within seconds before investing any attention. Zero scroll depth and a single 'Back to store' click at 62 seconds suggests the page either confused the visitor (they didn't realize they were already on the store) or failed to deliver on the expectation set by the referral context. | Cognitive / Post-Decision Dissonance
+
+dadc92f2-8324-44e1-a50e-6faae4f0f5cf  (8 events, 5 repeats)
+  state:              ✓ STABLE  — hesitating | hesitating | hesitating | hesitating | hesitating
+  insight_type:       ✓ STABLE  — SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING
+  insight_principle:  ✓ STABLE  — Social Proof (Cialdini)
+
+011aa77c-423b-47d6-b2f1-cf17ba57b4e6  (8 events, 5 repeats)
+  state:              ✓ STABLE  — hesitating | hesitating | hesitating | hesitating | hesitating
+  insight_type:       ✓ STABLE  — SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING | SOCIAL_PROOF_SEEKING
+  insight_principle:  ✗ VARIES (2 distinct)  — Social Proof (Cialdini) | Risk Compensation Theory
+
+constructed-comparison-02  (10 events, 5 repeats)
+  state:              ✓ STABLE  — comparing | comparing | comparing | comparing | comparing
+  insight_type:       ✓ STABLE  — COMPARISON_BEHAVIOR | COMPARISON_BEHAVIOR | COMPARISON_BEHAVIOR | COMPARISON_BEHAVIOR | COMPARISON_BEHAVIOR
+  insight_principle:  ✗ VARIES (4 distinct)  — Compromise Effect / Anchoring | Anchoring (Price/Reference Point) | Hick's Law / Choice Overload | Anchoring Effect
+
+Summary — stability across all repeated sessions:
+  state stable in:              6/6 sessions
+  insight_type stable in:       6/6 sessions
+  insight_principle stable in:  2/6 sessions
+
+
+==============================================================================
+END OF REPORT
+==============================================================================
