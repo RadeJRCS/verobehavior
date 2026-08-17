@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 import { getOwnedKeys } from '@/lib/auth/getOwnedKeys'
-import { COLLECTING_DATA_INSIGHT_TYPE } from '@/lib/analyze/prompt'
+import { NON_ANALYSIS_INSIGHT_TYPES } from '@/lib/analyze/prompt'
 
 export const runtime = 'nodejs'
 
@@ -40,9 +40,10 @@ function groupSessions(sessions: SessionRow[]) {
   const groups = new Map<string, SessionRow[]>()
   for (const s of sessions) {
     if (!s.state || !s.insight_type) continue
-    // Sessions with too little signal to analyze — don't let 3+ of them
-    // accumulate into a meaningless "pattern".
-    if (s.insight_type === COLLECTING_DATA_INSIGHT_TYPE) continue
+    // Sessions that never got a real AI analysis (too little signal, or
+    // usage-capped) — don't let 3+ of them accumulate into a meaningless
+    // "pattern".
+    if ((NON_ANALYSIS_INSIGHT_TYPES as readonly string[]).includes(s.insight_type)) continue
     const key = `${s.client_key}__${s.state}__${s.insight_type}`
     if (!groups.has(key)) groups.set(key, [])
     groups.get(key)!.push(s)

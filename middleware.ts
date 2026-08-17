@@ -39,6 +39,10 @@ export async function middleware(request: NextRequest) {
   // covers the whole public site too (for the refresh above), so the
   // redirect must stay scoped here — otherwise every anonymous visitor to
   // the homepage, pricing, blog, etc. would get bounced to /login.
+  // There is no "public routes" allowlist to maintain: /signup,
+  // /forgot-password, /reset-password (and /login itself) are public by
+  // construction, simply by not starting with /dashboard. Nothing to add
+  // here when a new public page is created.
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard')
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone()

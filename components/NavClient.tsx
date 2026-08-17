@@ -138,8 +138,8 @@ export default function NavClient({ user }: { user: NavUser }) {
               <Link href="/login" className="border border-white/30 text-white px-4 py-1.5 rounded-md text-[13px] font-semibold hover:bg-white/10 hover:border-white/50 transition-colors">
                 Log in
               </Link>
-              <Link href="/contact" className="bg-[#C8963C] text-white px-4 py-1.5 rounded-md text-[13px] font-semibold hover:opacity-90 transition-opacity">
-                Apply as design partner
+              <Link href="/signup" className="bg-[#C8963C] text-white px-4 py-1.5 rounded-md text-[13px] font-semibold hover:opacity-90 transition-opacity">
+                Sign up free
               </Link>
             </>
           )}
@@ -188,9 +188,9 @@ export default function NavClient({ user }: { user: NavUser }) {
                 className="mt-4 block text-center border border-white/30 text-white px-4 py-2.5 rounded-md text-[13px] font-semibold hover:bg-white/10 hover:border-white/50 transition-colors">
                 Log in
               </Link>
-              <Link href="/contact" onClick={() => setOpen(false)}
+              <Link href="/signup" onClick={() => setOpen(false)}
                 className="mt-2 block text-center bg-[#C8963C] text-white px-4 py-2.5 rounded-md text-[13px] font-semibold">
-                Apply as design partner
+                Sign up free
               </Link>
             </>
           )}
