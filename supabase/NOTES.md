@@ -66,6 +66,29 @@ Once you have real output from any of the above, replace the column-inventory
 comments in `schema/02_existing_tables.sql` with the actual `CREATE TABLE`
 statements.
 
+## Required console change: auth email templates (2026-08-20)
+
+`app/auth/callback/route.ts` verifies `token_hash` + `type` via
+`verifyOtp()` — it does **not** rely on Supabase's own hosted `/verify`
+redirect chain. For this to work, the **"Confirm signup"** and **"Reset
+Password"** templates (Authentication → Email Templates in the dashboard)
+must link directly to this route with those params, not use the default
+`{{ .ConfirmationURL }}` variable:
+
+- Confirm signup: `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email`
+- Reset Password: `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery`
+
+**Why this matters:** `{{ .ConfirmationURL }}` points at Supabase's own
+`/auth/v1/verify` endpoint first. That endpoint verifies the token
+server-side (so the account *does* get confirmed) and then 303-redirects
+to `redirect_to` — but diagnosed 2026-08-20 against a live test signup,
+that redirect carried no `code` param at all, so `exchangeCodeForSession()`
+in the old version of this route was never reached, `create_client_if_missing()`
+never ran, and the user landed on `/login` with no `clients` row despite a
+successfully confirmed account. Linking directly to this route with
+`token_hash`+`type` skips that hop entirely and is the flow Supabase's own
+SSR docs recommend.
+
 ## Open questions for senior review
 
 1. **Real `auth.uid()` RLS (Option 2) vs. keep the current helper-based
