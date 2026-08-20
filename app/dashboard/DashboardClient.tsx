@@ -1,7 +1,7 @@
 'use client'
 import Footer from '@/components/Footer'
 import { useState, useEffect, useCallback } from 'react'
-import { COLLECTING_DATA_INSIGHT_TYPE } from '@/lib/analyze/prompt'
+import { COLLECTING_DATA_INSIGHT_TYPE, LIMIT_REACHED_INSIGHT_TYPE, NON_ANALYSIS_INSIGHT_TYPES } from '@/lib/analyze/prompt'
 
 type TestAction = {
   type: 'text_replace' | 'insert_element' | 'style_change'
@@ -68,7 +68,9 @@ const typeColor: Record<string, string> = { 'E-commerce': 'bg-amber-50 text-ambe
 // instead of a real behavioral classification. Give them a readable label
 // instead of the raw enum string.
 function insightTypeLabel(insightType: string): string {
-  return insightType === COLLECTING_DATA_INSIGHT_TYPE ? 'Collecting data' : insightType
+  if (insightType === COLLECTING_DATA_INSIGHT_TYPE) return 'Collecting data'
+  if (insightType === LIMIT_REACHED_INSIGHT_TYPE) return 'Limit reached'
+  return insightType
 }
 
 // --- TestAction helpers ---
@@ -189,6 +191,7 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
   const [patterns, setPatterns] = useState<Pattern[]>([])
   const [patternSummaries, setPatternSummaries] = useState<Record<string, PatternSummary>>({})
   const [loadingPatternId, setLoadingPatternId] = useState<string | null>(null)
+  const [usage, setUsage] = useState<{ tier: string; monthly_session_limit: number | null; sessions_this_month: number } | null>(null)
 
   const fetchData = useCallback(async (key?: string) => {
     setLoading(true)
@@ -311,6 +314,16 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
   useEffect(() => { if (activeTab === 'backlog') fetchBacklog() }, [activeTab, fetchBacklog])
   useEffect(() => { if (activeTab === 'tests') fetchTests() }, [activeTab, fetchTests])
   useEffect(() => { if (activeTab === 'patterns') fetchPatterns() }, [activeTab, fetchPatterns])
+
+  useEffect(() => {
+    if (!filterKey) { setUsage(null); return }
+    let cancelled = false
+    fetch(`/api/usage?key=${filterKey}`)
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled) setUsage((d.usage && d.usage[0]) || null) })
+      .catch(() => { if (!cancelled) setUsage(null) })
+    return () => { cancelled = true }
+  }, [filterKey])
 
   const handleGeoAudit = async () => {
     if (!geoUrl) return
@@ -471,6 +484,16 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#5EBA7D] animate-pulse" />
                 {loading ? 'Loading...' : `${sessions.length} sessions`}
               </div>
+              {filterKey && usage && (
+                <div
+                  className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-[12px] font-mono"
+                  style={{ color: usage.monthly_session_limit != null && usage.sessions_this_month >= usage.monthly_session_limit ? '#F5A3A3' : '#A8D4B8' }}
+                >
+                  {usage.monthly_session_limit == null
+                    ? 'Unlimited analysis'
+                    : `${usage.sessions_this_month}/${usage.monthly_session_limit} analyzed this month`}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -625,7 +648,7 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
           {activeTab === 'insights' && (
             sessions.length === 0 ? <div className="bg-white border border-surface-3 rounded-xl p-12 text-center text-ink-3 text-[13px]">No insights yet.</div> : (
               <div className="grid md:grid-cols-2 gap-4">
-                {sessions.filter((s: Session) => s.insight_text && s.insight_type !== COLLECTING_DATA_INSIGHT_TYPE).slice(0, 8).map((s: Session) => (
+                {sessions.filter((s: Session) => s.insight_text && !(NON_ANALYSIS_INSIGHT_TYPES as readonly string[]).includes(s.insight_type)).slice(0, 8).map((s: Session) => (
                   <div key={s.id} className="bg-white border border-surface-3 rounded-xl p-5" style={{ borderLeftWidth: 3, borderLeftColor: stateColor[s.state] || '#4A4947' }}>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-[9px] font-mono uppercase tracking-widest" style={{ color: stateColor[s.state] || '#4A4947' }}>{insightTypeLabel(s.insight_type)}</span>

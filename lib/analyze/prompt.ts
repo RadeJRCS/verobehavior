@@ -40,6 +40,18 @@ export const MIN_EVENTS_FOR_ANALYSIS = 3
 export const COLLECTING_DATA_INSIGHT_TYPE = 'COLLECTING_DATA'
 export const COLLECTING_DATA_TEXT = 'Not enough activity yet to analyze — collecting data.'
 
+// Tier usage cap (Faza 5). monthly_session_limit on the clients row is the
+// gate — null means unlimited, a number means "no more AI calls once this
+// many sessions were analyzed this calendar month." Raw event capture from
+// the snippet is never capped, only the AI analysis step.
+export const LIMIT_REACHED_INSIGHT_TYPE = 'LIMIT_REACHED'
+export const LIMIT_REACHED_TEXT = 'Monthly analysis limit reached. Upgrade for more.'
+
+// Sentinel insight_types that never came from the AI — used by the
+// dashboard and patterns endpoint to exclude these from anything that
+// treats insight_type as a real behavioral classification.
+export const NON_ANALYSIS_INSIGHT_TYPES = [COLLECTING_DATA_INSIGHT_TYPE, LIMIT_REACHED_INSIGHT_TYPE] as const
+
 export const SYSTEM_PROMPT = `You are a behavioral psychology expert and CRO specialist. Analyze user sessions and respond ONLY with valid JSON. No markdown, no explanation, just raw JSON.`
 
 export type AnalyzeEvent = {

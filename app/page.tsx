@@ -38,7 +38,7 @@ const faqs = [
   ['How does the AI work?', 'We use leading AI models with strict privacy protection and zero data retention.'],
   ['Is my data safe?', 'All behavioral data is fully anonymized and tied to pseudonymous session IDs. We never collect personally identifiable information from website visitors. GDPR and CCPA compliant by design.'],
   ['How quickly can I see results?', 'First psychological insights appear within 48 hours of installing the snippet, depending on your traffic volume. The more sessions our AI analyzes, the more accurate the insights become.'],
-  ['What stage is the product in?', 'VeroBehavior is currently in private beta. We are onboarding a select group of design partners who get free early access in exchange for feedback. Apply through our contact page.'],
+  ['What stage is the product in?', 'VeroBehavior is currently in beta and open for signup — free to start. Design partners get unlimited access, direct support, and a lifetime discount in exchange for feedback. Apply through our contact page.'],
 ]
 
 export default function Home() {
@@ -51,7 +51,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-green-light border border-green/20 rounded-full px-4 py-1.5 text-[11px] font-mono font-medium text-green mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
-            Private beta: accepting design partners
+            Beta — sign up free
           </div>
           <h1 className="font-serif text-5xl md:text-7xl font-normal leading-[1.05] tracking-tight text-ink mb-6">
             Stop testing words.<br />
@@ -277,7 +277,7 @@ export default function Home() {
             <em className="italic text-[#A8D4B8]">Not just measure them.</em>
           </h2>
           <p className="text-[16px] text-white/60 max-w-md mx-auto mb-10 font-light leading-relaxed">
-            We are accepting a limited number of design partners for our private beta. Free access in exchange for feedback.
+            Sign up free to start, or apply as a design partner for unlimited access, direct support, and a lifetime discount.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/demo" className="bg-gold text-white px-8 py-3.5 rounded-lg text-[14px] font-semibold hover:opacity-90 transition-opacity">

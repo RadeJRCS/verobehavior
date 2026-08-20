@@ -9,6 +9,9 @@ import {
   MIN_EVENTS_FOR_ANALYSIS,
   COLLECTING_DATA_INSIGHT_TYPE,
   COLLECTING_DATA_TEXT,
+  LIMIT_REACHED_INSIGHT_TYPE,
+  LIMIT_REACHED_TEXT,
+  NON_ANALYSIS_INSIGHT_TYPES,
   normalizeInsightType,
 } from '@/lib/analyze/prompt'
 
@@ -25,6 +28,69 @@ function getSupabase() {
   const key = process.env.SUPABASE_ANON_KEY
   if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY')
   return createClient(url, key)
+}
+
+// This route is hit by the anonymous public snippet — no user session, no
+// cookies, so it can't use the cookie-aware authenticated client that
+// dashboard routes use to satisfy the "owner reads own client row" RLS
+// policy. Reading another account's tier/limit here needs the service role
+// key (server-only, never exposed to a browser) to bypass RLS for this one
+// legitimate backend purpose. Requires a new SUPABASE_SERVICE_ROLE_KEY env
+// var — see Faza 7.
+function getServiceSupabase() {
+  const url = process.env.SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
+  return createClient(url, key)
+}
+
+// Faza 5 usage cap. Fails OPEN on any lookup problem (missing/unreadable
+// clients row, count query error, missing env var) — an unknown limit never
+// blocks a real AI call for an existing client; it just doesn't enforce the
+// cap until the underlying issue is fixed. Logged loudly either way so a
+// silent misconfiguration doesn't look like "nobody ever hits their limit."
+async function isUsageLimitReached(clientKey: string): Promise<boolean> {
+  try {
+    const serviceSupabase = getServiceSupabase()
+    const { data: clientRow, error: clientErr } = await serviceSupabase
+      .from('clients')
+      .select('monthly_session_limit')
+      .eq('client_key', clientKey)
+      .maybeSingle()
+
+    if (clientErr) {
+      console.error('isUsageLimitReached: clients lookup failed:', clientErr.message)
+      return false
+    }
+    if (!clientRow || clientRow.monthly_session_limit == null) {
+      // No row (unrecognized client_key) or explicitly unlimited tier.
+      return false
+    }
+
+    const supabase = getSupabase()
+    const now = new Date()
+    const firstOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString()
+    // Only rows that actually consumed an AI call count against the limit —
+    // COLLECTING_DATA (skipped, too few events) and LIMIT_REACHED (skipped,
+    // capped) never reached Anthropic, so they must not count themselves
+    // toward the very cap that stopped them.
+    const { count, error: countErr } = await supabase
+      .from('sessions')
+      .select('*', { count: 'exact', head: true })
+      .eq('client_key', clientKey)
+      .gte('created_at', firstOfMonth)
+      .not('insight_type', 'in', `(${NON_ANALYSIS_INSIGHT_TYPES.join(',')})`)
+
+    if (countErr) {
+      console.error('isUsageLimitReached: session count failed:', countErr.message)
+      return false
+    }
+
+    return (count ?? 0) >= clientRow.monthly_session_limit
+  } catch (err: unknown) {
+    console.error('isUsageLimitReached: unexpected error:', err instanceof Error ? err.message : String(err))
+    return false
+  }
 }
 
 export async function OPTIONS() {
@@ -59,6 +125,19 @@ export async function POST(req: NextRequest) {
         tags: [],
         insight_type: COLLECTING_DATA_INSIGHT_TYPE,
         insight_text: COLLECTING_DATA_TEXT,
+        insight_principle: '',
+        recommendation: '',
+        estimated_lift: '',
+        ab_test_config: null,
+      }
+    } else if (await isUsageLimitReached(clientKey)) {
+      analysis = {
+        state: 'browsing',
+        intent_score: 0,
+        conversion_probability: 0,
+        tags: [],
+        insight_type: LIMIT_REACHED_INSIGHT_TYPE,
+        insight_text: LIMIT_REACHED_TEXT,
         insight_principle: '',
         recommendation: '',
         estimated_lift: '',

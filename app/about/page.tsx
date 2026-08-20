@@ -20,8 +20,8 @@ export default function AboutPage() {
         </div>
         <div className="space-y-5 text-ink-2 text-[15px] leading-relaxed font-light">
           <h2 className="font-serif text-2xl text-ink font-normal mt-10 mb-3">Where we are now</h2>
-          <p>VeroBehavior is currently in <strong className="text-ink font-semibold">private beta</strong>. Our core platform is live: the JavaScript snippet tracks behavior, our AI engine analyzes sessions in real time, and the dashboard displays psychological insights.</p>
-          <p>We are accepting a limited number of <strong className="text-ink font-semibold">design partners</strong>: companies that get free access in exchange for feedback and the willingness to help us shape the product.</p>
+          <p>VeroBehavior is currently in <strong className="text-ink font-semibold">beta</strong>. Our core platform is live: the JavaScript snippet tracks behavior, our AI engine analyzes sessions in real time, and the dashboard displays psychological insights.</p>
+          <p>Sign up free to get started — no waitlist, no sales call. For unlimited access, direct support, and a lifetime discount when we launch paid plans, apply as a <strong className="text-ink font-semibold">design partner</strong> and help us shape the product.</p>
           <h2 className="font-serif text-2xl text-ink font-normal mt-10 mb-3">What is next</h2>
           <p>Our roadmap includes psychological persona generation, industry-specific playbooks, GEO/AEO monitoring for AI search visibility, and an agentic AI mode that can autonomously suggest and launch tests.</p>
         </div>
