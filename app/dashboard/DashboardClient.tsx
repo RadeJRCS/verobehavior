@@ -196,9 +196,19 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
   const fetchData = useCallback(async (key?: string) => {
     setLoading(true)
     try {
-      const allRes = await fetch('/api/sessions')
+      const [allRes, usageRes] = await Promise.all([fetch('/api/sessions'), fetch('/api/usage')])
       const allData = await allRes.json()
-      const keys = [...new Set((allData.sessions || []).map((s: Session) => s.client_key).filter((k: string) => k && k.length > 0))] as string[]
+      // Union of two sources, not either alone: a handful of older
+      // client_keys (demo, terra-store, ...) have session history but no
+      // row in `clients` at all, and a brand-new signup has a `clients`
+      // row but zero sessions until the snippet actually fires. Reading
+      // only from sessions hides the second case ("No client yet" even
+      // though the key exists); reading only from ownership would hide
+      // the first.
+      const usageData: { usage?: { client_key: string }[] } = await usageRes.json().catch(() => ({ usage: [] }))
+      const sessionKeys = (allData.sessions || []).map((s: Session) => s.client_key).filter((k: string) => k && k.length > 0)
+      const ownedKeys = (usageData.usage || []).map((u) => u.client_key).filter((k) => k && k.length > 0)
+      const keys = [...new Set([...sessionKeys, ...ownedKeys])] as string[]
       setAllKeys(keys)
       if (!key) { setSessions(allData.sessions || []); setStats(allData.stats || null) }
       else {
@@ -438,6 +448,11 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
 
   // Dynamic profile - no hardcoding
   const clientProfile: ClientProfile | null = filterKey ? deriveClientProfile(filterKey, sessions) : null
+  // The key to show in the snippet box: the one currently selected, or —
+  // when viewing "All clients" — the account's only key, if it has just
+  // one (the common case right after signup). Ambiguous with 2+ unselected
+  // keys, so falls back to the generic placeholder there.
+  const snippetKey = filterKey || (allKeys.length === 1 ? allKeys[0] : null)
 
   useEffect(() => {
     if (clientProfile?.url && !geoUrl) setGeoUrl(clientProfile.url)
@@ -558,9 +573,9 @@ export default function DashboardClient({ nav }: { nav: React.ReactNode }) {
           <div className="bg-[#0E0E14] rounded-xl p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-3">
             <div>
               <div className="text-[10px] font-mono text-white/40 mb-1 uppercase tracking-widest">Add to any website to start tracking</div>
-              <code className="text-[12px] font-mono text-[#A8D4B8]">{'<script src="https://verobehavior.vercel.app/api/snippet?key=YOUR_CLIENT_KEY" async></script>'}</code>
+              <code className="text-[12px] font-mono text-[#A8D4B8]">{`<script src="https://verobehavior.vercel.app/api/snippet?key=${snippetKey || 'YOUR_CLIENT_KEY'}" async></script>`}</code>
             </div>
-            <div className="text-[11px] font-mono text-white/30 whitespace-nowrap">Replace YOUR_CLIENT_KEY with client name</div>
+            <div className="text-[11px] font-mono text-white/30 whitespace-nowrap">{snippetKey ? 'Your unique tracking key' : 'Replace YOUR_CLIENT_KEY with client name'}</div>
           </div>
 
           <div className="flex gap-1 bg-surface-2 border border-surface-3 rounded-lg p-1 mb-6 w-fit flex-wrap">
